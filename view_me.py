@@ -1,5 +1,5 @@
 from ROOT import TH2D, TCanvas
-#from FixROOT import OneFix
+from FixROOT import OneFix
 import csv
 import sys
 
@@ -108,44 +108,43 @@ def fillhisto(module,pins_to_pixels,pixels_to_fibers,pins_to_count,rows):
        
          
    for fib in rows[0] :
-       print "checking identifier row" + str(fib)
        if fib in hitfibers_top :
            module.SetBinContent(rows[0].index(fib)+1,4,1)
    for fib in rows[1] :
-       print "checking 2nd row" + str(fib)
        if fib in hitfibers_top :
            module.SetBinContent(rows[1].index(fib)+1,3,1)
    for fib in rows[2] :
-       print "checking 3rd row" + str(fib)
        if fib in hitfibers_bot :
            module.SetBinContent(rows[2].index(fib)+1,2,1)
    for fib in rows[3] :
-       print "checking bottom row" + str(fib)
        if fib in hitfibers_bot :
            module.SetBinContent(rows[3].index(fib)+1,1,1)
 
    return module
       
 def main():
-   c1     = TCanvas("c1","c1",1000,500)
-   module = TH2D("mod",";x;y",64,0,64,4,0,4)
-
-   pins_to_pixels   =  pins("pins.csv")
-   pixels_to_fibers =  mapit()
-   pins_to_count    =  struck("struck.csv")
-   rows             =  rowmaker()
-   
-   
-   module = fillhisto(module,
-                      pins_to_pixels,
-                      pixels_to_fibers,
-                      pins_to_count,
-                      rows)
-   c1.cd()
-   module.Draw("COLZ")
-   c1.Update()
-   c1.Modified()
-   sys.stdin.readline()
+    fixer=OneFix()
+    c1     = TCanvas("c1","c1",1000,500)
+    module = TH2D("mod",";x;y",64,0,64,4,0,4)
+    
+    pins_to_pixels   =  pins("pins.csv")
+    pixels_to_fibers =  mapit()
+    pins_to_count    =  struck("struck.csv")
+    rows             =  rowmaker()
+    
+    
+    module = fillhisto(module,
+                       pins_to_pixels,
+                       pixels_to_fibers,
+                       pins_to_count,
+                       rows)
+    c1.cd()
+    title=fixer.fix(module,"Module")
+    module.Draw("COLZ")
+    title.Draw("SAMES")
+    c1.Update()
+    c1.Modified()
+    sys.stdin.readline()
    
    
 if __name__ == '__main__' :
