@@ -1,4 +1,4 @@
-from ROOT import TH2D, TCanvas
+from ROOT import TH2D, TCanvas, TLatex
 from FixROOT import OneFix
 import csv
 import sys
@@ -68,9 +68,9 @@ def rowmaker() :
            row4.append(y-x)
 
    return [row1,row2,row3,row4]
-   print pixels_to_fibers
+   #print pixels_to_fibers
    
-   print pints_to_counts
+   #print pints_to_counts
 
    
 
@@ -93,7 +93,7 @@ def fillhisto(module,pins_to_pixels,pixels_to_fibers,pins_to_count,rows):
    hitfibers_top = []
    hitfibers_bot = []
    
-   print pixels_to_fibers
+   #print pixels_to_fibers
    for pixel in hitpixels_top:
        hitpixel = pixel[0]
        hitcount = pixel[1]
@@ -125,7 +125,7 @@ def fillhisto(module,pins_to_pixels,pixels_to_fibers,pins_to_count,rows):
 def main():
     fixer=OneFix()
     c1     = TCanvas("c1","c1",1000,500)
-    module = TH2D("mod",";x;y",64,0,64,4,0,4)
+    module = TH2D("mod",";x #rightarrow;y #rightarrow",64,0,64,4,0,4)
     
     pins_to_pixels   =  pins("pins.csv")
     pixels_to_fibers =  mapit()
@@ -140,6 +140,8 @@ def main():
                        rows)
     c1.cd()
     title=fixer.fix(module,"Module")
+    module.GetYaxis().SetNdivisions(4)
+    module.GetXaxis().SetNdivisions(8)
     module.Draw("COLZ")
     title.Draw("SAMES")
     c1.Update()
