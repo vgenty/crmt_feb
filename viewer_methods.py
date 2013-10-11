@@ -25,15 +25,24 @@ def mapit() :
             data=[]
     return mapping
 
-def struck(filename) :
+def struck(filename,event) :
     print 'opening file: ' + str(filename)
     pinstocounts=[]
-
+    data=[]
+    
     with open(filename, 'rb') as f:
         reader = csv.reader(f)
+        event_counter = 0
         for row in reader:
-            data=[int(row[0]),int(row[1])]
-            pinstocounts.append(data)  
+            event_counter+=1
+            if event_counter == int(event):
+                print event_counter
+                for channel in row:
+                    if row.index(channel) > 0: 
+                        data=[]
+                        data=[int(channel),int(1)]
+                        pinstocounts.append(data)  
+    print pinstocounts
     return pinstocounts
         
 def rowmaker() :
