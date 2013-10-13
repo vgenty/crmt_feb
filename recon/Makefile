@@ -1,0 +1,24 @@
+EXEC := RecoCRMT
+SRC  := $(wildcard *.cxx)
+OBJ  := $(patsubst %.cxx,%.o,$(SRC))
+
+CXX      := g++
+CPPFLAGS := -g -O3 -Wall -std=c++0x $(shell root-config --cflags)
+LDFLAGS  := -g $(shell root-config --ldflags)
+LDLIBS   := $(shell root-config --libs)
+
+$(EXEC): $(OBJ)
+	@echo Linking into $(EXEC)... Done;$(CXX) $(LDFLAGS) $(LDLIBS) -o $@ $^
+
+%.o: %.cxx
+	@echo Compiling $<...;$(CXX) $(CPPFLAGS) -c $<;
+
+%.o: %.h
+
+.PHONY: clean cleanroot
+
+clean:
+	@echo Cleaned;rm -rf $(EXEC) $(OBJ)
+
+cleanroot:
+	@echo Cleaned;rm -rf $(EXEC) $(OBJ) *.root
