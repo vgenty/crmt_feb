@@ -5,6 +5,20 @@
 #include <string>
 #include <stdlib.h>
 
+
+bool check_event(std::vector<int>& pin_data) {
+  bool check      =  false;
+  int goodpins[8] =  {16,19,20,23,17,18,9,4};
+ 
+  if(pin_data.size()>=3)     //Must have at least 3 pins hit
+     for(auto pin : pin_data) //Loop over pins
+      for(int j=0;j<8;++j)   //check against goodpins (which are identifier rows)
+	if(pin == goodpins[j])
+	  check=true;
+ 
+  return check;
+}
+
 void initpins(int pins_to_pixels[32][2]) {
   std::ifstream pins;
   pins.open("pins.csv");      
@@ -44,8 +58,8 @@ void initpins(int pins_to_pixels[32][2]) {
 
 void initfibs(int fiber_locations[4][64]) {
   int seeds[3][8] = {{9  ,33,73,97,  1,41,65,105},
-		     {104,80,40,16,112,72,48,8  },
-		     {120,96,56,32,128,88,64,24}};
+		     {104,80,40,16,112,72,48,  8},
+		     {120,96,56,32,128,88,64,224 }};
     
   //Fill identifier row
   for(int kk=0; kk<8;++kk) {
@@ -92,6 +106,7 @@ void initfile(std::map<int,std::vector<int> >& event_data) {
 	  if (*it == ',' || it == line.end()) {
 	    channel=true;
 	    event_data[evt].push_back(atoi(str_number.c_str()));
+	    str_number="";
 	  }
 	  if (!channel)  
 	    str_number += *it;
@@ -109,6 +124,7 @@ void initfile(std::map<int,std::vector<int> >& event_data) {
 
 int main(int argc,const char *argv[]) {
   std::cout << "Initializing Based God Event Reconstruction" << std::endl;
+  
   //Get fiber_locations in detector
   int fiber_locations[4][64];
   initfibs(fiber_locations);
@@ -122,9 +138,6 @@ int main(int argc,const char *argv[]) {
   } 
   */
 
-
-
-
   //Get pins_to_pixels
   int pins_to_pixels[32][2];
   initpins(pins_to_pixels);
@@ -133,17 +146,24 @@ int main(int argc,const char *argv[]) {
     std::cout << pins_to_pixels[p][0] << "," << pins_to_pixels[p][1] << std::endl;
     }*/
 
-
- 
   //Get event data
   std::map<int, std::vector<int> > event_data;
   std::map<int, std::vector<int> >::iterator itr;
-  initfile(event_data); // Initialize event_data<event_number,vec<hitpins>
-  
+  initfile(event_data); // Initialize event_data<event_number,vec<hitpins>  
  
-  /*  
+   
  
-   for(itr=event_data.begin(); itr!= event_data.end(); itr++) {
+  //Cut out events with no identifier row
+  //  for (itr = event_data.begin(); itr != event_data.end(); ++itr)
+  itr=event_data.begin();
+  while (itr != event_data.end()) {
+    if(!check_event((*itr).second))
+      event_data.erase(itr++); 
+    else
+      itr++;
+  }  
+
+  for(itr=event_data.begin(); itr!= event_data.end(); ++itr) {
     std::cout << (*itr).first;
     std::vector<int> channel = (*itr).second;
     for ( int g = 0; g < channel.size(); ++g) {
@@ -152,9 +172,7 @@ int main(int argc,const char *argv[]) {
     std::cout << std::endl;
     
   }
-  */ 
-  
-    
+   
   
   
 
