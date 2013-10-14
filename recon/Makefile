@@ -2,7 +2,7 @@ EXEC := RecoCRMT
 SRC  := $(wildcard *.cxx)
 OBJ  := $(patsubst %.cxx,%.o,$(SRC))
 
-CXX      := g++
+CXX      := clang++
 CPPFLAGS := -g -O3 -Wall -std=c++0x $(shell root-config --cflags)
 LDFLAGS  := -g $(shell root-config --ldflags)
 LDLIBS   := $(shell root-config --libs)
