@@ -3,7 +3,7 @@ SRC  := $(wildcard *.cxx)
 OBJ  := $(patsubst %.cxx,%.o,$(SRC))
 
 CXX      := clang++
-CPPFLAGS := -g -O3 -Wall -std=c++0x $(shell root-config --cflags)
+CPPFLAGS := -g -O3 -Wall -std=c++11 $(shell root-config --cflags)
 LDFLAGS  := -g $(shell root-config --ldflags)
 LDLIBS   := $(shell root-config --libs)
 
