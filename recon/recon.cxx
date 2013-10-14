@@ -5,13 +5,48 @@
 #include <string>
 #include <stdlib.h>
 
+void initpins(int pins_to_pixels[32][2]) {
+  std::ifstream pins;
+  pins.open("pins.csv");      
+  bool found;
+  int out = 0;
+  std::string line;
+
+  if ( pins.is_open() ) {
+    while( !pins.eof() ){
+      std::getline(pins,line);
+      std::string::iterator it;
+      std::string           str_number;      
+      found = false;
+      for ( it = line.begin();it<=line.end(); ++it) {
+	if (*it != ',') 
+	  str_number+=*it;
+	else
+	  found = true;
+
+       	if(found){
+	  pins_to_pixels[out][0] = atoi(str_number.c_str());
+	  str_number="";
+	  found = false;
+	}
+
+	if (it == line.end() ){
+	  pins_to_pixels[out][1]=atoi(str_number.c_str());
+	  out++;
+	}
+	
+      }//end for   
+    }
+  }
+  
+  pins.close();
+}
 
 void initfibs(int fiber_locations[4][64]) {
   int seeds[3][8] = {{9  ,33,73,97,  1,41,65,105},
 		     {104,80,40,16,112,72,48,8  },
 		     {120,96,56,32,128,88,64,24}};
-  
-  
+    
   //Fill identifier row
   for(int kk=0; kk<8;++kk) {
     fiber_locations[0][kk+0*8] = 25  + kk;
@@ -46,11 +81,12 @@ void initfile(std::map<int,std::vector<int> >& event_data) {
     while( !events.eof() ){
   
       std::getline(events,line);
-      std::string::iterator it;
+      std::string::iterator it;   
+      std::string           str_number;
       
-      std::string str_number;
-      found = false; 
+      found    = false; 
       channel  = false;
+      
       for ( it = line.begin();it<=line.end(); ++it) {
 	if (found) {
 	  if (*it == ',' || it == line.end()) {
@@ -72,18 +108,34 @@ void initfile(std::map<int,std::vector<int> >& event_data) {
 }
 
 int main(int argc,const char *argv[]) {
-
+  std::cout << "Initializing Based God Event Reconstruction" << std::endl;
+  //Get fiber_locations in detector
   int fiber_locations[4][64];
   initfibs(fiber_locations);
-
-
-  for(int kk=0; kk<4;++kk) {
+  //Get pixels_to_fibers
+  /*
+    for(int kk=0; kk<4;++kk) {
     for(int jj=0; jj<64;++jj) {
-      std::cout << fiber_locations[kk][jj] << " ";
-   }
+    std::cout << fiber_locations[kk][jj] << " ";
+    }
     std::cout << std::endl;
-  }  
-  std::cout << "Initializing Based God Event Reconstruction" << std::endl;
+  } 
+  */
+
+
+
+
+  //Get pins_to_pixels
+  int pins_to_pixels[32][2];
+  initpins(pins_to_pixels);
+  /*
+  for(int p=0;p<32;++p){
+    std::cout << pins_to_pixels[p][0] << "," << pins_to_pixels[p][1] << std::endl;
+    }*/
+
+
+ 
+  //Get event data
   std::map<int, std::vector<int> > event_data;
   std::map<int, std::vector<int> >::iterator itr;
   initfile(event_data); // Initialize event_data<event_number,vec<hitpins>
