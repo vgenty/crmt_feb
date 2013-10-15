@@ -8,10 +8,10 @@ LDFLAGS  := -g $(shell root-config --ldflags)
 LDLIBS   := $(shell root-config --libs)
 
 $(EXEC): $(OBJ)
-	@echo Linking into $(EXEC)... Done;$(CXX) $(LDFLAGS) $(LDLIBS) -o $@ $^
+	$(CXX) $(LDFLAGS) $(LDLIBS) -o $@ $^
 
 %.o: %.cxx
-	@echo Compiling $<...;$(CXX) $(CPPFLAGS) -c $<;
+	$(CXX) $(CPPFLAGS) -c $<;
 
 %.o: %.h
 
