@@ -10,7 +10,7 @@ def main():
     
     pins_to_pixels   =  pins("pins.csv")
     pixels_to_fibers =  mapit()
-    pins_to_count    =  struck("event_list.txt",sys.argv[1])
+    pins_to_count    =  struck("vics_list.txt",sys.argv[1])
     rows             =  rowmaker()
     
     
