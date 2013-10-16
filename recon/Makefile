@@ -1,4 +1,4 @@
-EXEC := RecoCRMT
+EXEC := RecoModule
 SRC  := $(wildcard *.cxx)
 OBJ  := $(patsubst %.cxx,%.o,$(SRC))
 
