@@ -135,7 +135,7 @@ bool RecoModule::check_event(std::vector<int>& pin_data)
 {
   bool check      =  false;
   int goodpins[8] =  {16,19,20,23,17,18,9,4};
-  if(pin_data.size()>=3)      //Must have at least 3 pins hit  
+  if(pin_data.size()>=4)      //Must have at least 4 pins hit  
     for(auto pin : pin_data) //Loop over pins                                                              
       for(int j=0;j<8;++j)    //check against goodpins (which are identifier rows)
 	if(pin == goodpins[j])
@@ -332,7 +332,45 @@ void RecoModule::clusterize(){
     fTracks.push_back(newtrack);
 
   }
+  
+  
+}
 
+void RecoModule::attach(){
+  std::cout << "Attaching clusters to identifier row " << std::endl;
+  bool found;
+  //for (auto track: fTracks){
+  //  for(std::vector<Track>::iterator track = fTracks.begin();
+  //    track != fTracks.end(); ++track){
+  std::vector<Track>::iterator track  = fTracks.begin();
+  std::vector<Track>::iterator lasttrack  = fTracks.end();
+  size_t counter=0;
+  while(track != fTracks.begin() + fTracks.size()){
+    //   std::cout << "track - fTracks.begin() " << track - fTracks.begin() << " fTracks.size() " << fTracks.size() << " ";
+    if( track - fTracks.begin() == fTracks.size()) break;
+    found = false;
+    for(auto fibs : track->fibers()){
+      for (auto fib : fFibers){
+	if (fib.y() == 0){ //only check identifier row y=0
+	  if (fib.near(fibs)) {
+	    //std::cout << "I found a track fiber with id " << fibs.id() << " near the identifier row with id " << fib.id() << std::endl;
+	    track->add_fiber(fib);
+	    found = true;
+	  }
+	}
+      }
+    }
+    if(!found){
+      //std::cout << "about to erase on: " << track-fTracks.begin() << " size " << fTracks.size();
+      //track->dump();
+      fTracks.erase(track);
+      //std::cout << "fTracks.size() " << fTracks.size() << " ";
+    }else{
+      counter ++;
+      track  = fTracks.begin() +  counter;
+    }
+    
+  }
 }
 
 void RecoModule::print_tracks(){
@@ -340,5 +378,8 @@ void RecoModule::print_tracks(){
     tr.dump();
   }
 
+
 }    
+
+
 

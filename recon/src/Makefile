@@ -9,7 +9,7 @@ LDLIBS   := $(shell root-config --libs)
 
 $(EXEC): $(OBJ)
 	@echo Linking into $@ ... Done ;$(CXX) $(LDFLAGS) $(LDLIBS) -o $@ $^
-	-@cd ..;ln -s src/$(EXEC) $(EXEC)
+	-@cd ..;rm -rf $(EXEC);ln -s src/$(EXEC) $(EXEC)
 
 %.o: %.cxx
 	@echo Compiling source file $< ... ;$(CXX) $(CPPFLAGS) -c $<;

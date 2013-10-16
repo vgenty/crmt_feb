@@ -22,21 +22,25 @@ int main()
    std::cout << "-------------------" << std::endl;
    std::cout << "Event: " << evt << std::endl;
    mm->find_hit_fibers((*itr).second);
-    for (int oo=0;oo<((*itr).second).size();oo++)
-      std::cout << "have: " << ((*itr).second).at(oo) << " ";
-
-    std::cout << std::endl;
-    mm->fill_fibers();
-    //mm->print_fibers();
-    mm->clusterize();
-    //mm->print_tracks();
-    mm->clear();
-    evt++;
+   for (int oo=0;oo<((*itr).second).size();oo++)
+     std::cout << "have: " << ((*itr).second).at(oo) << " ";
+   
+   std::cout << std::endl;
+   mm->fill_fibers();
+   //mm->print_fibers();
+   mm->clusterize();
+   mm->attach();
+   
+   //std::cout << "\n dumping" << std::endl;
+   //mm->print_tracks();
+   mm->clear();
+   
+   evt++;
   }
   
-
-
   
-   return 0;
+  
+  
+  return 0;
 }
 

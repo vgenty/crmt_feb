@@ -42,6 +42,7 @@ public:
   void get_location(int id, double *x, double *y, bool top);
   void print_fibers();
   void clusterize();
+  void attach();
   void print_tracks();
   
 };
