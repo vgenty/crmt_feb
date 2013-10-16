@@ -20,6 +20,4 @@ $(EXEC): $(OBJ)
 
 clean:
 	@echo Cleaned;rm -rf $(EXEC) $(OBJ)
-
-cleanroot:
-	@echo Cleaned;rm -rf $(EXEC) $(OBJ) *.root
+	-@rm -rf ../$(EXEC)

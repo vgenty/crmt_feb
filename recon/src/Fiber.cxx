@@ -1,3 +1,4 @@
+#include <cmath>
 #include "Fiber.h"
 
 bool Fiber::near(Fiber b){
