@@ -1,1 +1,0 @@
-../pins_to_display/event_list.txt
