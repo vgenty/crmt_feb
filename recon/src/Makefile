@@ -9,6 +9,7 @@ LDLIBS   := $(shell root-config --libs)
 
 $(EXEC): $(OBJ)
 	@echo Linking into $@ ... Done ;$(CXX) $(LDFLAGS) $(LDLIBS) -o $@ $^
+	-@cd ..;ln -s src/$(EXEC) $(EXEC)
 
 %.o: %.cxx
 	@echo Compiling source file $< ... ;$(CXX) $(CPPFLAGS) -c $<;
@@ -19,6 +20,4 @@ $(EXEC): $(OBJ)
 
 clean:
 	@echo Cleaned;rm -rf $(EXEC) $(OBJ)
-
-cleanroot:
-	@echo Cleaned;rm -rf $(EXEC) $(OBJ) *.root
+	-@rm -rf ../$(EXEC)
