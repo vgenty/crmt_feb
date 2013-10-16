@@ -1,4 +1,4 @@
-EXEC := RecoModule
+EXEC := Reco
 SRC  := $(wildcard *.cxx)
 OBJ  := $(patsubst %.cxx,%.o,$(SRC))
 
@@ -9,7 +9,6 @@ LDLIBS   := $(shell root-config --libs)
 
 $(EXEC): $(OBJ)
 	@echo Linking into $@ ... Done ;$(CXX) $(LDFLAGS) $(LDLIBS) -o $@ $^
-	-@cd ..;ln -s src/$(EXEC) $(EXEC)
 
 %.o: %.cxx
 	@echo Compiling source file $< ... ;$(CXX) $(CPPFLAGS) -c $<;
@@ -20,4 +19,6 @@ $(EXEC): $(OBJ)
 
 clean:
 	@echo Cleaned;rm -rf $(EXEC) $(OBJ)
-	-@rm -rf ../$(EXEC)
+
+cleanroot:
+	@echo Cleaned;rm -rf $(EXEC) $(OBJ) *.root

@@ -7,7 +7,9 @@
 #include <algorithm>
 #include "RecoModule.h"
 
-RecoModule::RecoModule() {}
+RecoModule::RecoModule() {
+  
+}
 
 RecoModule::~RecoModule() {}
 
@@ -17,11 +19,11 @@ void RecoModule::getfiles(std::string efile, std::string pfile)
   fPinFile   = pfile;
 }
 
-void RecoModule::initpixels(int pixels_to_fibers[16][8])
+void RecoModule::initpixels()
 {
   for(int pix=0;pix<16;++pix)
     for(int fib=0;fib<8;++fib)
-      pixels_to_fibers[pix][fib]=(fib+1)+pix*8;
+      fPixelsToFibers[pix][fib]=(fib+1)+pix*8;
 }
 
 void RecoModule::initpins(int pins_to_pixels[32][2])
@@ -67,7 +69,7 @@ void RecoModule::initfibs(int fiber_locations[4][64])
 {
   int seeds[3][8] = {{9  ,33,73,97,  1,41,65,105},
 		     {104,80,40,16,112,72,48,  8},
-		     {120,96,56,32,128,88,64,224 }};
+		     {120,96,56,32,128,88,64,24 }};
   
   //Fill identifier row                                                                                     
   for(int kk=0; kk<8;++kk) {
@@ -142,40 +144,49 @@ bool RecoModule::check_event(std::vector<int>& pin_data)
   return check;
 }
 
-void RecoModule::find_hit_fibers(std::vector<int>& hit_pins,
-                     std::map<int, std::vector<int> >& hit_fibers,
-                     int pins_to_pixels[32][2],
-                     int pixels_to_fibers[16][8]){
+void RecoModule::find_hit_fibers(std::vector<int>& hit_pins){
   int pixel;
   int pin;
   std::sort(hit_pins.begin(),hit_pins.end());
 
   for(int j=0;j<32;++j){
-    if(binary_search(hit_pins.begin(), hit_pins.end(), pins_to_pixels[j][0])){
-      pin   = pins_to_pixels[j][0];
-      pixel = pins_to_pixels[j][1];
+    if(binary_search(hit_pins.begin(), hit_pins.end(), fPinsToPixels[j][0])){
+      pin   = fPinsToPixels[j][0];
+      pixel = fPinsToPixels[j][1];
 
       if(pin<32)
         for(int k=0;k<8;++k)
-          hit_fibers[0].push_back(pixels_to_fibers[pixel][k]);
+          fHitFibers[0].push_back(fPixelsToFibers[pixel-1][k]);
       else
         for(int k=0;k<8;++k)
-          hit_fibers[1].push_back(pixels_to_fibers[pixel][k]);
+          fHitFibers[1].push_back(fPixelsToFibers[pixel-1][k]);
     }
   }
+  //xx
+  /*  for (auto tb: fHitFibers){
+    for(auto tb2: tb.second){
+      if(tb2 == 0){
+	std::cout << "found a 0:" << "\n";
+	for(int j=0;j<32;++j){
+	  int pixel2 = fPinsToPixels[j][1];
+	  std::cout << " j " << j << " pin " << fPinsToPixels[j][0] << " pix " << pixel2;
+	   for(int k=0;k<8;++k)
+	     std::cout << fPixelsToFibers[pixel2][k]<< " ";
+	}
+      }
+    }
+    }*/
 }
 
-void RecoModule::print_fibers_from_pins()
+void RecoModule::init_module()
 {
-  std::cout << "Initializing Based God Event Reconstruction" << std::endl;
-
+ 
   std::map<int, std::vector<int> >::iterator itr;
-  std::map<int, std::vector<int> >::iterator it;
-  
+   
   getfiles(fEventFile.c_str(),fPinFile.c_str());
   initfibs(fFiberLocations);
   initpins(fPinsToPixels);
-  initpixels(fPixelsToFibers);
+  initpixels();
   initfile(fEventData);
 
   //Clear events with not enough pins
@@ -187,32 +198,147 @@ void RecoModule::print_fibers_from_pins()
       itr++;
   }  
   //Eventwise loop
-  int evt=1;
-  for(itr=fEventData.begin();itr!=fEventData.end();++itr){
-    std::cout << "-------------------" << std::endl;
-    std::cout << "Event: " << evt << std::endl;
-
-    
-    find_hit_fibers((*itr).second,fHitFibers,fPinsToPixels,fPixelsToFibers);
-    for (int oo=0;oo<((*itr).second).size();oo++)
-      std::cout << "have: " << ((*itr).second).at(oo) << " ";
-
-    std::cout << std::endl;
-    for(auto tb: fHitFibers){
-      std::cout << "toporbot: " << tb.first << " size: " << (tb.second).size() << std::endl;
-      
-      std::cout << std::endl;
-      std::cout << "fiber numbers: " << std::endl;
-      for(int tt=0;tt<(tb.second).size();++tt)
-	std::cout << (tb.second).at(tt) << " ";
-      std::cout << std::endl;
-    }
-    
-    fHitFibers.clear();
-    evt++;
-  }
-
+}
   //Fill fHitFibers key 0 or 1; 0==top, 1==bottom (top/bot pmt)
 
-  
+void RecoModule::get_location(int id, double *x, double *y, bool top){
+  int kkfirst, kklast;
+
+  if( top ){
+    kkfirst=0;
+    kklast=1;
+  }else{
+    kkfirst=2;
+    kklast=3;
+  }
+  for(int kk=kkfirst; kk<=kklast;++kk) {
+    for(int jj=0; jj<64;++jj) {
+      if( fFiberLocations[kk][jj] == id ){
+	*x=jj;
+	*y=kk;
+	return;
+      }
+    }
+  } 
+  std::cout << " problem: could not locate fiber " << id << " in top? " << top << std::endl;
+  return;
 }
+
+void RecoModule::fill_fibers(){
+  double x, y;
+  bool top = true;
+  // for(int kk=0; kk<=3;++kk) {
+  //   for(int jj=0; jj<64;++jj) {
+  //     std::cout << fFiberLocations[kk][jj] << " ";
+  //   }
+  //   std::cout << std::endl;
+  // }
+ 
+   for (auto tb: fHitFibers){
+    if( tb.first == 1 ) top = false;
+    Fiber f;
+    for(int tt=0;tt<(tb.second).size();++tt){
+      f.set_id(tb.second.at(tt));
+      get_location(f.id(),&x,&y,top);
+      f.set_x(x);
+      f.set_y(y);
+      //std::cout << " id " << f.id() << " x " << f.x() << " y " << f.y() << std::endl;
+      fFibers.push_back(f);
+    }
+  }
+
+}
+
+void RecoModule::print_fibers(){
+  for(auto fib : fFibers){
+    fib.dump();
+  }
+
+}    
+  
+void RecoModule::clusterize(){
+
+  bool print = false;
+
+  if( print )
+    std::cout << " clusterizing " << std::endl;
+
+  for(auto fib : fFibers){
+
+    if( print )
+      std::cout << " start clustering from fib " << fib.id() << std::endl;
+
+    if( fib.y() == 0 ){
+      if( print )
+	std::cout << " fib " << fib.id() << " on 1st row " << std::endl;
+      continue;// goes to next element of for
+    }
+
+    bool contains = false;
+
+    for(auto track : fTracks){
+      if( track.contains(fib) ){
+	contains = true;
+	break;
+      }
+    }
+
+    if( contains ){ 
+      if( print )
+	std::cout << " fib " << fib.id() << " already contained " << std::endl;
+     continue;
+    }
+
+    Track newtrack;
+    newtrack.add_fiber(fib);
+    
+    for(size_t index=0; index<newtrack.fibers().size(); index++){
+
+      Fiber local_fib=newtrack.fibers()[index];
+
+      for(auto fib2 : fFibers){
+	
+	if( print )
+	  std::cout << " try to add fiber " << fib2.id() << std::endl;
+
+	if( fib2.y() == 0 ){
+	  if( print )
+	    std::cout << " fib " << fib2.id() << " on 1st row " << std::endl;
+	  continue;// goes to next element of for
+	}
+
+	bool contains2 = newtrack.contains(fib2);
+	if( contains2 ){
+	  if( print )
+	    std::cout << " fib " << fib2.id() << " already contained " << std::endl;
+	  continue;
+	}
+	
+	if( !fib2.near(local_fib) ){
+	  if( print )
+	    std::cout << " fib " << fib2.id() << "( " << fib2.x() << ", " << fib2.y() << ") is not near " << "( " << local_fib.x() << ", " << local_fib.y() << ")" << local_fib.id() << std::endl;
+	  continue;
+	}
+      
+	newtrack.add_fiber(fib2);
+	
+	if( print )
+	  std::cout << " fib " << fib2.id() << " is near " << local_fib.id() << " track now has size " << newtrack.size() << std::endl;
+
+      }
+    }
+
+    newtrack.set_id(fTracks.size());
+    fTracks.push_back(newtrack);
+
+  }
+
+}
+
+void RecoModule::print_tracks(){
+  for(auto tr : fTracks){
+    tr.dump();
+  }
+
+}    
+
