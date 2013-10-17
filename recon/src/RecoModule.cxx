@@ -290,7 +290,7 @@ void RecoModule::clusterize()
 void RecoModule::attach()
 {
   bool found;
-  
+  //This is such a BS way to delete track pls fix
   std::vector<Track>::iterator track  = fTracks.begin();
   std::vector<Track>::iterator lasttrack  = fTracks.end();
   size_t counter=0;
