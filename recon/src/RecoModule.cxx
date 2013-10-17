@@ -255,105 +255,74 @@ void RecoModule::print_fibers(){
   }
 
 }    
+  void RecoModule::clusterize(){
   
-void RecoModule::clusterize(){
-
-  bool print = false;
-
-  if( print )
-    std::cout << " clusterizing " << std::endl;
-
+  bool contains  = false;
+  bool contains2 = false;
+  
   for(auto fib : fFibers){
-
-    if( print )
-      std::cout << " start clustering from fib " << fib.id() << std::endl;
-
-    if( fib.y() == 0 ){
-      if( print )
-	std::cout << " fib " << fib.id() << " on 1st row " << std::endl;
-      continue;// goes to next element of for
-    }
-
-    bool contains = false;
-
+    
+    if( fib.y() == 0 )
+      continue;
+    
+    contains = false;
+    
     for(auto track : fTracks){
       if( track.contains(fib) ){
 	contains = true;
 	break;
       }
     }
-
-    if( contains ){ 
-      if( print )
-	std::cout << " fib " << fib.id() << " already contained " << std::endl;
-     continue;
-    }
-
+    
+    if( contains ) 
+      continue;
+    
+    
     Track newtrack;
     newtrack.add_fiber(fib);
     
     for(size_t index=0; index<newtrack.fibers().size(); index++){
-
+      
       Fiber local_fib=newtrack.fibers()[index];
-
+      
       for(auto fib2 : fFibers){
 	
-	if( print )
-	  std::cout << " try to add fiber " << fib2.id() << std::endl;
-
-	if( fib2.y() == 0 ){
-	  if( print )
-	    std::cout << " fib " << fib2.id() << " on 1st row " << std::endl;
-	  continue;// goes to next element of for
-	}
-
-	bool contains2 = newtrack.contains(fib2);
-	if( contains2 ){
-	  if( print )
-	    std::cout << " fib " << fib2.id() << " already contained " << std::endl;
+	if( fib2.y() == 0 )
 	  continue;
-	}
 	
-	if( !fib2.near(local_fib) ){
-	  if( print )
-	    std::cout << " fib " << fib2.id() << "( " << fib2.x() << ", " << fib2.y() << ") is not near " << "( " << local_fib.x() << ", " << local_fib.y() << ")" << local_fib.id() << std::endl;
+	contains2 = newtrack.contains(fib2);
+	if( contains2 )
 	  continue;
-	}
-      
+	
+	
+	if( !fib2.near(local_fib) )
+	  continue;
+	
 	newtrack.add_fiber(fib2);
 	
-	if( print )
-	  std::cout << " fib " << fib2.id() << " is near " << local_fib.id() << " track now has size " << newtrack.size() << std::endl;
-
       }
     }
 
     newtrack.set_id(fTracks.size());
     fTracks.push_back(newtrack);
-
+    
   }
-  
-  
 }
 
 void RecoModule::attach(){
-  std::cout << "Attaching clusters to identifier row " << std::endl;
   bool found;
-  //for (auto track: fTracks){
-  //  for(std::vector<Track>::iterator track = fTracks.begin();
-  //    track != fTracks.end(); ++track){
+  
   std::vector<Track>::iterator track  = fTracks.begin();
   std::vector<Track>::iterator lasttrack  = fTracks.end();
   size_t counter=0;
   while(track != fTracks.begin() + fTracks.size()){
-    //   std::cout << "track - fTracks.begin() " << track - fTracks.begin() << " fTracks.size() " << fTracks.size() << " ";
-    if( track - fTracks.begin() == fTracks.size()) break;
+    if( track - fTracks.begin() == fTracks.size()) 
+      break;
     found = false;
     for(auto fibs : track->fibers()){
       for (auto fib : fFibers){
-	if (fib.y() == 0){ //only check identifier row y=0
+	if (fib.y() == 0){
 	  if (fib.near(fibs)) {
-	    //std::cout << "I found a track fiber with id " << fibs.id() << " near the identifier row with id " << fib.id() << std::endl;
 	    track->add_fiber(fib);
 	    found = true;
 	  }
@@ -361,10 +330,8 @@ void RecoModule::attach(){
       }
     }
     if(!found){
-      //std::cout << "about to erase on: " << track-fTracks.begin() << " size " << fTracks.size();
       //track->dump();
       fTracks.erase(track);
-      //std::cout << "fTracks.size() " << fTracks.size() << " ";
     }else{
       counter ++;
       track  = fTracks.begin() +  counter;
@@ -372,7 +339,6 @@ void RecoModule::attach(){
     
   }
 }
-
 void RecoModule::print_tracks(){
   for(auto tr : fTracks){
     tr.dump();
