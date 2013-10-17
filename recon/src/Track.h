@@ -17,34 +17,16 @@ private:
   int fid;
 
 public:
-  Track(){
-    fid=0;
-  };
-  ~Track(){};
+  Track();
+  ~Track();
 
-  void add_fiber(Fiber a){
-    fFibers.push_back(a);
-  }
-
-  void set_id(int a){fid = a;}
-  int id(){return fid;}
-  bool contains(Fiber a){
-    for(auto fib : fFibers){
-      if( fib.id() == a.id() &&
-	  fib.x() == a.x() &&
-	  fib.y() == a.y() ) return true;
-    }
-    return false;
-  }
+  void add_fiber(Fiber a);
+  void set_id(int a);
+  int id() {return fid;}
+  bool contains(Fiber a);
   int size(){return fFibers.size();}
   std::vector<Fiber> fibers(){return fFibers;}
-
-  void dump(){
-    std::cout << " track id " << id() << std::endl;
-    for(auto fib : fFibers){
-      fib.dump();
-    }    
-  }
+  void dump();
 
 
 };

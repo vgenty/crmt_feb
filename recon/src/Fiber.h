@@ -18,23 +18,17 @@ private:
   double fy;
 
 public:
-  Fiber(){
-    fid=0;
-    fx=0;
-    fy=0;
-  };
-  ~Fiber(){};
+  Fiber();
+  ~Fiber();
 
-  void set_id(int a){fid=a;}
-  void set_x(double a){fx=a;}
-  void set_y(double a){fy=a;}
-
-  int id(){return fid;}
-  double x(){return fx;}
-  double y(){return fy;}
-  void dump(){
-    std::cout << " id " << id() << " x " << x() << " y " << y() << std::endl;
-  }
+  void set_id(int a);
+  void set_x(double a);
+  void set_y(double a);
+  
+  int id()   {return fid;}
+  double x() {return fx;}
+  double y() {return fy;}
+  void dump();
   bool near(Fiber b);
 
 };

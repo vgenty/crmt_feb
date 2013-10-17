@@ -1,6 +1,36 @@
 #include <cmath>
 #include "Fiber.h"
 
+Fiber::Fiber()
+{
+  fid = 0;
+  fx  = 0;
+  fy  = 0;
+}
+
+Fiber::~Fiber() {}
+
+
+void Fiber::set_id(int a)
+{
+  fid = a;
+}
+
+void Fiber::set_x(double a)
+{
+  fx = a;
+}
+
+void Fiber::set_y(double a)
+{
+  fy = a;
+}
+
+void Fiber::dump()
+{
+  std::cout << " id " << id() << " x " << x() << " y " << y() << std::endl;
+}
+
 bool Fiber::near(Fiber b){
 
   double dx = this->x() - b.x();
