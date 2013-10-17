@@ -7,9 +7,7 @@
 #include <algorithm>
 #include "RecoModule.h"
 
-RecoModule::RecoModule() {
-  
-}
+RecoModule::RecoModule() {}
 
 RecoModule::~RecoModule() {}
 
@@ -249,14 +247,15 @@ void RecoModule::fill_fibers(){
 
 }
 
-void RecoModule::print_fibers(){
+void RecoModule::print_fibers()
+{
   for(auto fib : fFibers){
     fib.dump();
   }
-
-}    
-  void RecoModule::clusterize(){
   
+}    
+void RecoModule::clusterize()
+{ 
   bool contains  = false;
   bool contains2 = false;
   
@@ -302,14 +301,15 @@ void RecoModule::print_fibers(){
 	
       }
     }
-
+    
     newtrack.set_id(fTracks.size());
     fTracks.push_back(newtrack);
     
   }
 }
 
-void RecoModule::attach(){
+void RecoModule::attach()
+{
   bool found;
   
   std::vector<Track>::iterator track  = fTracks.begin();
@@ -339,13 +339,9 @@ void RecoModule::attach(){
     
   }
 }
-void RecoModule::print_tracks(){
+void RecoModule::print_tracks()
+{
   for(auto tr : fTracks){
     tr.dump();
   }
-
-
-}    
-
-
-
+}
