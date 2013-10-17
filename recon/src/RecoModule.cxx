@@ -160,20 +160,6 @@ void RecoModule::find_hit_fibers(std::vector<int>& hit_pins){
           fHitFibers[1].push_back(fPixelsToFibers[pixel-1][k]);
     }
   }
-  //xx
-  /*  for (auto tb: fHitFibers){
-    for(auto tb2: tb.second){
-      if(tb2 == 0){
-	std::cout << "found a 0:" << "\n";
-	for(int j=0;j<32;++j){
-	  int pixel2 = fPinsToPixels[j][1];
-	  std::cout << " j " << j << " pin " << fPinsToPixels[j][0] << " pix " << pixel2;
-	   for(int k=0;k<8;++k)
-	     std::cout << fPixelsToFibers[pixel2][k]<< " ";
-	}
-      }
-    }
-    }*/
 }
 
 void RecoModule::init_module()
@@ -225,12 +211,6 @@ void RecoModule::get_location(int id, double *x, double *y, bool top){
 void RecoModule::fill_fibers(){
   double x, y;
   bool top = true;
-  // for(int kk=0; kk<=3;++kk) {
-  //   for(int jj=0; jj<64;++jj) {
-  //     std::cout << fFiberLocations[kk][jj] << " ";
-  //   }
-  //   std::cout << std::endl;
-  // }
  
    for (auto tb: fHitFibers){
     if( tb.first == 1 ) top = false;
@@ -240,7 +220,6 @@ void RecoModule::fill_fibers(){
       get_location(f.id(),&x,&y,top);
       f.set_x(x);
       f.set_y(y);
-      //std::cout << " id " << f.id() << " x " << f.x() << " y " << f.y() << std::endl;
       fFibers.push_back(f);
     }
   }
