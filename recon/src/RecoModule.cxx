@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <algorithm>
 #include "RecoModule.h"
+#include "TGraphErrors.h"
 
 RecoModule::RecoModule() {}
 

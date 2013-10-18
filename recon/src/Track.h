@@ -14,6 +14,11 @@ class Track {
 
 private:
   std::vector<Fiber> fFibers;
+  double fSlope;
+  double fYinter;
+  double fAngle;
+  double fChi;
+  double fNdf;
   int fid;
 
 public:
