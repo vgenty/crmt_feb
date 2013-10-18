@@ -10,6 +10,7 @@
 #include <algorithm>
 #include "Fiber.h"
 #include "Track.h"
+#include "Geometry.h"
 
 class RecoModule {
 
@@ -44,7 +45,7 @@ public:
   void clusterize();
   void attach();
   void print_tracks();
-  
+  void print_physical_xy();
 };
 
 #endif

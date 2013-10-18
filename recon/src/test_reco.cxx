@@ -37,7 +37,7 @@ int main()
    
    evt++;
   }
-  
+  mm->print_physical_xy();
   
   
   

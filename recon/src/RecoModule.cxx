@@ -324,3 +324,9 @@ void RecoModule::print_tracks()
     tr.dump();
   }
 }
+
+void RecoModule::print_physical_xy(){
+  Geometry g;
+  g.set_coordinates();
+  g.dump();
+}
