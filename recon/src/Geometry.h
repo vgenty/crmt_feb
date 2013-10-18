@@ -20,7 +20,9 @@ public:
   
   void set_coordinates();
   void dump();
-  
+  std::pair<double,double> location(int a, int b){return fLocation[a][b];}
+
 };
 
 #endif
+

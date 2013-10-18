@@ -29,6 +29,12 @@ void Fiber::set_y(double a)
 void Fiber::dump()
 {
   std::cout << " id " << id() << " x " << x() << " y " << y() << std::endl;
+  std::cout << " x: " << fCoords.first << " y: " << fCoords.second << std::endl;
+}
+
+void Fiber::set_coords(std::pair<double,double> coords)
+{
+  fCoords=coords;
 }
 
 bool Fiber::near(Fiber b){

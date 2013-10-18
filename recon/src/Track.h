@@ -27,8 +27,7 @@ public:
   int size(){return fFibers.size();}
   std::vector<Fiber> fibers(){return fFibers;}
   void dump();
-
-
+  
 };
 
 #endif

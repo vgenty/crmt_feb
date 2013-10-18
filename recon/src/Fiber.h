@@ -16,7 +16,8 @@ private:
   int fid;
   double fx;
   double fy;
-
+  std::pair<double,double> fCoords;
+  
 public:
   Fiber();
   ~Fiber();
@@ -24,13 +25,14 @@ public:
   void set_id(int a);
   void set_x(double a);
   void set_y(double a);
-  
+    
   int id()   {return fid;}
   double x() {return fx;}
   double y() {return fy;}
   void dump();
   bool near(Fiber b);
-
+  void set_coords(std::pair<double,double> coords);
+  
 };
 
 #endif

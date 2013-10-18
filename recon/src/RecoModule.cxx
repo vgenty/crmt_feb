@@ -172,7 +172,8 @@ void RecoModule::init_module()
   initpins(fPinsToPixels);
   initpixels();
   initfile(fEventData);
-
+  //set up coordinates
+  g.set_coordinates();
   //Clear events with not enough pins
   itr=fEventData.begin();
   while (itr != fEventData.end()) {
@@ -209,9 +210,10 @@ void RecoModule::get_location(int id, double *x, double *y, bool top){
 }
 
 void RecoModule::fill_fibers(){
+  
   double x, y;
   bool top = true;
- 
+  
    for (auto tb: fHitFibers){
     if( tb.first == 1 ) top = false;
     Fiber f;
@@ -220,10 +222,15 @@ void RecoModule::fill_fibers(){
       get_location(f.id(),&x,&y,top);
       f.set_x(x);
       f.set_y(y);
+      f.set_coords(g.location(y,x));
       fFibers.push_back(f);
+      //  f.dump();
     }
-  }
-
+   }
+   
+   //give them real xyz
+   
+   
 }
 
 void RecoModule::print_fibers()
@@ -324,9 +331,8 @@ void RecoModule::print_tracks()
     tr.dump();
   }
 }
+/*
+void RecoModule::ini{
 
-void RecoModule::print_physical_xy(){
-  Geometry g;
-  g.set_coordinates();
-  g.dump();
 }
+*/

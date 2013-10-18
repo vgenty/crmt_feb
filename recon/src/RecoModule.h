@@ -25,7 +25,8 @@ private:
   std::map<int, std::vector<int> > fHitFibers;
   std::vector<Fiber> fFibers;
   std::vector<Track> fTracks;
-  
+  Geometry g;
+
 public:
   RecoModule();
   ~RecoModule();
@@ -45,7 +46,7 @@ public:
   void clusterize();
   void attach();
   void print_tracks();
-  void print_physical_xy();
+
 };
 
 #endif
