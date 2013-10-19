@@ -33,6 +33,7 @@ int main()
    //std::cout << "\n dumping" << std::endl;
    //mm->print_tracks();
    //at this point i now have what i need to fit
+   mm->reconstruct();
    mm->clear();
    
    evt++;

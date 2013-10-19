@@ -9,22 +9,24 @@
 #include <stdlib.h>
 #include <algorithm>
 #include "Fiber.h"
+#include "TGraphErrors.h"
 
 class Track {
-
+  
 private:
   std::vector<Fiber> fFibers;
-  double fSlope;
-  double fYinter;
-  double fAngle;
+  TGraphErrors *fFit;
+  std::pair<double,double> fSlope;
+  std::pair<double,double> fYinter;
+  std::pair<double,double> fAngle;
   double fChi;
   double fNdf;
   int fid;
-
+  
 public:
   Track();
   ~Track();
-
+  
   void add_fiber(Fiber a);
   void set_id(int a);
   int id() {return fid;}
@@ -32,7 +34,8 @@ public:
   int size(){return fFibers.size();}
   std::vector<Fiber> fibers(){return fFibers;}
   void dump();
-  
+  void fit();
+  void calculate_angle();
 };
 
 #endif

@@ -332,8 +332,8 @@ void RecoModule::print_tracks()
     tr.dump();
   }
 }
-/*
-void RecoModule::ini{
 
+void RecoModule::reconstruct()
+{
+  std::cout << "reconstructing" << std::endl;
 }
-*/

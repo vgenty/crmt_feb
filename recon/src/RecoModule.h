@@ -46,7 +46,7 @@ public:
   void clusterize();
   void attach();
   void print_tracks();
-
+  void reconstruct();
 };
 
 #endif

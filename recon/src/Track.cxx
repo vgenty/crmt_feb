@@ -35,3 +35,14 @@ void Track::dump()
     fib.dump();
   }
 }
+
+void Track::fit()
+{
+  //  fFit = new TGraphErrors("fFit");
+  fFit = new TGraphErrors();
+  std::cout << "fitting" << std::endl;
+}
+void Track::calculate_angle()
+{
+  std::cout << "calculating angle" << std::endl;
+}
