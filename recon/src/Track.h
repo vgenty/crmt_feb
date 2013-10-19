@@ -10,15 +10,21 @@
 #include <algorithm>
 #include "Fiber.h"
 #include "TGraphErrors.h"
+#include "TF1.h"
+
 
 class Track {
   
 private:
   std::vector<Fiber> fFibers;
-  TGraphErrors *fFit;
-  std::pair<double,double> fSlope;
+  TGraphErrors *fTG;
+  TF1 *fFit;
+  /*std::pair<double,double> fSlope;
   std::pair<double,double> fYinter;
-  std::pair<double,double> fAngle;
+  std::pair<double,double> fAngle;*/
+  double fSlope;
+  double fYinter;
+  double fAngle;
   double fChi;
   double fNdf;
   int fid;

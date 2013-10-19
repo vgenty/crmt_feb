@@ -32,7 +32,7 @@ public:
   void dump();
   bool near(Fiber b);
   void set_coords(std::pair<double,double> coords);
-  
+  std::pair<double,double> coords(){return fCoords;}
 };
 
 #endif

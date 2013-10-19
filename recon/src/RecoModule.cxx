@@ -336,4 +336,7 @@ void RecoModule::print_tracks()
 void RecoModule::reconstruct()
 {
   std::cout << "reconstructing" << std::endl;
+  for (auto track : fTracks){
+    track.fit();
+  }
 }
