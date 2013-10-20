@@ -338,5 +338,6 @@ void RecoModule::reconstruct()
   std::cout << "reconstructing" << std::endl;
   for (auto track : fTracks){
     track.fit();
+    track.calculate_angle();
   }
 }

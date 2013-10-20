@@ -75,5 +75,7 @@ void Track::fit()
 }
 void Track::calculate_angle()
 {
-  std::cout << "calculating angle" << std::endl;
+  std::cout << "calculating angle" << std::endl; 
+  fAngle     = atan(1/fSlope);  
+  std::cout << "fangle(deg): " << fAngle*180.0/3.14 << std::endl;
 }
