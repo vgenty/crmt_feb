@@ -33,6 +33,7 @@ void Track::dump()
   for(auto fib : fFibers){
     fib.dump();
   }
+  std::cout << "fSlope: " << fSlope << " fYinter: " << fYinter << " fChi: " << fChi << " fNdf: " << fNdf  << " reduced: " << fChi/fNdf<< std::endl;
 }
 
 void Track::fit()
@@ -70,12 +71,16 @@ void Track::fit()
   fNdf    = fFit->GetNDF();
   
   
-  std::cout << "fSlope: " << fSlope << " fYinter: " << fYinter << " fChi: " << fChi << " fNdf: " << fNdf  << " reduced: " << fChi/fNdf<< std::endl;
+
   
 }
 void Track::calculate_angle()
 {
-  std::cout << "calculating angle" << std::endl; 
-  fAngle     = atan(1/fSlope);  
-  std::cout << "fangle(deg): " << fAngle*180.0/3.14 << std::endl;
+  fAngle  = atan(1/fSlope);  
+}
+
+void Track::reconstruct()
+{
+  fit();
+  calculate_angle();
 }

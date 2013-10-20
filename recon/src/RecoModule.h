@@ -26,7 +26,7 @@ private:
   std::map<int, std::vector<int> > fHitFibers;
   std::vector<Fiber>  fFibers;
   std::vector<Track>  fTracks;
-  std::vector<double> fAngles;
+  std::vector<double> fLocalAngles;
   Geometry g;
   FileManager fm;
 
@@ -35,9 +35,9 @@ public:
   ~RecoModule();
   void getfiles(std::string efile, std::string pfile);
   void initpixels();
-  void initpins(int pins_to_pixels[32][2]);
-  void initfibs(int fiber_locations[4][64]);
-  void initfile(std::map<int, std::vector<int> > &event_data);
+  void initpins();
+  void initfibs();
+  void initfile();
   bool check_event(std::vector<int>& pin_data);
   void find_hit_fibers(std::vector<int>& hit_pins);
   void init_module();

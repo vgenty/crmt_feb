@@ -26,19 +26,13 @@ int main()
      std::cout << "have: " << ((*itr).second).at(oo) << " ";
    
    std::cout << std::endl;
-   mm->fill_fibers();
-   //mm->print_fibers();
-   mm->clusterize();
-   mm->attach();
-   //std::cout << "\n dumping" << std::endl;
-   //mm->print_tracks();
-   //at this point i now have what i need to fit
-   mm->reconstruct();
-   mm->choose_angles();
-   mm->clear();   
+   mm -> fill_fibers();
+   mm -> clusterize();
+   mm -> attach();
+   mm -> choose_angles();
+   mm -> clear();   
    evt++;
   }
-  std::cout << "made it out of loop" << std::endl;
   mm->fill_root();
   return 0;
 }

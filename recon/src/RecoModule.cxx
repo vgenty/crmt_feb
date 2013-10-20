@@ -25,7 +25,7 @@ void RecoModule::initpixels()
       fPixelsToFibers[pix][fib]=(fib+1)+pix*8;
 }
 
-void RecoModule::initpins(int pins_to_pixels[32][2])
+void RecoModule::initpins()
 {
   std::ifstream pins;
   pins.open(fPinFile.c_str());
@@ -46,13 +46,13 @@ void RecoModule::initpins(int pins_to_pixels[32][2])
           found = true;
 
         if(found){
-          pins_to_pixels[out][0] = atoi(str_number.c_str());
+          fPinsToPixels[out][0] = atoi(str_number.c_str());
           str_number="";
           found = false;
         }
 
         if (it == line.end() ){
-          pins_to_pixels[out][1]=atoi(str_number.c_str());
+          fPinsToPixels[out][1]=atoi(str_number.c_str());
           out++;
         }
 
@@ -64,7 +64,7 @@ void RecoModule::initpins(int pins_to_pixels[32][2])
 }
 
 
-void RecoModule::initfibs(int fiber_locations[4][64])
+void RecoModule::initfibs()
 {
   int seeds[3][8] = {{9  ,33,73,97,  1,41,65,105},
 		     {104,80,40,16,112,72,48,  8},
@@ -72,25 +72,25 @@ void RecoModule::initfibs(int fiber_locations[4][64])
   
   //Fill identifier row                                                                                     
   for(int kk=0; kk<8;++kk) {
-    fiber_locations[0][kk+0*8] = 25  + kk;
-    fiber_locations[0][kk+1*8] = 49  + kk;
-    fiber_locations[0][kk+2*8] = 89  + kk;
-    fiber_locations[0][kk+3*8] = 113 + kk;
-    fiber_locations[0][kk+4*8] = 17  + kk;
-    fiber_locations[0][kk+5*8] = 57  + kk;
-    fiber_locations[0][kk+6*8] = 81  + kk;
-    fiber_locations[0][kk+7*8] = 121 + kk;
+    fFiberLocations[0][kk+0*8] = 25  + kk;
+    fFiberLocations[0][kk+1*8] = 49  + kk;
+    fFiberLocations[0][kk+2*8] = 89  + kk;
+    fFiberLocations[0][kk+3*8] = 113 + kk;
+    fFiberLocations[0][kk+4*8] = 17  + kk;
+    fFiberLocations[0][kk+5*8] = 57  + kk;
+    fFiberLocations[0][kk+6*8] = 81  + kk;
+    fFiberLocations[0][kk+7*8] = 121 + kk;
   }
   for (int o=0;o<3;++o)
     for( int e=0;e<8;++e)
       for (int i=0;i<8;++i)
         if(o+1==1)
-          fiber_locations[o+1][8*e+i]=seeds[o][i]+e;
+          fFiberLocations[o+1][8*e+i]=seeds[o][i]+e;
         else
-          fiber_locations[o+1][8*e+i]=seeds[o][i]-e;
+          fFiberLocations[o+1][8*e+i]=seeds[o][i]-e;
 }
 
-void RecoModule::initfile(std::map<int,std::vector<int> >& event_data)
+void RecoModule::initfile()
 {
   std::ifstream events;
   events.open(fEventFile.c_str());
@@ -113,7 +113,7 @@ void RecoModule::initfile(std::map<int,std::vector<int> >& event_data)
         if (found) {
           if (*it == ',' || it == line.end()) {
             channel=true;
-            event_data[evt].push_back(atoi(str_number.c_str()));
+            fEventData[evt].push_back(atoi(str_number.c_str()));
             str_number="";
           }
           if (!channel)
@@ -169,13 +169,11 @@ void RecoModule::init_module()
   std::map<int, std::vector<int> >::iterator itr;
    
   getfiles(fEventFile.c_str(),fPinFile.c_str());
-  initfibs(fFiberLocations);
-  initpins(fPinsToPixels);
+  initfibs();
+  initpins();
   initpixels();
-  initfile(fEventData);
-  //set up coordinates
+  initfile();
   g.set_coordinates();
-  //Clear events with not enough pins
   itr=fEventData.begin();
   while (itr != fEventData.end()) {
     if(!check_event((*itr).second))
@@ -223,13 +221,13 @@ void RecoModule::fill_fibers(){
       get_location(f.id(),&x,&y,top);
       f.set_x(x);
       f.set_y(y);
+      //give them real xyz
       f.set_coords(g.location(y,x));
+      //put attribute in fFibers;
       fFibers.push_back(f);
-      //  f.dump();
     }
    }
    
-   //give them real xyz
    
    
 }
@@ -317,7 +315,6 @@ void RecoModule::attach()
       }
     }
     if(!found){
-      //track->dump();
       fTracks.erase(track);
     }else{
       counter ++;
@@ -333,34 +330,32 @@ void RecoModule::print_tracks()
   }
 }
 
-void RecoModule::reconstruct()
-{
-  std::cout << "reconstructing" << std::endl;
-  for (auto track : fTracks){
-    track.fit();
-    track.calculate_angle();
-  }
-}
-
 void RecoModule::fill_root()
 {
-  std::cout << "im in fill root " << std::endl; 
-  fm.make_tree("recodata.root",fAngles.size(),fAngles);
+  fm.make_tree("recodata.root",fLocalAngles.size(),fLocalAngles);
 }
 
 void RecoModule::choose_angles()
 {
+  std::vector<Track>::iterator track;
+  
+  for (track = fTracks.begin();track != fTracks.end();++track)
+    track->reconstruct();
+
   int index=-1;
-  double cnt=1000000; //please fix this code its really bad
+  double cnt=10000000.0; //please fix this code its really bad
   double reduced=0.0;
-  for(auto track : fTracks){
+  for(auto track : fTracks){ //doing THIS MEANS YOU CAN NOT MODIFY fTRACKS
     reduced = track.chi()/track.ndf();
+    std::cout << "reduced: " << reduced<< "track.angle() " << track.angle() << std::endl;
     if(reduced < cnt) {
-      cnt = track.chi()/track.ndf();
+      cnt = reduced;
       index++;
     }
   }					       
-  std::cout << " i am about to do this" << std::endl;
-  if ( index >= 0 )fAngles.push_back(fTracks.at(index).angle());
-  std::cout << "i did this..." << std::endl;
+  std::cout << "index: " << index << std::endl;
+  if ( index >= 0 ){
+    fLocalAngles.push_back((fTracks.at(index)).angle());
+    std::cout << "i chose reduced: " << cnt << "angle: " << (fTracks.at(index)).angle() << std::endl;
+  }
 }
