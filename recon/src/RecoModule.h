@@ -11,6 +11,7 @@
 #include "Fiber.h"
 #include "Track.h"
 #include "Geometry.h"
+#include "FileManager.h"
 
 class RecoModule {
 
@@ -23,9 +24,11 @@ private:
   int fPixelsToFibers[16][8];
   std::map<int, std::vector<int> > fEventData;
   std::map<int, std::vector<int> > fHitFibers;
-  std::vector<Fiber> fFibers;
-  std::vector<Track> fTracks;
+  std::vector<Fiber>  fFibers;
+  std::vector<Track>  fTracks;
+  std::vector<double> fAngles;
   Geometry g;
+  FileManager fm;
 
 public:
   RecoModule();
@@ -47,6 +50,9 @@ public:
   void attach();
   void print_tracks();
   void reconstruct();
+  void fill_root();
+  void choose_angles();
+  
 };
 
 #endif

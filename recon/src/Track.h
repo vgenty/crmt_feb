@@ -42,6 +42,11 @@ public:
   void dump();
   void fit();
   void calculate_angle();
+  double slope(){return fSlope;}
+  double yinter(){return fYinter;}
+  double angle(){return fAngle;}
+  double chi(){return fChi;}
+  double ndf(){return fNdf;}
 };
 
 #endif

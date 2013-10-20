@@ -341,3 +341,26 @@ void RecoModule::reconstruct()
     track.calculate_angle();
   }
 }
+
+void RecoModule::fill_root()
+{
+  std::cout << "im in fill root " << std::endl; 
+  fm.make_tree("recodata.root",fAngles.size(),fAngles);
+}
+
+void RecoModule::choose_angles()
+{
+  int index=-1;
+  double cnt=1000000; //please fix this code its really bad
+  double reduced=0.0;
+  for(auto track : fTracks){
+    reduced = track.chi()/track.ndf();
+    if(reduced < cnt) {
+      cnt = track.chi()/track.ndf();
+      index++;
+    }
+  }					       
+  std::cout << " i am about to do this" << std::endl;
+  if ( index >= 0 )fAngles.push_back(fTracks.at(index).angle());
+  std::cout << "i did this..." << std::endl;
+}

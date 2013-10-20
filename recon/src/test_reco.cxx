@@ -34,11 +34,12 @@ int main()
    //mm->print_tracks();
    //at this point i now have what i need to fit
    mm->reconstruct();
-   mm->clear();
-   
+   mm->choose_angles();
+   mm->clear();   
    evt++;
   }
-  
+  std::cout << "made it out of loop" << std::endl;
+  mm->fill_root();
   return 0;
 }
 
