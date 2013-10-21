@@ -40,23 +40,31 @@ void Track::fit()
 {
   std::cout << "fitting" << std::endl;
   fTG = new TGraphErrors();
-  fFit = new TF1("fit","[0]+[1]*x",-1,70); //Not sure yet what range should be
+  //fFit = new TF1("fit","[0]+[1]*x",-1,70); //Not sure yet what range should be
+  fFit = new TF1("fit","[0]+[1]*x",-1,47); //Not sure yet what range should be
   int cnt=1;
   for(auto j : fFibers){
-    fTG->SetPoint(cnt,j.coords().first,j.coords().second);
-    fTG->SetPointError(cnt,0.52,1.54);
+    //fTG->SetPoint(cnt,j.coords().first,j.coords().second);
+    fTG->SetPoint(cnt,j.coords().second,j.coords().first);
+    //fTG->SetPointError(cnt,0.52,1.54);
+    fTG->SetPointError(cnt,1.54,0.52);
     cnt++;
   }
   //try and guess some values for fSlope and fYinter, take first and last point
 
-  
+  /*
   double x0=fFibers[0].coords().first;
   double x1=fFibers[fFibers.size()-1].coords().first;
   double y0=fFibers[0].coords().second;
   double y1=fFibers[fFibers.size()-1].coords().second;
-    
-  double slope  = (y1-y0)/(x1-x0);
-  double yinter = y1-slope*x1;
+  */
+  
+  
+  double slope  = 0;
+  double yinter = fFibers[fFibers.size()-1].coords().first;
+
+  //  double slope  = (y1-y0)/(x1-x0);
+  //  double yinter = y1-slope*x1;
   
   fFit->SetParameters(yinter,slope);
   
@@ -76,7 +84,7 @@ void Track::fit()
 }
 void Track::calculate_angle()
 {
-  fAngle  = atan(1/fSlope);  
+  fAngle  = atan(fSlope);  
 }
 
 void Track::reconstruct()

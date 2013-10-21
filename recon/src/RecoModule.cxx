@@ -7,6 +7,7 @@
 #include <algorithm>
 #include "RecoModule.h"
 #include "TGraphErrors.h"
+#include "TMath.h"
 
 RecoModule::RecoModule() {}
 
@@ -343,19 +344,28 @@ void RecoModule::choose_angles()
     track->reconstruct();
 
   int index=-1;
-  double cnt=10000000.0; //please fix this code its really bad
+  int good_index=-1;
+  double cnt=0; //please fix this code its really bad
   double reduced=0.0;
   for(auto track : fTracks){ //doing THIS MEANS YOU CAN NOT MODIFY fTRACKS
-    reduced = track.chi()/track.ndf();
-    std::cout << "reduced: " << reduced<< "track.angle() " << track.angle() << std::endl;
-    if(reduced < cnt) {
+    index ++;
+    reduced = TMath::Prob(track.chi(),track.ndf());
+    //    reduced = track.chi()/track.ndf();
+    //std::cout << "reduced: " << reduced<< "track.angle() " << track.angle() << std::endl;
+    if(reduced > cnt) {
       cnt = reduced;
-      index++;
+      good_index=index;
     }
   }					       
-  std::cout << "index: " << index << std::endl;
-  if ( index >= 0 ){
-    fLocalAngles.push_back((fTracks.at(index)).angle());
-    std::cout << "i chose reduced: " << cnt << "angle: " << (fTracks.at(index)).angle() << std::endl;
+  std::cout << "good_index: " << good_index << std::endl;
+  if ( good_index >= 0 ){
+    fLocalAngles.push_back((fTracks.at(good_index)).angle());
+    std::cout << "i chose reduced: " << cnt << "angle: " << (fTracks.at(good_index)).angle() << std::endl;
+      if( fabs(fTracks.at(good_index).angle()) >1)
+	fTracks.at(good_index).dump();
+      
   }
+  
+  
+  
 }
