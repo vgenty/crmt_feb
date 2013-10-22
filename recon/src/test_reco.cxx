@@ -11,7 +11,7 @@ int main()
 {
 
   RecoModule *mm = new RecoModule();
-  mm->getfiles("event_list.txt","pins.csv");
+  mm->getfiles("event_list2.txt","pins.csv");
   mm->init_module();
 
   std::map<int, std::vector<int> >::iterator itr;
@@ -30,8 +30,10 @@ int main()
    mm -> clusterize();
    mm -> attach();
    mm -> choose_angles();
+   mm -> write_out((*itr).second);
    mm -> clear();   
    evt++;
+   std::cout << "-------------------" << std::endl;
   }
   mm->fill_root();
   return 0;

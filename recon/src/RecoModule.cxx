@@ -132,14 +132,21 @@ void RecoModule::initfile()
 }
 
 bool RecoModule::check_event(std::vector<int>& pin_data)
-{
+{						
   bool check      =  false;
   int goodpins[8] =  {16,19,20,23,17,18,9,4};
-  if(pin_data.size()>=4)      //Must have at least 4 pins hit  
-    for(auto pin : pin_data) //Loop over pins                                                              
-      for(int j=0;j<8;++j)    //check against goodpins (which are identifier rows)
-	if(pin == goodpins[j])
+  if(pin_data.size()>=4){      //Must have at least 4 pins hit  
+    for(auto pin : pin_data){ //Loop over pins                                                      
+      for(int j=0;j<8;++j){    //check against goodpins (which are identifier rows)
+	if(pin == goodpins[j] && 
+	   ( (pin >=8  && pin<=23)
+	     || (pin<=23 && pin <=55) ) ){ //kill events with noisy channels
 	  check=true;
+	  std::cout << "this one is k" << std::endl;
+	}//end if good pin
+      }//end looping good pins
+    }//end pin loop
+  }//end >4
   
   return check;
 }
@@ -350,22 +357,26 @@ void RecoModule::choose_angles()
   for(auto track : fTracks){ //doing THIS MEANS YOU CAN NOT MODIFY fTRACKS
     index ++;
     reduced = TMath::Prob(track.chi(),track.ndf());
-    //    reduced = track.chi()/track.ndf();
+    //reduced = track.chi()/track.ndf();
     //std::cout << "reduced: " << reduced<< "track.angle() " << track.angle() << std::endl;
     if(reduced > cnt) {
       cnt = reduced;
       good_index=index;
     }
   }					       
-  std::cout << "good_index: " << good_index << std::endl;
+  std::cout << "good_index: " << good_index << " reduced: " << reduced << std::endl;
+  
+  print_tracks();
   if ( good_index >= 0 ){
-    fLocalAngles.push_back((fTracks.at(good_index)).angle());
-    std::cout << "i chose reduced: " << cnt << "angle: " << (fTracks.at(good_index)).angle() << std::endl;
-      if( fabs(fTracks.at(good_index).angle()) >1)
-	fTracks.at(good_index).dump();
-      
-  }
+    if (fabs(fTracks.at(good_index).angle()) < 1.4) // careful here
+      fLocalAngles.push_back((fTracks.at(good_index)).angle());
+    
+  } 
   
-  
-  
+}
+
+
+void RecoModule::write_out(std::vector<int>& hit_pins)
+{
+  fm.make_display(hit_pins,fTracks);
 }

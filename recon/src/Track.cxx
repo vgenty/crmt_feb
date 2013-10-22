@@ -30,9 +30,9 @@ bool Track::contains(Fiber a)
 void Track::dump()
 {
   std::cout << " track id " << id() << std::endl;
-  for(auto fib : fFibers){
+  /*for(auto fib : fFibers){
     fib.dump();
-  }
+    }*/
   std::cout << "fSlope: " << fSlope << " fYinter: " << fYinter << " fChi: " << fChi << " fNdf: " << fNdf  << " reduced: " << fChi/fNdf<< std::endl;
 }
 

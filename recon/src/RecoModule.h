@@ -52,7 +52,7 @@ public:
   void reconstruct();
   void fill_root();
   void choose_angles();
-  
+  void write_out(std::vector<int>& hit_pins);
 };
 
 #endif
