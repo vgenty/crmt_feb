@@ -3,7 +3,7 @@
 #include "FileManager.h"
 #include "Track.h"
 #include "Fiber.h"
-
+#include <cmath>
 FileManager::FileManager()
 {
   std::cout << "hi im filemanager" << std::endl;
@@ -17,6 +17,12 @@ void FileManager::make_tree(std::string file_name, int n_events,
   fReconData = new TFile(file_name.c_str(), "RECREATE");
   fTree      = new TTree("Recon Tree","Recon Tree");  
   fTree->Branch("ReconAngles", &fAngles);
+   
+  //make cosine plot
+  std::vector<double> lCosines;
+  for(int i=0;i<fAngles.size();++i)
+    lCosines.push_back(cos(fAngles.at(i)));
+  fTree->Branch("ReconAngles_Cos", &lCosines);
   fTree->Fill();
   fReconData->Write();
   fReconData->Close();
