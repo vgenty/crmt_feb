@@ -2,4 +2,7 @@
 *~
 *#
 *.o
-RecoCRMT
+Reco
+*.root
+events.txt
+pins.txt
