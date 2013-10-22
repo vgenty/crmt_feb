@@ -315,7 +315,7 @@ void RecoModule::attach()
     for(auto fibs : track->fibers()){
       for (auto fib : fFibers){
 	if (fib.y() == 0){
-	  if (fib.near(fibs)) {
+	  if (fib.near(fibs) && !track->contains(fib)) {//xx
 	    track->add_fiber(fib);
 	    found = true;
 	  }
