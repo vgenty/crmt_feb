@@ -22,8 +22,8 @@ int main()
    std::cout << "-------------------" << std::endl;
    std::cout << "Event: " << evt << std::endl;
    mm->find_hit_fibers((*itr).second);
-   for (int oo=0;oo<((*itr).second).size();oo++)
-     std::cout << "have: " << ((*itr).second).at(oo) << " ";
+   //  for (int oo=0;oo<((*itr).second).size();oo++)
+   //  std::cout << "have: " << ((*itr).second).at(oo) << " ";
    
    std::cout << std::endl;
    mm -> fill_fibers();
@@ -33,7 +33,6 @@ int main()
    mm -> write_out((*itr).second);
    mm -> clear();   
    evt++;
-   std::cout << "-------------------" << std::endl;
   }
   mm->fill_root();
   return 0;

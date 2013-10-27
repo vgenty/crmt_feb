@@ -346,31 +346,25 @@ void RecoModule::fill_root()
 void RecoModule::choose_angles()
 {
   std::vector<Track>::iterator track;
-  
+
   for (track = fTracks.begin();track != fTracks.end();++track)
     track->reconstruct();
 
-  int index=-1;
+  int index=0;
   int good_index=-1;
-  double cnt=0; //please fix this code its really bad
-  double reduced=0.0;
+  double value=10000;
   for(auto track : fTracks){ //doing THIS MEANS YOU CAN NOT MODIFY fTRACKS
-    index ++;
-    reduced = TMath::Prob(track.chi(),track.ndf());
-    //reduced = track.chi()/track.ndf();
-    //std::cout << "reduced: " << reduced<< "track.angle() " << track.angle() << std::endl;
-    if(reduced > cnt) {
-      cnt = reduced;
-      good_index=index;
+    if(track.pvalue() < value) {
+      value      = track.pvalue();
+      good_index = index;
     }
-  }					       
-  std::cout << "good_index: " << good_index << " reduced: " << reduced << std::endl;
-  
+    index++;
+  }		
   print_tracks();
   if ( good_index >= 0 ){
+    std::cout << "good_index: " << good_index << " pvalue: " << value << std::endl;
     if (fabs(fTracks.at(good_index).angle()) < 1.4) // careful here
       fLocalAngles.push_back((fTracks.at(good_index)).angle());
-    
   } 
   
 }

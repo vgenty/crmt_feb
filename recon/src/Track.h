@@ -27,6 +27,7 @@ private:
   double fAngle;
   double fChi;
   double fNdf;
+  double fPvalue;
   int fid;
   
 public:
@@ -48,6 +49,7 @@ public:
   double angle(){return fAngle;}
   double chi(){return fChi;}
   double ndf(){return fNdf;}
+  double pvalue(){return fPvalue;}
 };
 
 #endif
