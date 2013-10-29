@@ -5,7 +5,7 @@ import sys
       
 def main():
     fixer=OneFix()
-    c1     = TCanvas("c1","c1",1000,500)
+    c1     = TCanvas("c1","c1",800,500)
     module = TH2D("mod",";x #rightarrow;y #rightarrow",64,0,64,4,0,4)
     
     pins_to_pixels   =  pins("pins.csv")
@@ -24,9 +24,12 @@ def main():
                        tracks)
 
     c1.cd()
-    title=fixer.fix(module,"Module")
+    title=fixer.fix(module,"Module 1 - Event %d" % int(sys.argv[1]))
     module.GetYaxis().SetNdivisions(4)
     module.GetXaxis().SetNdivisions(8)
+    module.GetYaxis().SetTitleOffset(0.6)
+    
+    
     module.Draw("COLZ")
     title.Draw("SAMES")
     c1.Update()
