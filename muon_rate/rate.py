@@ -6,7 +6,8 @@ import sys, math
 def main():
     fixer = OneFix()
 
-    c1=TCanvas("c1","c1")#,600,800)
+    #c1=TCanvas("c1","c1")#,600,800)
+    c1=TCanvas("c1","c1",500,600)
     #tp1 = TPad("tp1","tpad1",0,0.3,1,1.0)
     #tp2 = TPad("tp1","tpad2",0,0.0,1,0.3)
 
@@ -28,7 +29,15 @@ def main():
     title=fixer.fix(h1,"Rate")
 
 
-    
+    gStyle.SetPadTopMargin(0.08)
+    gStyle.SetPadBottomMargin(0.12)
+    gStyle.SetPadLeftMargin(0.14)
+    gStyle.SetPadRightMargin(0.1)
+    gStyle.SetFrameLineWidth(2)
+    gStyle.SetStatBorderSize(2)
+    gStyle.SetStatFont(62)
+    h1.GetYaxis().SetTitleOffset(1.2)
+    c1.SetLogy()
     h1.Draw()
     h1.Fit("fitter")
     title.Draw("SAMES")
