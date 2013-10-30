@@ -6,7 +6,7 @@
 #include <cmath>
 FileManager::FileManager()
 {
-  std::cout << "hi im filemanager" << std::endl;
+  //std::cout << std::endl;
 }
 
 FileManager::~FileManager() {}

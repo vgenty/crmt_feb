@@ -142,7 +142,6 @@ bool RecoModule::check_event(std::vector<int>& pin_data)
 	   ( (pin >=8  && pin<=23)
 	     || (pin<=23 && pin <=55) ) ){ //kill events with noisy channels
 	  check=true;
-	  std::cout << "this one is k" << std::endl;
 	}//end if good pin
       }//end looping good pins
     }//end pin loop
@@ -360,9 +359,9 @@ void RecoModule::choose_angles()
     }
     index++;
   }		
-  print_tracks();
+  //print_tracks();
   if ( good_index >= 0 ){
-    std::cout << "good_index: " << good_index << " pvalue: " << value << std::endl;
+    //std::cout << "good_index: " << good_index << " pvalue: " << value << std::endl;
     if (fabs(fTracks.at(good_index).angle()) < 1.4) // careful here
       fLocalAngles.push_back((fTracks.at(good_index)).angle());
   } 
