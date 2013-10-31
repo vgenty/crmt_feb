@@ -7,16 +7,20 @@ def open_file(filename):
     
     print 'opening file: ' + str(filename)
     content=[]
+    
+    value=[]
+    adc=[]
 
     with open(filename, 'rb') as f:
         reader = csv.reader(f)
         for row in reader:
-            content.append(row[1])
+            adc.append(row[0])
+            value.append(row[1])
             
-    return content
+    return [adc,value]
             
 def heaviside(x,q):
-    if x >= q:
+    if x > q:
         return 0.0
     else:
         return 1.0
@@ -67,23 +71,23 @@ def the_fit(x,par):
     return tot
 
 def main():
-    
-
-    #print fit(2,p)
-    bins = 2000
-    
     c1=TCanvas("c1","c1")
     c1.cd()
-    h1 = TH1D("h1",";ADC;Counts",bins,.735,1.264)
+
+    content = open_file("data_2.dat")    
+    bins = 2000
+    print float(content[0][bins-1])*10**12
+    print float(content[0][0])*10**12
+    h1 = TH1D("h1",";ADC;Counts",bins,float(content[0][0])*10**12,float(content[0][bins-1])*10**12)
     fixer=OneFix()
     title=fixer.fix(h1,"Charge Spectrum")
     
-    content = open_file("data.dat")
-    print 'Got %d values from file' % len(content)
+
+    print 'Got %d values from file' % len(content[1])
     print 'Have %d bins in histogram' % bins
     for _bin in xrange(bins):
-        h1.SetBinContent(_bin,float(content[bins-_bin-1]))
-        
+        h1.SetBinContent(_bin,float(content[1][_bin-1]))
+
     h1.Rebin(10)
         
 #    function = TF1("function",the_fit,0.735,1.264,8)
