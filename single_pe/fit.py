@@ -38,37 +38,37 @@ def fit(x,p):
     return first + second + third
 '''    
     
-def fit(x,p):
+def the_fit(x,par):
 
     '''
-    w       = p[0]
-    sigma_0 = p[1]
-    Q_0     = p[2]
-    alpha   = p[3]
-    mu      = p[4]
-    sigma_1 = p[5]
-    Q_sh    = p[6]
-    Q_1     = p[7]
+    w       = par[0]
+    sigma_0 = par[1]
+    Q_0     = par[2]
+    alparha   = par[3]
+    mu      = par[4]
+    sigma_1 = par[5]
+    Q_sh    = par[6]
+    Q_1     = par[7]
     '''
 
-    first  = ((1-p[0])*(1/(np.sqrt(2*np.pi)*p[1]))*np.exp(-((x-p[2])**2/2*p[1]**2))+p[3]*np.exp(-1.0*p[3]*(x-p[2])))*np.exp(-p[4])
+    first  = ((1-par[0])*(1/(np.sqrt(2*np.pi)*par[1]))*np.exp(-((x[0]-par[2])**2/(2*par[1])**2))+par[3]*np.exp(-1.0*par[3]*(x[0]-par[2])))*np.exp(-par[4])
     
     second=0.0
-    for n in xrange(1,11):
-        second += ((p[4]**n)*np.exp(-p[4])/factorial(n))*1/(np.sqrt(2*np.pi*n)*p[5])*np.exp(-1.0*(x-p[2]-p[6]-n*p[7])**2/(2*n*p[5]**2))
+#    for n in xrange(1,11):
+#        second = second + ((par[4]**n)*np.exp(-par[4])/factorial(n))*1/(np.sqrt(2*np.pi*n)*par[5])*np.exp(-1.0*(x[0]-par[2]-par[6]-n*par[7])**2/(2*n*par[5]**2))
     
-        return first + second
+    
+    tot = first + second
+    return tot
 
 def main():
     
-    print factorial(5)
-    
-    
-    #p=[1,1,1,1,1,1,1,1]
+
     #print fit(2,p)
-    
     bins = 2000
     
+    c1=TCanvas("c1","c1")
+    c1.cd()
     h1 = TH1D("h1",";ADC;Counts",bins,.735,1.264)
     fixer=OneFix()
     title=fixer.fix(h1,"Charge Spectrum")
@@ -78,10 +78,50 @@ def main():
     print 'Have %d bins in histogram' % bins
     for _bin in xrange(bins):
         h1.SetBinContent(_bin,float(content[bins-_bin-1]))
-    
+        
     h1.Rebin(10)
+        
+#    function = TF1("function",the_fit,0.735,1.264,8)
+#    function.SetParameters(1,1,1,1,1,1,1,1)
+    
+#    h1.Fit(function,'V')
+
     h1.Draw()
     title.Draw("SAMES")
+    c1.Update()
+    c1.Modified()
+    
+    
+    c2=TCanvas("c2","c2")
+    c2.cd()
+    h2 = TH1D("h2",";ADC;Counts",bins/10,.735,1.264)
+
+    function = TF1("function",the_fit,0.735,1.264,8)
+    
+    '''
+    w       = par[0]
+    sigma_0 = par[1]
+    Q_0     = par[2]
+    alparha   = par[3]
+    mu      = par[4]
+    sigma_1 = par[5]
+    Q_sh    = par[6]
+    Q_1     = par[7]
+    '''
+    
+    function.SetParameters(0,0.01,0.75,0,1,0.5,0,1.1)
+    
+    for j in xrange(1000) :
+        h2.Fill(function.GetRandom())    
+    
+    title2=fixer.fix(h2,"What?")
+    
+    h2.Draw()
+    title2.Draw("SAMES")
+    
+    c2.Update()
+    c2.Modified()
+    
     sys.stdin.readline()
     
     
