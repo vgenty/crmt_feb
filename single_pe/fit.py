@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from ROOT import TF1, TH1D, TCanvas, TMath
 import sys, csv
 from FixROOT import OneFix
