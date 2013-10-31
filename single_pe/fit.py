@@ -18,8 +18,9 @@ def open_file(filename):
     
 def factorial(n):
     x=1
-    for j in reversed(xrange(n)):
-        x += j*x
+    for j in reversed(xrange(n+1)):
+        if(j != 0): x *= j
+
     return x
 
 def poisson(l,k):
@@ -59,7 +60,10 @@ def fit(x,p):
         return first + second
 
 def main():
-
+    
+    print factorial(5)
+    
+    
     #p=[1,1,1,1,1,1,1,1]
     #print fit(2,p)
     
