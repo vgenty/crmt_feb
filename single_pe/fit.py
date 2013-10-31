@@ -27,7 +27,8 @@ def heaviside(x,q):
         return 1.0
     
 def the_fit(x,par):
-
+    first  = 0.0
+    second = 0.0 
     '''
     w       = par[0]
     sigma_0 = par[1]
@@ -38,32 +39,14 @@ def the_fit(x,par):
     Q_sh    = par[6]
     Q_1     = par[7]
     '''
-    first    = 0.0
-    long_exp = 0.0
-    long_exp = ((1.0-par[0])*(1/(TMath.Sqrt(2*TMath.Pi())*par[1]))*TMath.Exp(-((x[0]-par[2])**2/(2*(par[1])**2))))
-    outside= 0.0
-    outside= TMath.Exp(-par[4]) 
-    second = 0.0
-    inside = 0.0
-    inside = par[0]*heaviside(x,par[2])
-    expp   = 0.0
-    expp   = par[3]*TMath.Exp(-1.0*par[3]*(x[0]-par[2]))
-    first  = (long_exp + inside*expp )*outside*par[9]
-    #first  = (long_exp)*outside
+    first = par[9]*((1.0-par[0])*(1/(TMath.Sqrt(2*TMath.Pi())*par[1]))*TMath.Exp(-((x[0]-par[2])**2/(2*(par[1])**2))) + par[0]*heaviside(x,par[2])*par[3]*TMath.Exp(-1.0*par[3]*(x[0]-par[2]))) *TMath.Exp(-par[4])
 
-    #for n in xrange(1,3):
-    #((par[4]**n)*TMath.Exp(-par[4])/TMath.Factorial(n))
-    second=0.0
-    for n in xrange(1,3):
+    for n in xrange(1,5):
         second = second + par[8]*TMath.Poisson(n,par[4])*1/(TMath.Sqrt(2*TMath.Pi()*n)*par[5])*TMath.Exp(-1.0*(x[0]-par[2]-par[0]/par[3]-n*par[7])**2/(2*n*par[5]**2))
-        #second = second + 1/(TMath.Sqrt(2*TMath.Pi()*n)*par[5])*TMath.Exp(-1.0*(x[0]-par[2]-par[0]/par[3]-n*par[7])**2/(2*n*par[5]**2))
-    #second = par[0]*TMath.Gaus(x[0],par[2],TMath.Sqrt(1)*par[5])
 
-    #    tot = first + second
     tot = first + second
     return tot
-    #return par[1]*TMath.Poisson(x[0],par[4])
-
+    
 def main():
     c1=TCanvas("c1","c1")
     c1.cd()
@@ -110,7 +93,7 @@ def main():
     Q_1     = par[7]
     '''
     
-    function.SetParameters(0.3,5,23.26,0.035,1.68,11.73,50,35.05,1.,1.0)
+    function.SetParameters(0.3,2,23.26,0.035,1.68,11.73,50,35.05,1.0,1)
     
     for j in xrange(10000) :
         h2.Fill(function.GetRandom())    
