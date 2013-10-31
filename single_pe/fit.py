@@ -15,7 +15,12 @@ def open_file(filename):
             
     return content
             
-    
+def heaviside(x,q):
+    if x >= q:
+        return 0.0
+    else:
+        return 1.0
+
 def factorial(n):
     x=1
     for j in reversed(xrange(n+1)):
@@ -50,12 +55,12 @@ def the_fit(x,par):
     Q_sh    = par[6]
     Q_1     = par[7]
     '''
-
-    first  = ((1-par[0])*(1/(np.sqrt(2*np.pi)*par[1]))*np.exp(-((x[0]-par[2])**2/(2*par[1])**2))+par[3]*np.exp(-1.0*par[3]*(x[0]-par[2])))*np.exp(-par[4])
+    first = 0.0
+    first  = ((1-par[0])*(1/(np.sqrt(2*np.pi)*par[1]))*np.exp(-((x[0]-par[2])**2/(2*par[1])**2))+par[3]*np.exp(-1.0*par[3]*(x[0]-par[2]))*par[0]*heaviside(x,par[2]))*np.exp(-par[4]) 
     
     second=0.0
-#    for n in xrange(1,11):
-#        second = second + ((par[4]**n)*np.exp(-par[4])/factorial(n))*1/(np.sqrt(2*np.pi*n)*par[5])*np.exp(-1.0*(x[0]-par[2]-par[6]-n*par[7])**2/(2*n*par[5]**2))
+    for n in xrange(1,11):
+        second = second + ((par[4]**n)*np.exp(-par[4])/factorial(n))*1/(np.sqrt(2*np.pi*n)*par[5])*np.exp(-1.0*(x[0]-par[2]-par[6]-n*par[7])**2/(2*n*par[5]**2))
     
     
     tot = first + second
@@ -94,9 +99,9 @@ def main():
     
     c2=TCanvas("c2","c2")
     c2.cd()
-    h2 = TH1D("h2",";ADC;Counts",bins/10,.735,1.264)
+    h2 = TH1D("h2",";ADC;Counts",bins/10,0,300)
 
-    function = TF1("function",the_fit,0.735,1.264,8)
+    function = TF1("function",the_fit,0,300,8)
     
     '''
     w       = par[0]
@@ -108,10 +113,11 @@ def main():
     Q_sh    = par[6]
     Q_1     = par[7]
     '''
+    function.SetParameters(0.3,0.2,23.26,0.035,1.68,11.73,0,35.05)
+    #function.SetParameters(0.3,0.2,23.26,0,1.68,11.73,0,35.05)
+
     
-    function.SetParameters(0,0.01,0.75,0,1,0.5,0,1.1)
-    
-    for j in xrange(1000) :
+    for j in xrange(10000) :
         h2.Fill(function.GetRandom())    
     
     title2=fixer.fix(h2,"What?")
