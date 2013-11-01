@@ -1,52 +1,10 @@
 #!/usr/bin/env python
 
-from ROOT import TF1, TH1D, TCanvas, TMath
-import sys, csv
+from ROOT import TF1, TH1D, TCanvas
+from fit_methods import *
+import sys
 from FixROOT import OneFix
 
-def open_file(filename):
-    
-    print 'opening file: ' + str(filename)
-    content=[]
-    
-    value=[]
-    adc=[]
-
-    with open(filename, 'rb') as f:
-        reader = csv.reader(f)
-        for row in reader:
-            adc.append(row[0])
-            value.append(row[1])
-            
-    return [adc,value]
-            
-def heaviside(x,q):
-    if x > q:
-        return 0.0
-    else:
-        return 1.0
-    
-def the_fit(x,par):
-    first  = 0.0
-    second = 0.0 
-    '''
-    w       = par[0]
-    sigma_0 = par[1]
-    Q_0     = par[2]
-    alparha   = par[3]
-    mu      = par[4]
-    sigma_1 = par[5]
-    Q_sh    = par[6]
-    Q_1     = par[7]
-    '''
-    first = par[9]*((1.0-par[0])*(1/(TMath.Sqrt(2*TMath.Pi())*par[1]))*TMath.Exp(-((x[0]-par[2])**2/(2*(par[1])**2))) + par[0]*heaviside(x,par[2])*par[3]*TMath.Exp(-1.0*par[3]*(x[0]-par[2]))) *TMath.Exp(-par[4])
-
-    for n in xrange(1,5):
-        second = second + par[8]*TMath.Poisson(n,par[4])*1/(TMath.Sqrt(2*TMath.Pi()*n)*par[5])*TMath.Exp(-1.0*(x[0]-par[2]-par[0]/par[3]-n*par[7])**2/(2*n*par[5]**2))
-
-    tot = first + second
-    return tot
-    
 def main():
     c1=TCanvas("c1","c1")
     c1.cd()
@@ -55,21 +13,18 @@ def main():
     bins = 2000
     xlow  = float(content[0][0])*10**12+30
     xhigh = float(content[0][bins-1])*10**12+30
+
     h1 = TH1D("h1",";ADC;Counts",bins,xlow,xhigh)
     fixer=OneFix()
     title=fixer.fix(h1,"Charge Spectrum")
 
     print 'Got %d values from file' % len(content[1])
     print 'Have %d bins in histogram' % bins
+    
     for _bin in xrange(bins):
         h1.SetBinContent(_bin,float(content[1][bins-_bin-1]))
 
     h1.Rebin(10)
-    #function = TF1("function",the_fit,xlow,xhigh,8)
-    #function.SetParameters(0.2,1,7,0.35,1.00,2,1,25.05)        
-
-    #h1.Fit(function,'V')
-
     h1.Draw()
     title.Draw("SAMES")
     c1.Update()
@@ -79,18 +34,19 @@ def main():
     c2=TCanvas("c2","c2")
     c2.cd()
     h2 = TH1D("h2",";ADC;Counts",bins/10,0,300)
-
     function = TF1("function",the_fit,0,300,10)
-    
+    #Var Names
     '''
     w       = par[0]
     sigma_0 = par[1]
     Q_0     = par[2]
-    alparha   = par[3]
+    alpha   = par[3]
     mu      = par[4]
     sigma_1 = par[5]
     Q_sh    = par[6]
     Q_1     = par[7]
+    char_amp= par[8]
+    ped_amp = par[9]
     '''
     
     function.SetParameters(0.3,2,23.26,0.035,1.68,11.73,50,35.05,1.0,1)
@@ -101,36 +57,14 @@ def main():
     function.SetParameter(8, 200)
     function.SetParameter(9, 200)
         
-    title2=fixer.fix(h2,"What?")
-    #for i in xrange(0,8):
-    #    function.SetParLimits(i,0,10*function.GetParameter(i))
-
-
+    title2=fixer.fix(h2,"NIM Spectrum")
+    
     h2.Fit("function","V")
     h2.Draw()
     title2.Draw("SAMES")
     
     c2.Update()
     c2.Modified()
-    '''
-    c3=TCanvas("c3","c3")
-    c3.cd()
-    h3 = TH1D("h3",";ADC;Counts",bins/10,xlow,xhigh)
-    title3=fixer.fix(h3,"Testing")
-    
-    function2 = TF1("function2",the_fit,xlow,xhigh,8)
-    function2.SetParameters(0.2,1,7,0.0,1.00,2,1,25.05)
-    #function2.SetParameters(0.2,1.0,6.0,0.035,1.0,2,0,25.05)
-    
-    for j in xrange(10000) :
-        h3.Fill(function2.GetRandom())        
-        
-    h3.Fit("function2","V")
-    h3.Draw()
-    title3.Draw("SAMES")
-    c3.Update()
-    c3.Modified()
-    '''
     sys.stdin.readline()
     
     
