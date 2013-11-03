@@ -9,7 +9,10 @@
 #include "TGraphErrors.h"
 #include "TMath.h"
 
-RecoModule::RecoModule() {}
+RecoModule::RecoModule() {
+  fGoodTrackIndex = -1;
+  fAngleThreshold = 1.4;
+}
 
 RecoModule::~RecoModule() {}
 
@@ -154,7 +157,7 @@ void RecoModule::find_hit_fibers(std::vector<int>& hit_pins){
   int pixel;
   int pin;
   std::sort(hit_pins.begin(),hit_pins.end());
-
+  
   for(int j=0;j<32;++j){
     if(binary_search(hit_pins.begin(), hit_pins.end(), fPinsToPixels[j][0])){
       pin   = fPinsToPixels[j][0];
@@ -194,6 +197,9 @@ void RecoModule::init_module()
       itr++;
   }  
   //Eventwise loop
+  
+  //  fNEvents = fEventData.size();
+  
 }
   //Fill fHitFibers key 0 or 1; 0==top, 1==bottom (top/bot pmt)
 
@@ -357,11 +363,12 @@ void RecoModule::print_tracks()
     tr.dump();
   }
 }
-
+/*
 void RecoModule::fill_root()
 {
   fm.make_tree("recodata.root",fLocalAngles.size(),fLocalAngles);
 }
+*/
 
 void RecoModule::choose_angles()
 {
@@ -380,17 +387,83 @@ void RecoModule::choose_angles()
     }
     index++;
   }		
-  //print_tracks();
-  if ( good_index >= 0 ){
-    //std::cout << "good_index: " << good_index << " pvalue: " << value << std::endl;
-    if (fabs(fTracks.at(good_index).angle()) < 1.4) // careful here
-      fLocalAngles.push_back((fTracks.at(good_index)).angle());
-  } 
+  
+  fGoodTrackIndex = good_index;
+}
+
+
+// below this line okay my failure is showing
+// require good track index AND an angle less than fAngleTreshold <1.4????
+
+bool RecoModule::is_good_track(){
+  if (fGoodTrackIndex >=0)
+    return true;
+  else
+    return false;
+}
+
+bool RecoModule::is_good_angle(){
+  if (is_good_track()){
+    if(fabs(fTracks.at(fGoodTrackIndex).angle()) <fAngleThreshold ){
+      return true;
+    }
+    else
+      return false;
+  }
+  else
+    return false;
   
 }
-
-
-void RecoModule::write_out(std::vector<int>& hit_pins)
-{
-  fm.make_display(hit_pins,fTracks);
+bool RecoModule::conditions_are_met(){
+  if(is_good_angle() && is_good_track())
+    return true;
+  else
+    return false;
 }
+
+double RecoModule::get_Slope(){
+  if(conditions_are_met())
+    return fTracks.at(fGoodTrackIndex).slope();
+  else
+    return 0.0;
+}
+double RecoModule::get_YInter(){
+  if(conditions_are_met())
+    return fTracks.at(fGoodTrackIndex).yinter();
+  else
+    return 0.0;
+}
+double RecoModule::get_Chi(){
+  if(conditions_are_met())
+    return fTracks.at(fGoodTrackIndex).chi();
+  else
+    return 0.0;
+}
+double RecoModule::get_Ndf(){
+  if(conditions_are_met())
+    return fTracks.at(fGoodTrackIndex).ndf();
+  else
+    return 0.0;
+}
+double RecoModule::get_Pvalue(){
+  if(conditions_are_met())
+    return fTracks.at(fGoodTrackIndex).pvalue();
+  else
+    return 0.0;
+}
+
+double RecoModule::get_Angle()
+{
+  if(conditions_are_met())
+    return fTracks.at(fGoodTrackIndex).angle();
+  else
+    return 0.0;
+}
+double RecoModule::get_CosAngle()
+{
+  if(conditions_are_met())
+    return fTracks.at(fGoodTrackIndex).cosangle();
+  else
+    return 0.0;
+}
+

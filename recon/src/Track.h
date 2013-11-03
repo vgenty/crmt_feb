@@ -25,6 +25,7 @@ private:
   double fSlope;
   double fYinter;
   double fAngle;
+  double fCosAngle;
   double fChi;
   double fNdf;
   double fPvalue;
@@ -44,12 +45,17 @@ public:
   void fit();
   void calculate_angle();
   void reconstruct();
+  
+  
+  
   double slope(){return fSlope;}
   double yinter(){return fYinter;}
   double angle(){return fAngle;}
   double chi(){return fChi;}
   double ndf(){return fNdf;}
   double pvalue(){return fPvalue;}
+  double cosangle(){return fCosAngle;}
+  
 };
 
 #endif

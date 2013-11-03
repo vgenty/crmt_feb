@@ -4,7 +4,7 @@
 
 Track::Track()
 {
-  fid = 0;
+  fid  = 0;
 }
 
 Track::~Track() {}
@@ -67,7 +67,8 @@ void Track::fit()
 }
 void Track::calculate_angle()
 {
-  fAngle  = atan(fSlope);  
+  fAngle    = atan(fSlope);  
+  fCosAngle = cos(fAngle);
 }
 
 void Track::reconstruct()
