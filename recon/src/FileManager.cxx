@@ -24,19 +24,14 @@ void FileManager::open_file(std::string file_name)
   fEventTree->Branch("fPvalue",      &fPvalue,   "Pvalue/D"   ); 
   fEventTree->Branch("fAngle",       &fAngle,    "Angle/D"    ); 
   fEventTree->Branch("fCosAngle",    &fCosAngle, "CosAngle/D" ); 
-  
+  fEventTree->Branch("fHitPins",     &fHitPins                );
 }
 
 
 void FileManager::fill_event_tree(int EventID,
-				  double Slope,
-				  double YInter,
-				  double Chi,
-				  double Ndf,
-				  double Pvalue,
-				  double Angle,
-				  double CosAngle,
-				  std::vector<int> HitPins)
+				  double Slope, double YInter, double Chi,
+				  double Ndf,   double Pvalue, double Angle,
+				  double CosAngle, std::vector<int> HitPins)
 {
   
   fEventID  =  EventID;
@@ -49,7 +44,7 @@ void FileManager::fill_event_tree(int EventID,
   fAngle    =  Angle;
   fCosAngle =  CosAngle;
 
-  //fHitPins(HitPins);
+  fHitPins  = HitPins;
   fEventTree->Fill();
   
 }
