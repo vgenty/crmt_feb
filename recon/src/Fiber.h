@@ -17,18 +17,25 @@ private:
   double fx;
   double fy;
   std::pair<double,double> fCoords;
+  int fpixel;
+  int fpin;  
   
 public:
   Fiber();
   ~Fiber();
-
+  
   void set_id(int a);
   void set_x(double a);
   void set_y(double a);
-    
-  int id()   {return fid;}
-  double x() {return fx;}
-  double y() {return fy;}
+  void set_pin(int a);
+  void set_pixel(int a);
+  
+  int id()       {return fid;}
+  double x()     {return fx;}
+  double y()     {return fy;}
+  int pin()   {return fpin;}
+  int pixel() {return fpixel;}   
+  
   void dump();
   bool near(Fiber b);
   void set_coords(std::pair<double,double> coords);

@@ -24,18 +24,6 @@ def main():
     for _bin in xrange(bins):
         h1.SetBinContent(_bin,float(content[1][bins-_bin-1]))
 
-    h1.Rebin(10)
-    h1.Draw()
-    title.Draw("SAMES")
-    c1.Update()
-    c1.Modified()
-        
-    
-    c2=TCanvas("c2","c2")
-    c2.cd()
-    h2 = TH1D("h2",";ADC;Counts",bins/10,0,300)
-    function = TF1("function",the_fit,0,300,10)
-    #Var Names
     '''
     w       = par[0]
     sigma_0 = par[1]
@@ -48,6 +36,26 @@ def main():
     char_amp= par[8]
     ped_amp = par[9]
     '''
+    
+
+    #fit_func = TF1("fit_func",the_fit,xlow+30,xhigh+30,10)
+    #fit_func.SetParameters(0.3,2,7.0,0.035,1.68,15,50,35.05,1.0,1.0)
+    #fit_func.SetParameter(8, 1000)
+    #fit_func.SetParameter(9, 1200)
+    #fit_func.SetParLimits(0,0,1)
+    h1.Rebin(10)
+    #h1.Fit("fit_func","V")    
+    h1.Draw()
+    title.Draw("SAMES")
+    c1.Update()
+    c1.Modified()
+        
+    
+    c2=TCanvas("c2","c2")
+    c2.cd()
+    h2 = TH1D("h2",";ADC;Counts",bins/10,0,300)
+    function = TF1("function",the_fit,0,300,10)
+    #Var Names
     
     function.SetParameters(0.3,2,23.26,0.035,1.68,11.73,50,35.05,1.0,1)
     
@@ -65,6 +73,7 @@ def main():
     
     c2.Update()
     c2.Modified()
+    
     sys.stdin.readline()
     
     

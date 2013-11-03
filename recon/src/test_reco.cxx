@@ -9,13 +9,16 @@
 
 int main()
 {
+  
+  
+  //Reco, generated recodata and I want to be able to read out
+  //the angles, hit pins, 
   RecoModule *mm = new RecoModule();
   mm->getfiles("event_list2.txt","pins.csv");
   mm->init_module();
   
   std::map<int, std::vector<int> >::iterator itr;
   int evt=1;
-  
   std::map<int, std::vector<int> > eventdata = mm->get_event_data();
   for(itr=eventdata.begin();itr!=eventdata.end();++itr){
     if(evt%100==0){
@@ -32,6 +35,9 @@ int main()
     evt++;
   }
   mm->fill_root();
-  return 0;
-}
+ 
+  //Event Display needs to take recoroot data.
 
+
+  return 0;  
+}

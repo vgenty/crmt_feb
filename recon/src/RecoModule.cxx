@@ -136,7 +136,7 @@ bool RecoModule::check_event(std::vector<int>& pin_data)
   bool check      =  false;
   int goodpins[8] =  {16,19,20,23,17,18,9,4};
   if(pin_data.size()>=4){      //Must have at least 4 pins hit  
-    for(auto pin : pin_data){ //Loop over pins                                                      
+    for(auto pin : pin_data){ //Loop over pins              
       for(int j=0;j<8;++j){    //check against goodpins (which are identifier rows)
 	if(pin == goodpins[j] && 
 	   ( (pin >=8  && pin<=23)
@@ -160,12 +160,16 @@ void RecoModule::find_hit_fibers(std::vector<int>& hit_pins){
       pin   = fPinsToPixels[j][0];
       pixel = fPinsToPixels[j][1];
 
-      if(pin<32)
-        for(int k=0;k<8;++k)
+      if(pin<32) //pins less than 32 are the top PMT
+        for(int k=0;k<8;++k){
           fHitFibers[0].push_back(fPixelsToFibers[pixel-1][k]);
-      else
-        for(int k=0;k<8;++k)
+	  fFiberPinPixel[0][fPixelsToFibers[pixel-1][k]] = std::make_pair(pin,pixel);
+	}
+      else //pins greater than this are on the bottom
+        for(int k=0;k<8;++k){
           fHitFibers[1].push_back(fPixelsToFibers[pixel-1][k]);
+	  fFiberPinPixel[1][fPixelsToFibers[pixel-1][k]] = std::make_pair(pin,pixel);
+	}
     }
   }
 }
@@ -181,6 +185,7 @@ void RecoModule::init_module()
   initpixels();
   initfile();
   g.set_coordinates();
+
   itr=fEventData.begin();
   while (itr != fEventData.end()) {
     if(!check_event((*itr).second))
@@ -218,6 +223,7 @@ void RecoModule::get_location(int id, double *x, double *y, bool top){
 void RecoModule::fill_fibers(){
   
   double x, y;
+  int pin, pixel;
   bool top = true;
   
    for (auto tb: fHitFibers){
@@ -225,20 +231,35 @@ void RecoModule::fill_fibers(){
     Fiber f;
     for(int tt=0;tt<(tb.second).size();++tt){
       f.set_id(tb.second.at(tt));
+
       get_location(f.id(),&x,&y,top);
       f.set_x(x);
       f.set_y(y);
-      //give them real xyz
+      
       f.set_coords(g.location(y,x));
-      //put attribute in fFibers;
+      
+      get_pixel(f.id(),&pixel,top);
+      get_pin(f.id(),&pin,top);
+      f.set_pin(pin);
+      f.set_pixel(pixel);
+      
       fFibers.push_back(f);
     }
    }
    
-   
-   
 }
-
+void RecoModule::get_pin(int id, int *pin, bool top){ 
+  if (top)
+    *pin = fFiberPinPixel[0][id].first; 
+  else
+    *pin = fFiberPinPixel[1][id].first; 
+}
+void RecoModule::get_pixel(int id, int *pixel, bool top){
+  if (top)
+    *pixel = fFiberPinPixel[0][id].second; 
+  else
+    *pixel = fFiberPinPixel[1][id].second; 
+}
 void RecoModule::print_fibers()
 {
   for(auto fib : fFibers){
@@ -314,7 +335,7 @@ void RecoModule::attach()
     for(auto fibs : track->fibers()){
       for (auto fib : fFibers){
 	if (fib.y() == 0){
-	  if (fib.near(fibs) && !track->contains(fib)) {//xx
+	  if (fib.near(fibs) && !track->contains(fib)) {
 	    track->add_fiber(fib);
 	    found = true;
 	  }

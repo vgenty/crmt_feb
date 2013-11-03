@@ -37,7 +37,7 @@ def the_fit(x,par):
     alpha   = par[3]
     mu      = par[4]
     sigma_1 = par[5]
-    Q_sh    = par[6]
+    Q_sh    = par[6] <--------currently not in use
     Q_1     = par[7]
     char_amp= par[8]
     ped_amp = par[9]
@@ -46,7 +46,7 @@ def the_fit(x,par):
     first = par[9]*((1.0-par[0])*(1/(TMath.Sqrt(2*TMath.Pi())*par[1]))*TMath.Exp(-((x[0]-par[2])**2/(2*(par[1])**2))) + par[0]*heaviside(x,par[2])*par[3]*TMath.Exp(-1.0*par[3]*(x[0]-par[2]))) *TMath.Exp(-par[4])
 
     #range 1->x peaks in pe charge spectrum, this is very slow
-    for n in xrange(1,5):
+    for n in xrange(1,10):
         second = second + par[8]*TMath.Poisson(n,par[4])*1/(TMath.Sqrt(2*TMath.Pi()*n)*par[5])*TMath.Exp(-1.0*(x[0]-par[2]-par[0]/par[3]-n*par[7])**2/(2*n*par[5]**2))
         
     tot = first + second
