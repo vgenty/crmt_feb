@@ -4,6 +4,9 @@
 #include "Track.h"
 #include "Fiber.h"
 #include <cmath>
+#include <stdio.h>
+#include <sstream>
+
 FileManager::FileManager()
 {
   //std::cout << std::endl;
@@ -11,6 +14,12 @@ FileManager::FileManager()
 
 FileManager::~FileManager() {}
 
+std::string FileManager::to_string(char let, int id)
+{
+  std::ostringstream ss;
+  ss << let << id;
+  return ss.str();
+}
 void FileManager::open_file(std::string file_name)
 {
   
@@ -25,13 +34,16 @@ void FileManager::open_file(std::string file_name)
   fEventTree->Branch("fAngle",       &fAngle,    "Angle/D"    ); 
   fEventTree->Branch("fCosAngle",    &fCosAngle, "CosAngle/D" ); 
   fEventTree->Branch("fHitPins",     &fHitPins                );
+  fEventTree->Branch("fStringTracks",&fStringTracks           );
+  
 }
 
 
 void FileManager::fill_event_tree(int EventID,
 				  double Slope, double YInter, double Chi,
 				  double Ndf,   double Pvalue, double Angle,
-				  double CosAngle, std::vector<int> HitPins)
+				  double CosAngle, std::vector<int> HitPins,
+				  std::vector<Track> Tracks)
 {
   
   fEventID  =  EventID;
@@ -43,10 +55,31 @@ void FileManager::fill_event_tree(int EventID,
   fHitPins  =  HitPins; //this might error trying to copy vector
   fAngle    =  Angle;
   fCosAngle =  CosAngle;
-
-  fHitPins  = HitPins;
-  fEventTree->Fill();
   
+  
+  for (auto tracks : Tracks){
+    for (auto fiber : tracks.fibers()){
+      if(fiber.y() <= 1)
+	fStringTracks.push_back(to_string('t',fiber.id()));
+      else 
+	fStringTracks.push_back(to_string('b',fiber.id()));
+    }
+    
+    if (tracks.is_chosen())  { //do it again if its the chosen one..
+      for (auto fiber : tracks.fibers()){
+	if(fiber.y() <= 1)
+	  fStringTracks.push_back(to_string('t',fiber.id()));
+	else 
+	  fStringTracks.push_back(to_string('b',fiber.id()));
+      }
+    }
+    
+  }
+  
+  
+  fHitPins      = HitPins;
+  fEventTree->Fill();
+  fStringTracks.clear(); //empty string tracks after fill??
 }
 
 void FileManager::finish(){
@@ -69,15 +102,7 @@ void FileManager::make_display(std::vector<int>& pins,
     for (auto pin : pins)
       pin_display << "," << pin ;
     
-    for (auto tracks : fTracks){
-      for (auto fiber : tracks.fibers()){
-	if(fiber.y() <= 1)
-	  track_display << "t" << fiber.id() << ",";
-	else 
-	  track_display << "b" << fiber.id() << ",";
-      }
-      track_display << "n,";	    
-    }
+
     pin_display << std::endl;
     pin_display.close();
     track_display << std::endl;
@@ -85,3 +110,4 @@ void FileManager::make_display(std::vector<int>& pins,
   }
 }
 */
+

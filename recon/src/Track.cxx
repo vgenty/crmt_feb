@@ -5,6 +5,7 @@
 Track::Track()
 {
   fid  = 0;
+  fChosen = false;
 }
 
 Track::~Track() {}
@@ -75,4 +76,9 @@ void Track::reconstruct()
 {
   fit();
   calculate_angle();
+}
+
+void Track::chosen(bool a)
+{
+  fChosen = a;
 }

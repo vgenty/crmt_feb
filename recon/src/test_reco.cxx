@@ -40,7 +40,8 @@ int main()
 			    mm->get_Slope(),mm->get_YInter(),
 			    mm->get_Chi(),mm->get_Ndf(),
 			    mm->get_Pvalue(),mm->get_Angle(),
-			    mm->get_CosAngle(),(*itr).second);
+			    mm->get_CosAngle(),(*itr).second,
+			    mm->get_Tracks());
       evt++;    
     }
     mm -> clear();   

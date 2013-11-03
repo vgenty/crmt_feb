@@ -10,10 +10,11 @@ def main():
     
     pins_to_pixels   =  pins("pins.csv")
     pixels_to_fibers =  mapit()
-    pins_to_count    =  struck("pins.txt",sys.argv[1])
-    tracks           =  fibsss("tracks.txt",sys.argv[1])
+    pins_to_count    =  struck("recodata.root",sys.argv[1])
+    tracks           =  fibsss("recodata.root",sys.argv[1])
     rows             =  rowmaker()
     
+    print pins_to_count
     print tracks
     
     module = fillhisto(module,
@@ -22,7 +23,7 @@ def main():
                        pins_to_count,
                        rows,
                        tracks)
-
+    
     c1.cd()
     title=fixer.fix(module,"Module 1 - Event %d" % int(sys.argv[1]))
     module.GetYaxis().SetNdivisions(4)

@@ -13,6 +13,7 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "Track.h"
+#include "Fiber.h"
 
 class FileManager {
   
@@ -22,7 +23,7 @@ private:
   TTree *fEventTree;
   TTree *fReconTree;
   
-  int fEventID;
+  int    fEventID;
   double fSlope;
   double fYInter;
   double fChi;
@@ -30,15 +31,16 @@ private:
   double fPvalue;
   double fAngle;
   double fCosAngle;
-  std::vector<int> fHitPins;
-  //std::ofstream pin_display;
-  //std::ofstream track_display;
- 
+  
+  std::vector<int>   fHitPins;
+  std::vector<std::string> fStringTracks;
+  
   
 public:
   FileManager();
   ~FileManager();
   
+  std::string to_string(char let, int id);
   void open_file(std::string file_name);
   void fill_event_tree(int EventID,
 		       double Slope,
@@ -48,7 +50,9 @@ public:
 		       double Pvalue,
 		       double Angle,
 		       double CosAngle,
-		       std::vector<int> HitPins);
+		       std::vector<int>   HitPins,
+		       std::vector<Track> Tracks);
+  
   void fill_reco_tree(std::vector<double> angles);
   void finish();
 };

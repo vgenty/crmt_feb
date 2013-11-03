@@ -19,9 +19,7 @@ private:
   std::vector<Fiber> fFibers;
   TGraphErrors *fTG;
   TF1 *fFit;
-  /*std::pair<double,double> fSlope;
-  std::pair<double,double> fYinter;
-  std::pair<double,double> fAngle;*/
+
   double fSlope;
   double fYinter;
   double fAngle;
@@ -29,6 +27,7 @@ private:
   double fChi;
   double fNdf;
   double fPvalue;
+  bool   fChosen;
   int fid;
   
 public:
@@ -45,8 +44,8 @@ public:
   void fit();
   void calculate_angle();
   void reconstruct();
-  
-  
+  void chosen(bool a);
+  bool is_chosen(){return fChosen;}
   
   double slope(){return fSlope;}
   double yinter(){return fYinter;}

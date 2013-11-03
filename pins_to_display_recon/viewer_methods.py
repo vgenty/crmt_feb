@@ -1,9 +1,12 @@
 import csv
+from ROOT import TFile
 
 
 def pins(filename) :
     print 'opening file: ' + str(filename)
     pinstopixels=[]
+    
+
 
     with open(filename, 'rb') as f:
         reader = csv.reader(f)
@@ -11,7 +14,7 @@ def pins(filename) :
             data=[int(row[0]),int(row[1])]
             pinstopixels.append(data)  
     return pinstopixels
-
+    
 
 def mapit() :
     mapping=[]
@@ -29,7 +32,14 @@ def struck(filename,event) :
     print 'opening file: ' + str(filename)
     pinstocounts=[]
     data=[]
-    
+
+    f = TFile(filename,"READ")
+    tree = f.Get("Event Tree")
+    tree.GetEntry(int(event))
+
+    for pin in tree.fHitPins:
+        pinstocounts.append([int(pin),int(1)])
+    '''
     with open(filename, 'rb') as f:
         reader = csv.reader(f)
         event_counter = 0
@@ -43,6 +53,9 @@ def struck(filename,event) :
                         data=[int(channel),int(1)]
                         pinstocounts.append(data)  
     print pinstocounts
+    '''
+
+    f.Close()
     return pinstocounts
         
 def rowmaker() :
@@ -116,12 +129,13 @@ def fillhisto(module,pins_to_pixels,
            hitfibers_bot.append(fib)
    
    #add these tracks
-   for track in tracks:
-       for fib in track:
-           if fib[0]=='t':
-               hitfibers_top.append(int(fib[1:]))
-           if fib[0]=='b':
-               hitfibers_bot.append(int(fib[1:]))
+   #for fib in track:
+
+   for fib in tracks:
+    if fib[0]=='t':
+        hitfibers_top.append(int(fib[1:]))
+    if fib[0]=='b':
+        hitfibers_bot.append(int(fib[1:]))
          
 #   for fib in rows[0] :
 #       if fib in hitfibers_top :
@@ -154,7 +168,14 @@ def fibsss(filename,event):
     
     trackz=[]
     fiberz=[]
-    
+
+    f = TFile(filename,"READ")
+    tree = f.Get("Event Tree")
+    tree.GetEntry(int(event))
+
+    for fiber in tree.fStringTracks:
+        trackz.append(fiber)
+    '''
     with open(filename, 'rb') as f:
         reader = csv.reader(f)
         event_counter = 0
@@ -168,5 +189,6 @@ def fibsss(filename,event):
                         fiberz=[];
                     elif fiber != '':
                         fiberz.append(fiber)
+    '''
     return trackz
 

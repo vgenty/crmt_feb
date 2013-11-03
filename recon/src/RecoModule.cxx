@@ -389,6 +389,9 @@ void RecoModule::choose_angles()
   }		
   
   fGoodTrackIndex = good_index;
+  if(is_good_track()){
+    fTracks.at(good_index).chosen(true);
+  }
 }
 
 

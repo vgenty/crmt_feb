@@ -69,7 +69,7 @@ public:
   double get_Pvalue();
   double get_Angle();
   double get_CosAngle();
-  
+  std::vector<Track> get_Tracks(){return fTracks;}
 };
 
 #endif
