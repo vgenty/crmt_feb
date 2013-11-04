@@ -12,7 +12,7 @@ $(EXEC): $(OBJ)
 	-@cd ..;rm -rf $(EXEC);ln -s src/$(EXEC) $(EXEC)
 
 %.o: %.cxx
-	@echo Compiling source file $< ... ;$(CXX) $(CPPFLAGS) -c $<;
+	@echo Compiling source file $< into $@ ;$(CXX) $(CPPFLAGS) -c $<;
 
 %.o: %.h
 
