@@ -6,8 +6,6 @@ def pins(filename) :
     print 'opening file: ' + str(filename)
     pinstopixels=[]
     
-
-
     with open(filename, 'rb') as f:
         reader = csv.reader(f)
         for row in reader:
@@ -28,17 +26,18 @@ def mapit() :
             data=[]
     return mapping
 
-def struck(filename,event) :
-    print 'opening file: ' + str(filename)
+def struck(tfile,event) :
+    print 'opening file: ' + str(tfile)
     pinstocounts=[]
     data=[]
 
-    f = TFile(filename,"READ")
-    tree = f.Get("Event Tree")
+
+    tree = tfile.Get("Event Tree")
     tree.GetEntry(int(event))
 
     for pin in tree.fHitPins:
         pinstocounts.append([int(pin),int(1)])
+
     '''
     with open(filename, 'rb') as f:
         reader = csv.reader(f)
@@ -55,7 +54,6 @@ def struck(filename,event) :
     print pinstocounts
     '''
 
-    f.Close()
     return pinstocounts
         
 def rowmaker() :
@@ -164,13 +162,12 @@ def fillhisto(module,pins_to_pixels,
 
 
 
-def fibsss(filename,event):
+def fibsss(tfile,event):
     
     trackz=[]
     fiberz=[]
 
-    f = TFile(filename,"READ")
-    tree = f.Get("Event Tree")
+    tree = tfile.Get("Event Tree")
     tree.GetEntry(int(event))
 
     for fiber in tree.fStringTracks:
