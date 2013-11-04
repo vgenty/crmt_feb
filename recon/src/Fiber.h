@@ -30,6 +30,8 @@ public:
   void set_pin(int a);
   void set_pixel(int a);
   
+  std::pair<double,double> get_coords(){return fCoords;}
+  
   int id()       {return fid;}
   double x()     {return fx;}
   double y()     {return fy;}

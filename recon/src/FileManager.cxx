@@ -35,6 +35,8 @@ void FileManager::open_file(std::string file_name)
   fEventTree->Branch("fCosAngle",    &fCosAngle, "CosAngle/D" ); 
   fEventTree->Branch("fHitPins",     &fHitPins                );
   fEventTree->Branch("fStringTracks",&fStringTracks           );
+  fEventTree->Branch("fFibX",&fFibX           );
+  fEventTree->Branch("fFibY",&fFibY           );
   
 }
 
@@ -55,7 +57,7 @@ void FileManager::fill_event_tree(int EventID,
   fHitPins  =  HitPins; //this might error trying to copy vector
   fAngle    =  Angle;
   fCosAngle =  CosAngle;
-  
+
   
   for (auto tracks : Tracks){
     for (auto fiber : tracks.fibers()){
@@ -71,7 +73,14 @@ void FileManager::fill_event_tree(int EventID,
 	  fStringTracks.push_back(to_string('t',fiber.id()));
 	else 
 	  fStringTracks.push_back(to_string('b',fiber.id()));
+
+	fFibX.push_back((fiber.get_coords()).first);
+	fFibY.push_back((fiber.get_coords()).second);
+	
       }
+      
+      
+      
     }
     
   }
@@ -80,6 +89,8 @@ void FileManager::fill_event_tree(int EventID,
   fHitPins      = HitPins;
   fEventTree->Fill();
   fStringTracks.clear(); //empty string tracks after fill??
+  fFibY.clear(); //empty y
+  fFibX.clear(); //empt  x
 }
 
 void FileManager::finish(){

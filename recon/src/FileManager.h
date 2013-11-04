@@ -31,6 +31,10 @@ private:
   double fPvalue;
   double fAngle;
   double fCosAngle;
+
+  std::vector<double> fFibX;
+  std::vector<double> fFibY;
+  
   
   std::vector<int>   fHitPins;
   std::vector<std::string> fStringTracks;
