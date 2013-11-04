@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from ROOT import TH2D, TCanvas, TLatex, TF1, TFile, TGraphErrors, TMultiGraph
 from FixROOT import OneFix
 from display_methods import *
