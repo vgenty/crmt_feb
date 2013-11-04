@@ -76,8 +76,9 @@ def main():
     c2.Modified()
     tmulti.GetYaxis().SetRangeUser(0,13)
     title_tg=fixer.fix(tmulti,"Module 1 Fit - Event %d" % int(event))
-
+    tg.SetTitle(";x (cm); y (cm)")
     title_tg.Draw("SAMES")
+
     fit_function.Draw("SAMES")
     c2.Update()
     c2.Modified()
