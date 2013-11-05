@@ -48,7 +48,7 @@ def main():
     
     #this is for the line display
     c2     = TCanvas("c2","c2",800,500)
-    
+    c2.cd()
     slope  = get_slope(f,event)
     yinter = get_inter(f,event,slope)
     fit_function = TF1("fit_function","%f*x + %f" % (slope,yinter),0,70)
@@ -92,9 +92,10 @@ def main():
 
     
     
-    
-    f.Close()
     sys.stdin.readline()
+    f.Close()
+    
+    
    
    
 if __name__ == '__main__' :

@@ -65,7 +65,7 @@ def main():
     function.SetParameter(8, 200)
     function.SetParameter(9, 200)
         
-    title2=fixer.fix(h2,"NIM Spectrum")
+    title2=fixer.fix(h2,"Test Spectrum")
     
     h2.Fit("function","V")
     h2.Draw()
