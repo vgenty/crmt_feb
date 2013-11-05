@@ -424,49 +424,32 @@ bool RecoModule::conditions_are_met(){
     return false;
 }
 
-double RecoModule::get_Slope(){
-  if(conditions_are_met())
-    return fTracks.at(fGoodTrackIndex).slope();
-  else
-    return 0.0;
+double RecoModule::get_Slope()
+{
+  return fTracks.at(fGoodTrackIndex).slope();
 }
-double RecoModule::get_YInter(){
-  if(conditions_are_met())
-    return fTracks.at(fGoodTrackIndex).yinter();
-  else
-    return 0.0;
+double RecoModule::get_YInter()
+{
+  return fTracks.at(fGoodTrackIndex).yinter();
 }
-double RecoModule::get_Chi(){
-  if(conditions_are_met())
-    return fTracks.at(fGoodTrackIndex).chi();
-  else
-    return 0.0;
+double RecoModule::get_Chi()
+{
+  return fTracks.at(fGoodTrackIndex).chi();
 }
-double RecoModule::get_Ndf(){
-  if(conditions_are_met())
-    return fTracks.at(fGoodTrackIndex).ndf();
-  else
-    return 0.0;
+double RecoModule::get_Ndf()
+{
+  return fTracks.at(fGoodTrackIndex).ndf();
 }
-double RecoModule::get_Pvalue(){
-  if(conditions_are_met())
-    return fTracks.at(fGoodTrackIndex).pvalue();
-  else
-    return 0.0;
+double RecoModule::get_Pvalue()
+{
+  return fTracks.at(fGoodTrackIndex).pvalue();
 }
-
 double RecoModule::get_Angle()
 {
-  if(conditions_are_met())
-    return fTracks.at(fGoodTrackIndex).angle();
-  else
-    return 0.0;
+  return fTracks.at(fGoodTrackIndex).angle();
 }
 double RecoModule::get_CosAngle()
 {
-  if(conditions_are_met())
-    return fTracks.at(fGoodTrackIndex).cosangle();
-  else
-    return 0.0;
+  return fTracks.at(fGoodTrackIndex).cosangle();
 }
 
