@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
-from ROOT import TF1, TH1D, TCanvas
+from ROOT import TF1, TH1D, TCanvas, gROOT
 from fit_methods import *
 import sys
-from FixROOT import OneFix
+from other_methods import *
 
 def main():
+    gROOT.SetStyle("DStyle")
     c1=TCanvas("c1","c1")
     c1.cd()
 
@@ -15,8 +16,11 @@ def main():
     xhigh = float(content[0][bins-1])*10**12+30
 
     h1 = TH1D("h1",";ADC;Counts",bins,xlow,xhigh)
-    fixer=OneFix()
-    title=fixer.fix(h1,"Charge Spectrum")
+    
+    h1.GetXaxis().CenterTitle()
+    h1.GetYaxis().CenterTitle()
+    
+    title = GetTitle("Charge Spectrum")
 
     print 'Got %d values from file' % len(content[1])
     print 'Have %d bins in histogram' % bins
@@ -56,7 +60,8 @@ def main():
     h2 = TH1D("h2",";ADC;Counts",bins/10,0,300)
     function = TF1("function",the_fit,0,300,10)
     #Var Names
-    
+    h2.GetXaxis().CenterTitle()
+    h2.GetYaxis().CenterTitle()    
     function.SetParameters(0.3,2,23.26,0.035,1.68,11.73,50,35.05,1.0,1)
     
     for j in xrange(10000) :
@@ -65,7 +70,7 @@ def main():
     function.SetParameter(8, 200)
     function.SetParameter(9, 200)
         
-    title2=fixer.fix(h2,"Test Spectrum")
+    title2=GetTitle("Test Spectrum")
     
     h2.Fit("function","V")
     h2.Draw()

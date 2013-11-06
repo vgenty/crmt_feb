@@ -1,20 +1,23 @@
 #!/usr/bin/env python
 
 from ROOT import TH2D, TCanvas, TLatex, TF1, TFile, TGraphErrors, TMultiGraph
-from FixROOT import OneFix
+from ROOT import gROOT
 from display_methods import *
 from fit_methods import *
+from other_methods import *
 import sys
       
 def main():
-    fixer=OneFix()
+    gROOT.SetStyle("DStyle")
     f = TFile("recodata.root","READ")
     event = sys.argv[1]
     
     #this is for the event display
-    c1     = TCanvas("c1","c1",800,500)
+    #c1     = TCanvas("c1","c1",800,500)
+    c1     = TCanvas("c1","c1")
     module = TH2D("mod",";x #rightarrow;y #rightarrow",64,0,64,4,0,4)
-    
+    module.GetXaxis().CenterTitle()
+    module.GetYaxis().CenterTitle()
     pins_to_pixels   =  pins("pins.csv")
     pixels_to_fibers =  mapit()
     pins_to_count    =  struck(f,event)
@@ -32,10 +35,9 @@ def main():
                        tracks)
     
     c1.cd()
-    title=fixer.fix(module,"Module 1 - Event %d" % int(event))
+    title=GetTitle("Module 1 - Event %d" % int(event))
     module.GetYaxis().SetNdivisions(4)
     module.GetXaxis().SetNdivisions(8)
-    module.GetYaxis().SetTitleOffset(0.6)
     
     
     module.Draw("COLZ")
@@ -47,7 +49,8 @@ def main():
     
     
     #this is for the line display
-    c2     = TCanvas("c2","c2",800,500)
+    #c2     = TCanvas("c2","c2",800,500)
+    c2     = TCanvas("c2","c2")
     c2.cd()
     slope  = get_slope(f,event)
     yinter = get_inter(f,event,slope)
@@ -66,6 +69,7 @@ def main():
         
     tg_hit.SetMarkerStyle(8)
     tg_hit.SetMarkerColor(2)
+    tg_hit.SetMarkerSize(1.2)
     tg_all.SetMarkerStyle(8)
     
     
@@ -75,11 +79,12 @@ def main():
     tmulti.Add(tg_hit)
     tmulti.Draw("AP")
     tmulti.SetTitle(";x (cm); y (cm)")
+    tmulti.GetXaxis().CenterTitle()
+    tmulti.GetYaxis().CenterTitle()
     c2.Update()
     c2.Modified()
     tmulti.GetYaxis().SetRangeUser(0,13)
-    title_tg=fixer.fix(tmulti,"Module 1 Fit - Event %d" % int(event))
-
+    title_tg=GetTitle("Module 1 Fit - Event %d" % int(event))
     title_tg.Draw("SAMES")
 
     fit_function.Draw("SAMES")
