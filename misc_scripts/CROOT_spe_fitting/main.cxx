@@ -7,11 +7,11 @@
 #include "TMath.h"
 #include "dstyle.h"
 
-std::vector<std::pair<double,double> > read_file(char* file)
+std::vector<std::pair<double,double> > read_file(std::string file)
 {
   std::ifstream myfile;
   std::vector<std::pair<double,double> > data;
-  myfile.open(file);
+  myfile.open(file.c_str());
   
   double holder1 ,holder2;
   
