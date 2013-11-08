@@ -23,6 +23,9 @@ public:
   void dump();
   std::pair<double,double> location(int a, int b){return fLocation[a][b];}
 
+  double get_HalfHeight(){return fHalfHeight;}
+  double get_Width(){return fWidth;}
+  
 };
 
 #endif
