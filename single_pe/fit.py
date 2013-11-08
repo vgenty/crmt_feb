@@ -10,12 +10,12 @@ def main():
     c1=TCanvas("c1","c1")
     c1.cd()
 
-    content = open_file("data_2.dat")    
+    content = open_file("adc_750VHV_3.07Vled.txt")    
     bins = 2000
     xlow  = float(content[0][0])*10**12+30
     xhigh = float(content[0][bins-1])*10**12+30
 
-    h1 = TH1D("h1",";ADC;Counts",bins,xlow,xhigh)
+    h1 = TH1D("h1",";pVs;Counts",bins,xlow,xhigh)
     
     h1.GetXaxis().CenterTitle()
     h1.GetYaxis().CenterTitle()
@@ -47,14 +47,15 @@ def main():
     #fit_func.SetParameter(8, 1000)
     #fit_func.SetParameter(9, 1200)
     #fit_func.SetParLimits(0,0,1)
-    h1.Rebin(10)
+    h1.Rebin(2)
+    h1.SetLineWidth(1)
     #h1.Fit("fit_func","V")    
     h1.Draw()
     title.Draw("SAMES")
     c1.Update()
     c1.Modified()
         
-    
+    '''
     c2=TCanvas("c2","c2")
     c2.cd()
     h2 = TH1D("h2",";ADC;Counts",bins/10,0,300)
@@ -78,7 +79,7 @@ def main():
     
     c2.Update()
     c2.Modified()
-    
+    '''
     sys.stdin.readline()
     
     
