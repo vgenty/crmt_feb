@@ -15,6 +15,17 @@ def get_inter(tfile,event,slope) :
     
     return float((-1.0 * yinter)*(slope))
 
+def get_xyslope(tfile,event):
+    
+    tree = tfile.Get("Event Tree")
+    tree.GetEntry(int(event))
+    return tree.Slope
+    
+
+def get_xyinter(tfile,event,slope) :
+    tree = tfile.Get("Event Tree")
+    tree.GetEntry(int(event))
+    return tree.Yinter
 
 def get_hitcoords(tfile,event):
     coords=[]

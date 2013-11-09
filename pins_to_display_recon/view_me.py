@@ -43,14 +43,14 @@ def main():
     
     
     module.Draw("COLZ")
+    #module.Draw("LEGO")
     title.Draw("SAMES")
     c1.Update()
     c1.Modified()
 
+        
     
-    
-    
-    #this is for the line display
+    #this is for the TRUE line display
     #c2     = TCanvas("c2","c2",800,500)
     c2     = TCanvas("c2","c2")
     c2.cd()
@@ -95,17 +95,56 @@ def main():
     #fit_function.Draw()
     
 
-    
+
+    c3     = TCanvas("c3","c3")
+    c3.cd()
+    xy_slope  = get_xyslope(f,event)
+    xy_yinter = get_xyinter(f,event,slope)
+    xy_fit_function = TF1("xy_fit_function","%f*x + %f" % (xy_slope,xy_yinter),0,17)
 
     
-    c3 = TCanvas("c3","c3")
-    c3.cd()
+    xy_tg_all     = TGraphErrors()
+    xy_tg_hit     = TGraphErrors()
+    xy_tmulti     = TMultiGraph()
     
+    for i in xrange(len(hit_coords)):
+        xy_tg_hit.SetPoint(i,hit_coords[i][1],hit_coords[i][0])
+    for i in xrange(len(all_coords)):
+        xy_tg_all.SetPoint(i,all_coords[i][1],all_coords[i][0])
+
+    xy_tg_hit.SetMarkerStyle(8)
+    xy_tg_hit.SetMarkerColor(2)
+    xy_tg_hit.SetMarkerSize(1.2)
+    xy_tg_all.SetMarkerStyle(8)
+    
+    
+    
+    
+    xy_tmulti.Add(xy_tg_all)
+    xy_tmulti.Add(xy_tg_hit)
+    xy_tmulti.Draw("AP")
+    xy_tmulti.SetTitle(";y (cm); x (cm)")
+    xy_tmulti.GetXaxis().CenterTitle()
+    xy_tmulti.GetYaxis().CenterTitle()
+    c3.Update()
+    c3.Modified()
+    xy_tmulti.GetYaxis().SetRangeUser(0,64)
+    xy_title_tg=GetTitle("Module 1 Fit - Event %d" % int(event))
+    xy_title_tg.Draw("SAMES")
+
+    xy_fit_function.Draw("SAMES")
+    c3.Update()
+    c3.Modified()
+
+
+
+    c4 = TCanvas("c4","c4")
+    c4.cd()
     
     fx_slope  = get_fx_slope(f,event) #these are in specific order
     fx_yinter = get_fx_yinter(f,event) #these are in specific order
     fx_zvalue = get_fx_zvalue(f,event) #these are in specific order
-
+    
     num = len(fx_slope)
     
     
@@ -114,23 +153,20 @@ def main():
     
     xlow  = sorted_fx_slope[0]
     xhigh = sorted_fx_slope[num - 1]
- 
+    
     ylow  = sorted_fx_yinter[0]
     yhigh = sorted_fx_yinter[num - 1]
- 
-    #look for different values
-    #xstat = math.fabs(( sorted_fx_slope[num-1]  - sorted_fx_slope[0]  ))/10
-    #ystat = math.fabs(( sorted_fx_yinter[num-1] - sorted_fx_yinter[0] ))/4
 
+    
     #ok is there going to be a conversion issue here? im scared
 
-    h3 = TH2D("Xvalue",";Slope;Y-inter",
-              100,xlow,xhigh,
-              40,ylow,yhigh)
+    h3 = TH2D("Xvalue",";Slope #Deltax/#Deltay;X-inter",
+              500,xlow,xhigh,
+              80,ylow,yhigh)
     
     
-    for x in xrange(num):
-     print "(" + str(fx_slope[x]) + "," + str(fx_yinter[x]) + "," + str(fx_zvalue[x])
+    #for x in xrange(num):
+    # print "(" + str(fx_slope[x]) + "," + str(fx_yinter[x]) + "," + str(fx_zvalue[x])
 
        
     for x in xrange(num):
@@ -149,8 +185,11 @@ def main():
     '''
     h3.GetXaxis().CenterTitle()
     h3.GetYaxis().CenterTitle()
+    #h3.Draw("CONT4Z")
     h3.Draw("COLZ")
-
+    #c4.SetLogz()
+    c4.Update()
+    c4.Modified()
     sys.stdin.readline()
     f.Close()
     

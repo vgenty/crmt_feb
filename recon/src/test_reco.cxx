@@ -15,8 +15,8 @@ int main()
   RecoModule  *mm = new RecoModule();
   FileManager *fm = new FileManager();
   ParameterSpace *ps = new ParameterSpace();
-  ps->set_NSlopeDivisions(100);
-  ps->set_NYinterDivisions(40);
+  ps->set_NSlopeDivisions(500);
+  ps->set_NYinterDivisions(80);
   
   std::cout << "ps->get_MaxSlope(): " << ps->get_MaxSlope() << std::endl;
   std::cout << "ps->get_MinSlope(): " << ps->get_MinSlope() << std::endl;
@@ -35,7 +35,7 @@ int main()
   std::map<int, std::vector<int> > eventdata = mm->get_event_data();
   
   for(itr=eventdata.begin();itr!=eventdata.end();++itr){
-    if(evt%100==0){
+    if(evt%10==0){
       std::cout << "-------------------" << std::endl;
       std::cout << "Event: " << evt << std::endl;
     }
@@ -47,7 +47,7 @@ int main()
     mm -> choose_angles();
     if (mm->conditions_are_met()){
       ps -> TrackOpener(mm->get_Tracks());
-      
+      //if(evt==16)      {
       fm -> fill_event_tree(evt,
 			    mm->get_Slope(),mm->get_YInter(),
 			    mm->get_Chi(),mm->get_Ndf(),
@@ -55,9 +55,10 @@ int main()
 			    mm->get_CosAngle(),(*itr).second,
 			    mm->get_Tracks(),
 			    ps->CreateSpace());
-      
-      evt++;
-      
+      // break;
+      //}
+    evt++;
+    
     }
     mm -> clear();   
   }

@@ -12,11 +12,7 @@ ParameterSpace::ParameterSpace()
   fMinSlope = ((g.location(3,63)).first-(g.location(0,0)).first)/((g.location(3,63)).second-(g.location(0,0)).second);
   
   fMinYinter = -1.0 * fMaxSlope * (g.location(0,63)).second + (g.location(0,63)).first;
-  fMaxYinter = -1.0 * fMinSlope * (g.location(0,0)).second + (g.location(0,0)).first;
-
-  
-  
-  
+  fMaxYinter = -1.0 * fMinSlope * (g.location(0,0)).second + (g.location(0,0)).first;  
 }
 
 ParameterSpace::~ParameterSpace() {}
@@ -34,7 +30,7 @@ void ParameterSpace::Fill_Space()
 
       std::pair<double,double> pair = std::make_pair(slope,yinter);
 
-      //std::cout << "slope: " << slope << " yinter: " << yinter << std::endl;
+      std::cout << "slope: " << slope << " yinter: " << yinter << std::endl;
       for(int yy = 0; yy < 4; ++yy){
 	for(int xx = 0; xx < 64; ++xx){
 	  if(Intersection(g.location(yy,xx),slope,yinter)){
@@ -66,8 +62,8 @@ bool ParameterSpace::Intersection(std::pair<double,double> params, double Slope,
   double           LeftEdge_h = FibJ + g.get_HalfHeight();
   double          RightEdge_h = FibJ - g.get_HalfHeight();
   
-  double   LineLeftLocation_v = Slope*LeftEdge_h  + Yint;
-  double  LineRightLocation_v = Slope*RightEdge_h + Yint;
+  double   LineLeftLocation_v = Slope*RightEdge_h  + Yint;
+  double  LineRightLocation_v = Slope*LeftEdge_h + Yint;
   
   double            TopEdge_v = FibI + g.get_Width()/2.0;
   double         BottomEdge_v = FibI - g.get_Width()/2.0;
@@ -90,6 +86,11 @@ bool ParameterSpace::Intersection(std::pair<double,double> params, double Slope,
 
 void ParameterSpace::TrackOpener(std::vector<Track> tracks)
 {
+ //Clearn for new run
+  fZ.clear();
+  fRecoPoints.clear(); 
+  //end clear
+
   for (auto track : tracks){
     if(track.is_chosen()){
       for (auto fib : track.fibers()){
@@ -115,25 +116,61 @@ void ParameterSpace::set_NYinterDivisions(int a)
 
 std::map<std::pair<double,double> , double  > ParameterSpace::CreateSpace()
 {
+  
   std::map<double,std::map<int,std::vector<double> > > difference;
+  
   double sigma_x = 0.57;
   double sigma_y = 1.54;
-  
+  bool looked_at = false;
+  double current;
   for(auto key : fPSpace){
-    //std::cout << "key in fPSpace" << std::endl;
     for(auto value : key.second){
-      //std::cout <<  "vector in key: value.second = " << value.second << std::endl;
+      if(value.second != current) looked_at = false;
+      
       difference[value.second][0].push_back(value.first);
-	for(auto rpoint : fRecoPoints){
-	  if(rpoint.second == value.second){
-	    //std::cout << "matched: rpoint.second: " << rpoint.second << std::endl;
+      current = value.second;
+      
+      for(auto rpoint : fRecoPoints){
+	  if(rpoint.second == value.second && !looked_at){
 	    difference[value.second][1].push_back(rpoint.first);
-	  }
+	    looked_at = true;
+	  } 
 	}
+
+ 	
     }
+   
+
+
+			     
     
-    //std::cout << "have difference.size(): " << difference.size() << std::endl;
+    
+    
     if(difference.size() == 4){//must be a simulated fiber in each row
+      /*     
+      if( fabs(key.first.first) < 1.0){
+	std::cout << "~~~~~" << std::endl;
+	std::cout << "have slope: " << key.first.first << std::endl;
+	std::cout << "have yintr: " << key.first.second << std::endl;
+	
+	for (auto key : difference){
+	  
+	  std::cout << "yvalue: " << key.first << std::endl;
+	  for (auto rs : key.second){
+	    if(rs.first==0) std::cout << " simx:";
+	    if(rs.first==1) std::cout << " recox";
+	    for(auto xvalue : rs.second){
+	      std::cout << " " <<  xvalue << " ";
+	    }
+	    std::cout << std::endl;
+	  }
+	  
+	  
+	}
+       }
+      
+      */  
+      
       /*
       std::cout << std::endl;
       std::cout << " ----- " << std::endl;
@@ -156,9 +193,11 @@ std::map<std::pair<double,double> , double  > ParameterSpace::CreateSpace()
       for(size_t v = 0 ; v < reco_avg.size(); ++v){
 	fZ[key.first] += pow(sim_avg[v]-reco_avg[v],2)/(pow(sigma_x,2)+pow(sigma_y,2));
       }
-      // std::cout << "wrote z-value: " << fZ[key.first] << std::endl;
       reco_avg.clear();
       sim_avg.clear();
+      
+      //std::cout << "zvalue : " << fZ[key.first] << std::endl;
+    
       
     }
     difference.clear();
@@ -170,8 +209,9 @@ std::map<std::pair<double,double> , double  > ParameterSpace::CreateSpace()
   std::cout << "end of createspace" << std::endl;
   */
   return fZ;
-
+  
 }
+
 
 double ParameterSpace::avg(std::vector<double> xes)
 {
