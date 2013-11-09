@@ -389,8 +389,9 @@ void RecoModule::choose_angles()
   }		
   
   fGoodTrackIndex = good_index;
-  if(is_good_track()){
+  if(is_good_track() && one_each_layer(fTracks.at(good_index))){//need something here
     fTracks.at(good_index).chosen(true);
+    fTracks.at(good_index).hasoneeach(true);
   }
 }
 
@@ -404,7 +405,18 @@ bool RecoModule::is_good_track(){
   else
     return false;
 }
+bool RecoModule::is_good_layers(){
+  if (is_good_track()){
+    if(fTracks.at(fGoodTrackIndex).is_hasoneeach()){
+      return true;
+    }
+    else
+      return false;
+  }
+  else
+    return false;
 
+}
 bool RecoModule::is_good_angle(){
   if (is_good_track()){
     if(fabs(fTracks.at(fGoodTrackIndex).angle()) <fAngleThreshold ){
@@ -418,7 +430,7 @@ bool RecoModule::is_good_angle(){
   
 }
 bool RecoModule::conditions_are_met(){
-  if(is_good_angle() && is_good_track())
+  if(is_good_angle() && is_good_track() && is_good_layers())
     return true;
   else
     return false;
@@ -451,5 +463,27 @@ double RecoModule::get_Angle()
 double RecoModule::get_CosAngle()
 {
   return fTracks.at(fGoodTrackIndex).cosangle();
+}
+
+bool RecoModule::one_each_layer(Track trakk) 
+{
+  bool one_each[4] = {false,false,false};
+
+  for (auto fiber : trakk.fibers())
+    for(size_t layer=0;layer<4;++layer)
+      if(fiber.y()==layer)
+	one_each[layer] = true;
+  
+  bool good = false;
+  for(size_t layer=0;layer<4;++layer){
+    if(one_each[layer] == true) {
+      good = true;
+    }else{
+      good = false;
+      break;
+    }
+  }
+  
+  return good;
 }
 

@@ -34,7 +34,10 @@ private:
 
   std::vector<double> fFibX;
   std::vector<double> fFibY;
-  
+   
+  std::vector<double> fx_Slope;
+  std::vector<double> fx_Yinter;
+  std::vector<double> fx_Zvalue;
   
   std::vector<int>   fHitPins;
   std::vector<std::string> fStringTracks;
@@ -55,7 +58,8 @@ public:
 		       double Angle,
 		       double CosAngle,
 		       std::vector<int>   HitPins,
-		       std::vector<Track> Tracks);
+		       std::vector<Track> Tracks,
+		       std::map<std::pair<double,double> , double  > Xvalues);
   
   void fill_reco_tree(std::vector<double> angles);
   void finish();

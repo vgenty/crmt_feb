@@ -31,7 +31,9 @@ private:
   //value : vector of (x,y) locations of intersected fibers
   std::map<std::pair<double,double>,std::vector<std::pair<double,double>> > fPSpace;
   
-public:
+  std::map<std::pair<double,double>, double > fZ;
+ 
+ public:
   ParameterSpace();
   ~ParameterSpace();
   
@@ -41,12 +43,13 @@ public:
 
   bool Intersection(std::pair<double,double> params, double Slope, double Yint);
   
-  std::map<int,std::vector<double> > CreateSpace();
-  
+  std::map<std::pair<double,double> , double  > CreateSpace();
+
+
   void TrackOpener(std::vector<Track> tracks);
   void set_NSlopeDivisions(int a);
   void set_NYinterDivisions(int a);
-  
+  double avg(std::vector<double> xes);
   double get_MaxSlope(){return fMaxSlope;}
   double get_MinSlope(){return fMinSlope;}
   double get_MaxYinter(){return fMaxYinter;}

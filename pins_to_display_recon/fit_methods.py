@@ -6,7 +6,6 @@ def get_slope(tfile,event):
     tree = tfile.Get("Event Tree")
     tree.GetEntry(int(event))
     slope = tree.Slope
-
     return float(1.0/(float(slope)))
 
 def get_inter(tfile,event,slope) :

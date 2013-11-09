@@ -24,10 +24,9 @@ ParameterSpace::~ParameterSpace() {}
 
 void ParameterSpace::Fill_Space()
 {
- 
-  
-  for(int ystep = 0; ystep <=fNYinterDivisions; ++ystep){
-    for(int sstep = 0; sstep <=fNSlopeDivisions; ++sstep){
+   
+  for(int ystep = 0; ystep <fNYinterDivisions; ++ystep){
+    for(int sstep = 0; sstep <fNSlopeDivisions; ++sstep){
       
       double slope = fSlopeStep*sstep+fMinSlope;
       double yinter = fYinterStep*ystep+fMinYinter;
@@ -35,20 +34,20 @@ void ParameterSpace::Fill_Space()
 
       std::pair<double,double> pair = std::make_pair(slope,yinter);
 
-      std::cout << "slope: " << slope << " yinter: " << yinter << std::endl;
+      //std::cout << "slope: " << slope << " yinter: " << yinter << std::endl;
       for(int yy = 0; yy < 4; ++yy){
 	for(int xx = 0; xx < 64; ++xx){
 	  if(Intersection(g.location(yy,xx),slope,yinter)){
 	    fPSpace[pair].push_back(std::make_pair(g.location(yy,xx).first,
 						   g.location(yy,xx).second));
 
-	    std::cout << "pushed back: ( " << g.location(yy,xx).first << "," << g.location(yy,xx).second << " ) " << std::endl; 
+	    //std::cout << "pushed back: ( " << g.location(yy,xx).first << "," << g.location(yy,xx).second << " ) " << std::endl; 
 	  }
 	}
       }
-      std::cout << "sstep: " << sstep << std::endl;
+      //std::cout << "sstep: " << sstep << std::endl;
     }
-    std::cout << "ytep: " << ystep << std::endl;
+    //std::cout << "ytep: " << ystep << std::endl;
   }
   
   
@@ -114,30 +113,72 @@ void ParameterSpace::set_NYinterDivisions(int a)
 
 
 
-std::map<int,std::vector<double> > ParameterSpace::CreateSpace()
+std::map<std::pair<double,double> , double  > ParameterSpace::CreateSpace()
 {
+  std::map<double,std::map<int,std::vector<double> > > difference;
+  double sigma_x = 0.57;
+  double sigma_y = 1.54;
   
-  //only want to look row by row
-  
-    for(auto key : fPSpace){
-      for(auto value : key){
-	
-	
+  for(auto key : fPSpace){
+    //std::cout << "key in fPSpace" << std::endl;
+    for(auto value : key.second){
+      //std::cout <<  "vector in key: value.second = " << value.second << std::endl;
+      difference[value.second][0].push_back(value.first);
 	for(auto rpoint : fRecoPoints){
-	  if (rpoint.second = value.second){ //only look on y slices
-	    //ask fede about this multiple on same y-row
+	  if(rpoint.second == value.second){
+	    //std::cout << "matched: rpoint.second: " << rpoint.second << std::endl;
+	    difference[value.second][1].push_back(rpoint.first);
 	  }
-	  
 	}
-	
-	
-	
-      }
+    }
+    
+    //std::cout << "have difference.size(): " << difference.size() << std::endl;
+    if(difference.size() == 4){//must be a simulated fiber in each row
+      /*
+      std::cout << std::endl;
+      std::cout << " ----- " << std::endl;
+      std::cout << std::endl;
+      */
+      std::vector<double> reco_avg;
+      std::vector<double> sim_avg;
       
+      for (auto yy : difference){
+	//yy.first = double physical y
+	//yy.second = map
+	//yy.second[n] : n is sim: 0 reco:1 ==vector of x's
+	reco_avg.push_back(avg(yy.second[1]));
+	sim_avg.push_back(avg(yy.second[0]));
+      }
+      /*
+      std::cout << "sim_avg.size(): " <<  sim_avg.size() << std::endl;
+      std::cout << "reco_avg.size(): " <<  reco_avg.size() << std::endl;
+      */
+      for(size_t v = 0 ; v < reco_avg.size(); ++v){
+	fZ[key.first] += pow(sim_avg[v]-reco_avg[v],2)/(pow(sigma_x,2)+pow(sigma_y,2));
+      }
+      // std::cout << "wrote z-value: " << fZ[key.first] << std::endl;
+      reco_avg.clear();
+      sim_avg.clear();
       
     }
-  
-  
+    difference.clear();
+      
   
 
+  }
+  /*  
+  std::cout << "end of createspace" << std::endl;
+  */
+  return fZ;
+
+}
+
+double ParameterSpace::avg(std::vector<double> xes)
+{
+  double average = 0.0;
+  int len        = xes.size();
+  for (size_t num = 0; num < len; ++num)
+    average = average + xes[num]/len;
+  
+  return average;
 }

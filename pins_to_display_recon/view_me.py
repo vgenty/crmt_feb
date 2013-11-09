@@ -4,8 +4,10 @@ from ROOT import TH2D, TCanvas, TLatex, TF1, TFile, TGraphErrors, TMultiGraph
 from ROOT import gROOT
 from display_methods import *
 from fit_methods import *
+from fx_methods import *
 from other_methods import *
 import sys
+import math
       
 def main():
     gROOT.SetStyle("DStyle")
@@ -96,7 +98,59 @@ def main():
     
 
     
+    c3 = TCanvas("c3","c3")
+    c3.cd()
     
+    
+    fx_slope  = get_fx_slope(f,event) #these are in specific order
+    fx_yinter = get_fx_yinter(f,event) #these are in specific order
+    fx_zvalue = get_fx_zvalue(f,event) #these are in specific order
+
+    num = len(fx_slope)
+    
+    
+    sorted_fx_slope  = sorted( fx_slope  )
+    sorted_fx_yinter = sorted( fx_yinter )
+    
+    xlow  = sorted_fx_slope[0]
+    xhigh = sorted_fx_slope[num - 1]
+ 
+    ylow  = sorted_fx_yinter[0]
+    yhigh = sorted_fx_yinter[num - 1]
+ 
+    #look for different values
+    #xstat = math.fabs(( sorted_fx_slope[num-1]  - sorted_fx_slope[0]  ))/10
+    #ystat = math.fabs(( sorted_fx_yinter[num-1] - sorted_fx_yinter[0] ))/4
+
+    #ok is there going to be a conversion issue here? im scared
+
+    h3 = TH2D("Xvalue",";Slope;Y-inter",
+              100,xlow,xhigh,
+              40,ylow,yhigh)
+    
+    
+    for x in xrange(num):
+     print "(" + str(fx_slope[x]) + "," + str(fx_yinter[x]) + "," + str(fx_zvalue[x])
+
+       
+    for x in xrange(num):
+        h3.Fill(fx_slope[x],fx_yinter[x],fx_zvalue[x])
+    
+    print h3.GetMinimum() 
+    '''
+    minslope= 0
+    miny    = 0
+    minnull = 0
+    
+    h3.GetMinimumBin(minslope,miny,minnull)
+    
+    print h3.GetXaxis().GetBinCenter(minslope)
+    print h3.GetYaxis().GetBinCenter(miny)
+    '''
+    h3.GetXaxis().CenterTitle()
+    h3.GetYaxis().CenterTitle()
+    h3.Draw("COLZ")
+
     sys.stdin.readline()
     f.Close()
     

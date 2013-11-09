@@ -56,9 +56,13 @@ public:
   void reconstruct();
   void fill_root();
   void choose_angles();
+  
+  
+  bool is_good_layers();
   bool is_good_track();
   bool is_good_angle();
   bool conditions_are_met();
+  
   // holy shit i'm a bad programmer
   // need only return the best track and the angle associated with it
   
@@ -70,6 +74,10 @@ public:
   double get_Angle();
   double get_CosAngle();
   std::vector<Track> get_Tracks(){return fTracks;}
+
+
+  bool one_each_layer(Track trakk);
+  
 };
 
 #endif

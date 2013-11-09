@@ -35,9 +35,11 @@ void FileManager::open_file(std::string file_name)
   fEventTree->Branch("fCosAngle",    &fCosAngle, "CosAngle/D" ); 
   fEventTree->Branch("fHitPins",     &fHitPins                );
   fEventTree->Branch("fStringTracks",&fStringTracks           );
-  fEventTree->Branch("fFibX",&fFibX           );
-  fEventTree->Branch("fFibY",&fFibY           );
-  
+  fEventTree->Branch("fFibX",&fFibX             );
+  fEventTree->Branch("fFibY",&fFibY             );
+  fEventTree->Branch("fx_Slope",&fx_Slope       );
+  fEventTree->Branch("fx_Yinter",&fx_Yinter     );
+  fEventTree->Branch("fx_Zvalue",&fx_Zvalue     );
 }
 
 
@@ -45,7 +47,8 @@ void FileManager::fill_event_tree(int EventID,
 				  double Slope, double YInter, double Chi,
 				  double Ndf,   double Pvalue, double Angle,
 				  double CosAngle, std::vector<int> HitPins,
-				  std::vector<Track> Tracks)
+				  std::vector<Track> Tracks,
+				  std::map<std::pair<double,double> , double  > Xvalues)
 {
   
   fEventID  =  EventID;
@@ -58,6 +61,16 @@ void FileManager::fill_event_tree(int EventID,
   fAngle    =  Angle;
   fCosAngle =  CosAngle;
 
+ 
+  
+  for(auto coord_pair : Xvalues){
+    fx_Slope.push_back((coord_pair.first).first);
+    fx_Yinter.push_back((coord_pair.first).second);
+    fx_Zvalue.push_back(coord_pair.second);
+  }
+  
+  
+  
   
   for (auto tracks : Tracks){
     for (auto fiber : tracks.fibers()){
@@ -91,6 +104,9 @@ void FileManager::fill_event_tree(int EventID,
   fStringTracks.clear(); //empty string tracks after fill??
   fFibY.clear(); //empty y
   fFibX.clear(); //empt  x
+  fx_Slope.clear();
+  fx_Yinter.clear();
+  fx_Zvalue.clear();
 }
 
 void FileManager::finish(){

@@ -28,6 +28,7 @@ private:
   double fNdf;
   double fPvalue;
   bool   fChosen;
+  bool fHasOneEach;
   int fid;
   
 public:
@@ -36,6 +37,7 @@ public:
   
   void add_fiber(Fiber a);
   void set_id(int a);
+
   int id() {return fid;}
   bool contains(Fiber a);
   int size(){return fFibers.size();}
@@ -45,7 +47,9 @@ public:
   void calculate_angle();
   void reconstruct();
   void chosen(bool a);
+  void hasoneeach(bool a);
   bool is_chosen(){return fChosen;}
+  bool is_hasoneeach(){return fHasOneEach;}
   
   double slope(){return fSlope;}
   double yinter(){return fYinter;}

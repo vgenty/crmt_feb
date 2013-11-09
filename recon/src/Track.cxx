@@ -4,8 +4,9 @@
 
 Track::Track()
 {
-  fid  = 0;
-  fChosen = false;
+  fid         = 0;
+  fChosen     = false;
+  fHasOneEach = false;
 }
 
 Track::~Track() {}
@@ -41,7 +42,7 @@ void Track::dump()
 void Track::fit()
 {
   fTG = new TGraphErrors();
-  fFit = new TF1("fit","[0]+[1]*x",-1,47); //Not sure yet what range should be
+  fFit = new TF1("fit","[0]+[1]*x",-1,74); //Not sure yet what range should be
   int cnt=1;
   for(auto j : fFibers){
     fTG->SetPoint(cnt,j.coords().second,j.coords().first);
@@ -51,7 +52,8 @@ void Track::fit()
   //try and guess some values for fSlope and fYinter, take first and last point
     
   double slope  = 0; // just guess zero as the slope...
-  double yinter = fFibers[fFibers.size()-1].coords().first; //choose last point
+  //double yinter = fFibers[fFibers.size()-1].coords().first; //choose last point
+  double yinter = fFibers[0].coords().first; //choose first point
 
   //  double slope  = (y1-y0)/(x1-x0);
   //  double yinter = y1-slope*x1;
@@ -81,4 +83,7 @@ void Track::reconstruct()
 void Track::chosen(bool a)
 {
   fChosen = a;
+}
+void Track::hasoneeach(bool a){
+  fHasOneEach = a;
 }
