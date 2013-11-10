@@ -24,7 +24,7 @@ double fitter(double *x, double *p)
   double ped  = exp(-1.0*p[0])*1/(sqrt(2*PI)*p[2])*exp(-1.0*pow(x[0]-p[1],2)/(2*pow(p[2],2)));
   double loop_factor   = (1-p[3]); 
   double pe=0;
-  for (int r=1;r<=12;++r)
+  for (int r=1;r<=4;++r)
     pe = pe + (exp(-1.0*p[0])*pow(p[0],r)/TMath::Factorial(r))*exp(-1.0*pow(x[0]-p[1]-r*p[4],2)/(2.0*(pow(p[2],2)+r*pow(p[5],2))))/(sqrt(2*PI*(pow(p[2],2)+r*pow(p[5],2))));
   
   double last = p[3]*(1-exp(-1.0*p[0]))*exp(pow(x[0]-p[1]-p[4]/p[6],2)/(2.0*(pow(p[1],2)+pow(p[4],2)/pow(p[6],2))))/(sqrt(2*PI*(pow(p[1],2)+pow(p[4],2)/pow(p[6],2))));
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
   TApplication *tapp = new TApplication("tapp",&argc,argv);  
   TCanvas *can = new TCanvas("can","can");
   //can->Divide(2);
-  std::vector<std::pair<double,double> > raw_data = read_file("adc_750VHV_3.07Vled_2.txt");
+  std::vector<std::pair<double,double> > raw_data = read_file("adc_800VHV_3.07Vled_2.txt");
   int len = raw_data.size();
   double scale = -1*pow(10.0,12);
   double xlow =raw_data[len-1].first*scale;
@@ -88,7 +88,8 @@ int main(int argc, char *argv[])
   */
   
   the_fit->SetParameters(1.0,5.0,5.0,0.0,55.0,10.0,0.05);
-  the_fit->FixParameter(7,h1->GetEntries());   
+  //the_fit->FixParameter(7,h1->GetEntries());   
+  the_fit->SetParameter(7,h1->GetEntries());   
   
    
   h1->Rebin(rebin);
