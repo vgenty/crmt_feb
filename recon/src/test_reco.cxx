@@ -2,12 +2,17 @@
 #include <map>
 #include <vector>
 #include <fstream>
+#include <cstdlib>
 #include <stdlib.h>
+
 #include "Fiber.h"
 #include "RecoModule.h"
 #include "Track.h"
 #include "FileManager.h"
 #include "ParameterSpace.h"
+
+#include <sstream>
+
 
 void usage()
 {
@@ -75,7 +80,7 @@ int main(int argc, char *argv[])
 				      mm->get_Pvalue(),mm->get_Angle(),
 				      mm->get_CosAngle(),(*itr).second,
 				      mm->get_Tracks(),
-				      ps->CreateSpace());
+				      ps->CreateSpace()); //only diff is this line
 	else    fm -> fill_event_tree(evt,
 				      mm->get_Slope(),mm->get_YInter(),
 				      mm->get_Chi(),mm->get_Ndf(),
@@ -89,5 +94,22 @@ int main(int argc, char *argv[])
     }
     fm -> finish();
   }
+
+  if(args[0] == "-d") { // go ahead with reco
+    std::stringstream ss;
+    if(args.size() > 2){
+      ss << "cd viewer && python view_me.py ";
+      ss << args[3];
+      std::system((ss.str()).c_str());    
+    }
+    
+    else{
+      std::cout << "Not implemented yet, aborting" << std::endl;
+    }
+  }
+  
+  
+  
   return 0;  
-}
+ }
+    
