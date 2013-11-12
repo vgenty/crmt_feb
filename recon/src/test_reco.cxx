@@ -9,7 +9,7 @@
 #include "FileManager.h"
 #include "ParameterSpace.h"
 
-int main()
+int main(int argc, char *argv[])
 {
   
   RecoModule  *mm = new RecoModule();
@@ -25,7 +25,10 @@ int main()
 
   ps->Fill_Space();
   
-  mm->getfiles("./input/event_list2.txt","./input/pins.csv");
+  std::string event_list_string = "./intput/";
+  event_list_string = event_list_string+argv[1];
+
+  mm->getfiles(event_list_string.c_str(),"./input/pins.csv");
   mm->init_module(); 
   fm->open_file("./output/recodata.root");
   
