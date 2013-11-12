@@ -40,7 +40,7 @@ def get_hitcoords(tfile,event):
 
 def get_allcoords() :
     
-    filename = 'geometry.dat'
+    filename = '../input/geometry.dat'
     coords   =[]
     
     with open(filename, 'rb') as f:

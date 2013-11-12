@@ -1,18 +1,18 @@
 #!/usr/bin/env python
 
-from ROOT import TH2D, TCanvas, TLatex, TF1, TFile, TGraphErrors, TMultiGraph
-from ROOT import gROOT, gStyle, TH1D
-from display_methods import *
-from fit_methods import *
-from fx_methods import *
-from other_methods import *
+from ROOT import TH2D, TCanvas, TLatex, TF1, TFile
+from ROOT import gROOT, gStyle, TH1D, TGraphErrors, TMultiGraph
+from methods.display_methods import *
+from methods.fit_methods import *
+from methods.fx_methods import *
+from methods.other_methods import *
 import sys
 import math
       
 def main():
     gROOT.SetStyle("DStyle")
     gStyle.SetOptStat(0)
-    f = TFile("recodata.root","READ")
+    f = TFile("../output/recodata.root","READ")
     event = sys.argv[1]
     
     #this is for the event display
@@ -21,7 +21,7 @@ def main():
     module = TH2D("mod",";x #rightarrow;y #rightarrow",64,0,64,4,0,4)
     module.GetXaxis().CenterTitle()
     module.GetYaxis().CenterTitle()
-    pins_to_pixels   =  pins("pins.csv")
+    pins_to_pixels   =  pins("../input/pins.csv")
     pixels_to_fibers =  mapit()
     pins_to_count    =  struck(f,event)
     tracks           =  fibsss(f,event)
@@ -184,7 +184,6 @@ def main():
     h3_low.Fill(low_values[1],low_values[2],low_values[0])
     h3_low.SetMarkerStyle(8)
 
-    print h3.GetMinimum() 
     '''
     minslope= 0
     miny    = 0

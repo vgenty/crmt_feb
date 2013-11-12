@@ -18,16 +18,16 @@ int main()
   ps->set_NSlopeDivisions(500);
   ps->set_NYinterDivisions(80);
   
-  std::cout << "ps->get_MaxSlope(): " << ps->get_MaxSlope() << std::endl;
-  std::cout << "ps->get_MinSlope(): " << ps->get_MinSlope() << std::endl;
+  std::cout << "ps->get_MaxSlope():  " << ps->get_MaxSlope()  << std::endl;
+  std::cout << "ps->get_MinSlope():  " << ps->get_MinSlope()  << std::endl;
   std::cout << "ps->get_MaxYinter(): " << ps->get_MaxYinter() << std::endl;
   std::cout << "ps->get_MinYinter(): " << ps->get_MinYinter() << std::endl;
 
   ps->Fill_Space();
   
-  mm->getfiles("../input/event_list2.txt","../input/pins.csv");
+  mm->getfiles("./input/event_list2.txt","./input/pins.csv");
   mm->init_module(); 
-  fm->open_file("../output/recodata.root");
+  fm->open_file("./output/recodata.root");
   
   
   std::map<int, std::vector<int> >::iterator itr;
