@@ -25,8 +25,7 @@ int main(int argc, char *argv[])
 
   ps->Fill_Space();
   
-  std::string event_list_string = "./intput/";
-  event_list_string = event_list_string+argv[1];
+  std::string event_list_string = argv[1];
 
   mm->getfiles(event_list_string.c_str(),"./input/pins.csv");
   mm->init_module(); 
