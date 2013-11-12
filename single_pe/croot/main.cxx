@@ -7,6 +7,8 @@
 #include "TMath.h"
 #include "dstyle.h"
 #include "TPaveText.h"
+#include "TSpectrum.h"
+
 
 #define PI 3.14159
 
@@ -25,22 +27,23 @@ double fitter(double *x, double *p)
   double ped  = exp(-1.0*p[0])*1/(sqrt(2*PI)*p[2])*exp(-1.0*pow(x[0]-p[1],2)/(2*pow(p[2],2)));
   double loop_factor   = (1-p[3]); 
   double pe=0;
-  for (int r=1;r<3;++r)
+  for (int r=1;r<=3;++r)
     pe = pe + (exp(-1.0*p[0])*pow(p[0],r)/TMath::Factorial(r))*exp(-1.0*pow(x[0]-p[1]-r*p[4],2)/(2.0*(pow(p[2],2)+r*pow(p[5],2))))/(sqrt(2*PI*(pow(p[2],2)+r*pow(p[5],2))));
   
   double last = p[3]*(1-exp(-1.0*p[0]))*exp(pow(x[0]-p[1]-p[4]/p[6],2)/(2.0*(pow(p[1],2)+pow(p[4],2)/pow(p[6],2))))/(sqrt(2*PI*(pow(p[1],2)+pow(p[4],2)/pow(p[6],2))));
   
-  return p[7]*(ped + loop_factor*pe + last);
+  //return p[7]*(ped + loop_factor*pe + last);
+  //return p[7]*(ped + loop_factor*pe);
+  return p[7]*(ped + pe);
+  
 
 }
-
-
-
 
 std::vector<std::pair<double,double> > read_file(std::string file)
 {
   std::ifstream myfile;
   std::vector<std::pair<double,double> > data;
+  std::cout << "file: " << std::endl;
   myfile.open(file.c_str());
   
   double holder1 ,holder2;
@@ -53,9 +56,7 @@ std::vector<std::pair<double,double> > read_file(std::string file)
 }
 
 int main(int argc, char *argv[])
-{
-  
-  
+{  
   set_style();
   gStyle->SetOptFit(111);
   gStyle->SetOptStat("e");
@@ -65,19 +66,23 @@ int main(int argc, char *argv[])
   title->SetTextSize(25);
   title->SetBorderSize(0);
   title->SetFillColor(0);
-  title->AddText("800V");
+  title->AddText("Title");
   
+
+  std::string filename = argv[1];
+  
+  //tapplication sucks up arguments be careful
   TApplication *tapp = new TApplication("tapp",&argc,argv);  
   TCanvas *can = new TCanvas("can","can");
   //can->Divide(2);
-  std::vector<std::pair<double,double> > raw_data = read_file("adc_800VHV_3.07Vled_2.txt");
+  
+  std::vector<std::pair<double,double> > raw_data = read_file(filename);
   int len = raw_data.size();
   double scale = -1*pow(10.0,12);
-  double xlow =raw_data[len-1].first*scale;
+  double xlow =raw_data[len-1].first*scale; //breaks here....
   double xhigh =raw_data[0].first*scale;
-  int rebin = 10;
+  int rebin = 4;
   
-  //can->cd(1);
   can->SetLogy();
   TH1D *h1 = new TH1D("Charge",";pVs;Count",len,xlow,xhigh);
   TF1 *the_fit = new TF1("the_fit",fitter,xlow,xhigh,8);
@@ -87,20 +92,33 @@ int main(int argc, char *argv[])
   for (auto entry : raw_data)
      for (int i = 0; i <entry.second;++i)
        h1->Fill(entry.first*scale);
-  /*
-    p[0] = \lambda
-    p[1] = x_ped
-    p[2] = \sigma_ped
-    p[3] = d_f
-    p[4] = x_pe
-    p[5] = \sigma_pe
-    p[6] = d_s
-    p[7] = N
-  */
   
-  the_fit->SetParameters(1.0,5.0,5.0,0.0,55.0,10.0,0.05);
-  //the_fit->FixParameter(7,h1->GetEntries());   
-  the_fit->SetParameter(7,h1->GetEntries());   
+
+  TSpectrum *s = new TSpectrum(10);
+  int nfound = s->Search(h1,1,"",0.15);
+  float *xpeaks = s->GetPositionX();
+  
+
+  std::cout << "found: pedestal" << xpeaks[0] << std::endl;
+  std::cout << "found: pe      " << xpeaks[1] << std::endl;
+  
+  the_fit->SetParameter(0,0.5); //\lambda
+  the_fit->SetParameter(1,xpeaks[0]); //x_ped
+  the_fit->SetParameter(2,5.0); //\sigma_ped
+  the_fit->SetParameter(3,0.01); //d_f
+  the_fit->SetParameter(4,xpeaks[1]); //x_pe
+  the_fit->SetParameter(5,50.0); //\sigma_pe
+  the_fit->SetParameter(6,0.05); //d_s
+  the_fit->SetParameter(7,h1->GetEntries()/10); //N
+  
+  the_fit->SetParLimits(0,0,10);
+  the_fit->SetParLimits(1,0,1000);
+  the_fit->SetParLimits(2,0,1000);
+  the_fit->SetParLimits(3,0,1);
+  the_fit->SetParLimits(4,0,1000);
+  the_fit->SetParLimits(5,0,1000);
+  the_fit->SetParLimits(6,0,1000);
+
   
    
   h1->Rebin(rebin);
@@ -110,28 +128,6 @@ int main(int argc, char *argv[])
   h1->Draw();
    
   title->Draw("SAMES");
-  
-  /*
-  can->cd(2);
-  can->SetLogy();
-  TH1D *h2 = new TH1D("Fake Charge",";pVs;Count",len,xlow,xhigh);
-  TF1 *the_fake_fit = new TF1("the_fake_fit",fitter,xlow,xhigh,8);
-  the_fake_fit->SetParameters(1.0,5.0,5.0,0.0,55.0,10.0,0.05,h1->GetEntries());
-  
-  
-  for(int t=0; t<h1->GetEntries();t++)
-    h2->Fill(the_fake_fit->GetRandom());
-  
-  h2->GetXaxis()->CenterTitle();
-  h2->GetYaxis()->CenterTitle();
-  h2->Rebin(rebin);
-  h2->Draw();
-  
-
-  
-  
-  
-  */
   can->Draw();
   tapp->Run();  
   
