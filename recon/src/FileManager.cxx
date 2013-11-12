@@ -10,7 +10,7 @@
 
 FileManager::FileManager()
 {
-  //std::cout << std::endl;
+  fPSpace = false;
 }
 
 FileManager::~FileManager() {}
@@ -38,12 +38,16 @@ void FileManager::open_file(std::string file_name)
   fEventTree->Branch("fStringTracks",&fStringTracks           );
   fEventTree->Branch("fFibX",&fFibX             );
   fEventTree->Branch("fFibY",&fFibY             );
-  fEventTree->Branch("fx_Slope",&fx_Slope       );
-  fEventTree->Branch("fx_Yinter",&fx_Yinter     );
-  fEventTree->Branch("fx_Zvalue",&fx_Zvalue     );
-  fEventTree->Branch("fx_LowZValue" ,  &fx_LowZValue, "x_LowZValue/D");
-  fEventTree->Branch("fx_LowSlope"  ,  &fx_LowSlope ,   "x_LowSlope/D");
-  fEventTree->Branch("fx_LowYinter" ,  &fx_LowYinter, "x_LowYinter/D");
+
+  if(fPSpace) {
+    fEventTree->Branch("fx_Slope",&fx_Slope       );
+    fEventTree->Branch("fx_Yinter",&fx_Yinter     );
+    fEventTree->Branch("fx_Zvalue",&fx_Zvalue     );
+    fEventTree->Branch("fx_LowZValue" ,  &fx_LowZValue, "x_LowZValue/D");
+    fEventTree->Branch("fx_LowSlope"  ,  &fx_LowSlope ,   "x_LowSlope/D");
+    fEventTree->Branch("fx_LowYinter" ,  &fx_LowYinter, "x_LowYinter/D");
+  }
+  
   //fEventTree->Branch("fxp_Zvalue",     &fxp_Zvalue     );
   //fEventTree->Branch("fxp_LowZValue" ,  &fxp_LowZValue, "xp_LowZValue/D");
 
@@ -68,28 +72,29 @@ void FileManager::fill_event_tree(int EventID,
   fAngle    =  Angle;
   fCosAngle =  CosAngle;
   
-
-  double current = 0;
-  fx_LowZValue  = 10000;
+  if(fPSpace){
+    double current = 0;
+    fx_LowZValue  = 10000;
   
-  for(auto coord_pair : Xvalues){
-    current = coord_pair.second;
+    for(auto coord_pair : Xvalues){
+      current = coord_pair.second;
     
-    if (current < fx_LowZValue){
-      fx_LowZValue = current;
-      fx_LowSlope  = (coord_pair.first).first;
-      fx_LowYinter = (coord_pair.first).second;
-      fxp_LowZValue = TMath::Prob(current,4);
+      if (current < fx_LowZValue){
+	fx_LowZValue = current;
+	fx_LowSlope  = (coord_pair.first).first;
+	fx_LowYinter = (coord_pair.first).second;
+	fxp_LowZValue = TMath::Prob(current,4);
+      }
+
+      fx_Slope.push_back((coord_pair.first).first);
+      fx_Yinter.push_back((coord_pair.first).second);
+      fx_Zvalue.push_back(coord_pair.second);
+      fxp_Zvalue.push_back(TMath::Prob(coord_pair.second,4));  
+
     }
 
-    fx_Slope.push_back((coord_pair.first).first);
-    fx_Yinter.push_back((coord_pair.first).second);
-    fx_Zvalue.push_back(coord_pair.second);
-    fxp_Zvalue.push_back(TMath::Prob(coord_pair.second,4));  
-
   }
-
-
+  
   fPvalue = TMath::Prob(fChi,fNdf);
   for (auto tracks : Tracks){
     for (auto fiber : tracks.fibers()){
@@ -122,10 +127,12 @@ void FileManager::fill_event_tree(int EventID,
   fStringTracks.clear(); //empty string tracks after fill??
   fFibY.clear(); //empty y
   fFibX.clear(); //empt  x
-  fx_Slope.clear();
-  fx_Yinter.clear();
-  fx_Zvalue.clear();
-  fxp_Zvalue.clear();
+  if(fPSpace){
+    fx_Slope.clear();
+    fx_Yinter.clear();
+    fx_Zvalue.clear();
+    fxp_Zvalue.clear();
+  }
 }
 
 

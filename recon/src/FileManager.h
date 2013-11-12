@@ -35,6 +35,8 @@ private:
   double fx_LowSlope;
   double fx_LowYinter;
   double fxp_LowZValue;
+
+  bool fPSpace;
   
   std::vector<double> fFibX;
   std::vector<double> fFibY;
@@ -52,7 +54,7 @@ private:
 public:
   FileManager();
   ~FileManager();
-  
+  void yes_parameterspace(){fPSpace = true;};
   std::string to_string(char let, int id);
   void open_file(std::string file_name);
   void fill_event_tree(int EventID,

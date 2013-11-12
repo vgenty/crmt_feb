@@ -30,7 +30,7 @@ void ParameterSpace::Fill_Space()
 
       std::pair<double,double> pair = std::make_pair(slope,yinter);
 
-      std::cout << "slope: " << slope << " yinter: " << yinter << std::endl;
+      //      std::cout << "slope: " << slope << " yinter: " << yinter << std::endl;
       for(int yy = 0; yy < 4; ++yy){
 	for(int xx = 0; xx < 64; ++xx){
 	  if(Intersection(g.location(yy,xx),slope,yinter)){
