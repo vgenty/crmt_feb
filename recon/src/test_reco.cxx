@@ -25,9 +25,9 @@ int main()
 
   ps->Fill_Space();
   
-  mm->getfiles("event_list2.txt","pins.csv");
+  mm->getfiles("../input/event_list2.txt","../input/pins.csv");
   mm->init_module(); 
-  fm->open_file("recodata.root");
+  fm->open_file("../output/recodata.root");
   
   
   std::map<int, std::vector<int> >::iterator itr;

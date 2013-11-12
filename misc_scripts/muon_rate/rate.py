@@ -1,13 +1,14 @@
-from ROOT import TH1D, TCanvas, TF1, TFile,gStyle, TLatex, TPad
+from ROOT import TH1D, TCanvas, TF1, TFile,gStyle, TLatex, TPad, gROOT
 from FixROOT import OneFix, TPaveTitle
 import sys, math
 
 
 def main():
     fixer = OneFix()
-
+    gROOT.SetStyle("DStyle")
     #c1=TCanvas("c1","c1")#,600,800)
-    c1=TCanvas("c1","c1",500,600)
+    c1=TCanvas("c1","c1")#,500,600)
+    gStyle.SetOptStat(0)
     #tp1 = TPad("tp1","tpad1",0,0.3,1,1.0)
     #tp2 = TPad("tp1","tpad2",0,0.0,1,0.3)
 
@@ -26,17 +27,20 @@ def main():
     gStyle.SetOptFit(111)
     binWidth = h1.GetBinWidth(2)
     equation = TPaveTitle("f(x)=Ae^{bx}").GetTitle()
-    title=fixer.fix(h1,"Rate")
+    title=fixer.fix(h1,"Coincidence Rate")
 
-
-    gStyle.SetPadTopMargin(0.08)
-    gStyle.SetPadBottomMargin(0.12)
-    gStyle.SetPadLeftMargin(0.14)
-    gStyle.SetPadRightMargin(0.1)
-    gStyle.SetFrameLineWidth(2)
-    gStyle.SetStatBorderSize(2)
-    gStyle.SetStatFont(62)
-    h1.GetYaxis().SetTitleOffset(1.2)
+    
+    #gStyle.SetPadTopMargin(0.08)
+    #gStyle.SetPadBottomMargin(0.12)
+    #gStyle.SetPadLeftMargin(0.14)
+    #gStyle.SetPadRightMargin(0.1)
+    #gStyle.SetFrameLineWidth(2)
+    #gStyle.SetStatBorderSize(2)
+    #gStyle.SetStatFont(62)
+    
+    h1.GetYaxis().SetTitleOffset(-0.2)
+    h1.GetXaxis().SetTitleOffset(-0.2)
+    
     c1.SetLogy()
     h1.Draw()
     h1.Fit("fitter")

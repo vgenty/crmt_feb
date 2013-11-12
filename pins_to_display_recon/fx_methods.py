@@ -1,5 +1,11 @@
 from ROOT import TFile
 
+def get_fx_lowvals(tfile,event) :
+    tree = tfile.Get("Event Tree")
+    tree.GetEntry(int(event))
+    
+    return[tree.fx_LowZValue,tree.fx_LowSlope,tree.fx_LowYinter]
+
 def get_fx_slope(tfile,event)  :
     tree = tfile.Get("Event Tree")
     tree.GetEntry(int(event))

@@ -31,13 +31,19 @@ private:
   double fPvalue;
   double fAngle;
   double fCosAngle;
-
+  double fx_LowZValue;
+  double fx_LowSlope;
+  double fx_LowYinter;
+  double fxp_LowZValue;
+  
   std::vector<double> fFibX;
   std::vector<double> fFibY;
    
   std::vector<double> fx_Slope;
   std::vector<double> fx_Yinter;
   std::vector<double> fx_Zvalue;
+
+  std::vector<double> fxp_Zvalue;
   
   std::vector<int>   fHitPins;
   std::vector<std::string> fStringTracks;

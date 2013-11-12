@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from ROOT import TH2D, TCanvas, TLatex, TF1, TFile, TGraphErrors, TMultiGraph
-from ROOT import gROOT
+from ROOT import gROOT, gStyle, TH1D
 from display_methods import *
 from fit_methods import *
 from fx_methods import *
@@ -11,6 +11,7 @@ import math
       
 def main():
     gROOT.SetStyle("DStyle")
+    gStyle.SetOptStat(0)
     f = TFile("recodata.root","READ")
     event = sys.argv[1]
     
@@ -37,7 +38,7 @@ def main():
                        tracks)
     
     c1.cd()
-    title=GetTitle("Module 1 - Event %d" % int(event))
+    title=GetTitle("Reco Event Display - Event %d" % int(event))
     module.GetYaxis().SetNdivisions(4)
     module.GetXaxis().SetNdivisions(8)
     
@@ -86,7 +87,7 @@ def main():
     c2.Update()
     c2.Modified()
     tmulti.GetYaxis().SetRangeUser(0,13)
-    title_tg=GetTitle("Module 1 Fit - Event %d" % int(event))
+    title_tg=GetTitle("Reco Fit - Event %d" % int(event))
     title_tg.Draw("SAMES")
 
     fit_function.Draw("SAMES")
@@ -129,7 +130,7 @@ def main():
     c3.Update()
     c3.Modified()
     xy_tmulti.GetYaxis().SetRangeUser(0,64)
-    xy_title_tg=GetTitle("Module 1 Fit - Event %d" % int(event))
+    xy_title_tg=GetTitle("Reco Fit - Event %d" % int(event))
     xy_title_tg.Draw("SAMES")
 
     xy_fit_function.Draw("SAMES")
@@ -160,18 +161,29 @@ def main():
     
     #ok is there going to be a conversion issue here? im scared
 
-    h3 = TH2D("Xvalue",";Slope #Deltax/#Deltay;X-inter",
+    #h3 = TH2D("Xvalue",";Slope #Deltax/#Deltay;X-inter",
+    h3 = TH2D("Xinter",";tan#theta;X-Intercept",
               500,xlow,xhigh,
               80,ylow,yhigh)
     
-    
+    title_ps=GetTitle("Reco PS - Event %d" % int(event))
     #for x in xrange(num):
     # print "(" + str(fx_slope[x]) + "," + str(fx_yinter[x]) + "," + str(fx_zvalue[x])
 
-       
+  
+    low_values = get_fx_lowvals(f,event)
+    
     for x in xrange(num):
         h3.Fill(fx_slope[x],fx_yinter[x],fx_zvalue[x])
     
+        
+    h3_low = TH2D("Xinter_low",";tan#theta;X-Intercept",
+              500,xlow,xhigh,
+              80,ylow,yhigh)
+
+    h3_low.Fill(low_values[1],low_values[2],low_values[0])
+    h3_low.SetMarkerStyle(8)
+
     print h3.GetMinimum() 
     '''
     minslope= 0
@@ -187,15 +199,17 @@ def main():
     h3.GetYaxis().CenterTitle()
     #h3.Draw("CONT4Z")
     h3.Draw("COLZ")
+    h3_low.Draw("SAMES")
+    title_ps.Draw("SAMES")
     #c4.SetLogz()
     c4.Update()
     c4.Modified()
+
     sys.stdin.readline()
-    f.Close()
+    f.Close()    
     
     
-   
-   
+    
 if __name__ == '__main__' :
     main()
     

@@ -6,6 +6,7 @@
 #include "TCanvas.h"
 #include "TMath.h"
 #include "dstyle.h"
+#include "TPaveText.h"
 
 #define PI 3.14159
 
@@ -24,7 +25,7 @@ double fitter(double *x, double *p)
   double ped  = exp(-1.0*p[0])*1/(sqrt(2*PI)*p[2])*exp(-1.0*pow(x[0]-p[1],2)/(2*pow(p[2],2)));
   double loop_factor   = (1-p[3]); 
   double pe=0;
-  for (int r=1;r<=4;++r)
+  for (int r=1;r<3;++r)
     pe = pe + (exp(-1.0*p[0])*pow(p[0],r)/TMath::Factorial(r))*exp(-1.0*pow(x[0]-p[1]-r*p[4],2)/(2.0*(pow(p[2],2)+r*pow(p[5],2))))/(sqrt(2*PI*(pow(p[2],2)+r*pow(p[5],2))));
   
   double last = p[3]*(1-exp(-1.0*p[0]))*exp(pow(x[0]-p[1]-p[4]/p[6],2)/(2.0*(pow(p[1],2)+pow(p[4],2)/pow(p[6],2))))/(sqrt(2*PI*(pow(p[1],2)+pow(p[4],2)/pow(p[6],2))));
@@ -56,6 +57,16 @@ int main(int argc, char *argv[])
   
   
   set_style();
+  gStyle->SetOptFit(111);
+  gStyle->SetOptStat("e");
+  TPaveText *title = new TPaveText(0.1412338,0.9321267,0.4399351,0.9886878,"brNDC");
+
+  title->SetTextFont(63);
+  title->SetTextSize(25);
+  title->SetBorderSize(0);
+  title->SetFillColor(0);
+  title->AddText("800V");
+  
   TApplication *tapp = new TApplication("tapp",&argc,argv);  
   TCanvas *can = new TCanvas("can","can");
   //can->Divide(2);
@@ -97,6 +108,9 @@ int main(int argc, char *argv[])
   h1->GetXaxis()->CenterTitle();
   h1->GetYaxis()->CenterTitle();
   h1->Draw();
+   
+  title->Draw("SAMES");
+  
   /*
   can->cd(2);
   can->SetLogy();

@@ -6,6 +6,7 @@
 #include <cmath>
 #include <stdio.h>
 #include <sstream>
+#include "TMath.h"
 
 FileManager::FileManager()
 {
@@ -40,6 +41,12 @@ void FileManager::open_file(std::string file_name)
   fEventTree->Branch("fx_Slope",&fx_Slope       );
   fEventTree->Branch("fx_Yinter",&fx_Yinter     );
   fEventTree->Branch("fx_Zvalue",&fx_Zvalue     );
+  fEventTree->Branch("fx_LowZValue" ,  &fx_LowZValue, "x_LowZValue/D");
+  fEventTree->Branch("fx_LowSlope"  ,  &fx_LowSlope ,   "x_LowSlope/D");
+  fEventTree->Branch("fx_LowYinter" ,  &fx_LowYinter, "x_LowYinter/D");
+  //fEventTree->Branch("fxp_Zvalue",     &fxp_Zvalue     );
+  //fEventTree->Branch("fxp_LowZValue" ,  &fxp_LowZValue, "xp_LowZValue/D");
+
 }
 
 
@@ -60,18 +67,30 @@ void FileManager::fill_event_tree(int EventID,
   fHitPins  =  HitPins; //this might error trying to copy vector
   fAngle    =  Angle;
   fCosAngle =  CosAngle;
+  
 
- 
+  double current = 0;
+  fx_LowZValue  = 10000;
   
   for(auto coord_pair : Xvalues){
+    current = coord_pair.second;
+    
+    if (current < fx_LowZValue){
+      fx_LowZValue = current;
+      fx_LowSlope  = (coord_pair.first).first;
+      fx_LowYinter = (coord_pair.first).second;
+      fxp_LowZValue = TMath::Prob(current,4);
+    }
+
     fx_Slope.push_back((coord_pair.first).first);
     fx_Yinter.push_back((coord_pair.first).second);
     fx_Zvalue.push_back(coord_pair.second);
+    fxp_Zvalue.push_back(TMath::Prob(coord_pair.second,4));  
+
   }
-  
-  
-  
-  
+
+
+  fPvalue = TMath::Prob(fChi,fNdf);
   for (auto tracks : Tracks){
     for (auto fiber : tracks.fibers()){
       if(fiber.y() <= 1)
@@ -86,7 +105,7 @@ void FileManager::fill_event_tree(int EventID,
 	  fStringTracks.push_back(to_string('t',fiber.id()));
 	else 
 	  fStringTracks.push_back(to_string('b',fiber.id()));
-
+	
 	fFibX.push_back((fiber.get_coords()).first);
 	fFibY.push_back((fiber.get_coords()).second);
 	
@@ -98,7 +117,6 @@ void FileManager::fill_event_tree(int EventID,
     
   }
   
-  
   fHitPins      = HitPins;
   fEventTree->Fill();
   fStringTracks.clear(); //empty string tracks after fill??
@@ -107,7 +125,9 @@ void FileManager::fill_event_tree(int EventID,
   fx_Slope.clear();
   fx_Yinter.clear();
   fx_Zvalue.clear();
+  fxp_Zvalue.clear();
 }
+
 
 void FileManager::finish(){
   fEventTree->Write();

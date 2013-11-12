@@ -1,6 +1,7 @@
 from ROOT import TH2D, TCanvas, TLatex, gROOT
 from viewer_methods import *
 from other_methods import *
+from ROOT import gStyle
 import sys
 
 def main():
@@ -20,11 +21,12 @@ def main():
                        pins_to_count,
                        rows)
     c1.cd()
-    title=GetTitle("Module")
+    title=GetTitle("Raw FEB Data")
     module.GetYaxis().SetNdivisions(4)
     module.GetXaxis().SetNdivisions(8)
     module.GetYaxis().CenterTitle()
     module.GetXaxis().CenterTitle()
+    gStyle.SetOptStat(0)
     module.Draw("COLZ")
     title.Draw("SAMES")
     c1.Update()
