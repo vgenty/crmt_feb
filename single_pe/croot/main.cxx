@@ -38,7 +38,7 @@ double fitter(double *x, double *p)
   double ped  = exp(-1.0*p[0])*1/(sqrt(2*PI)*p[2])*exp(-1.0*pow(x[0]-p[1],2)/(2*pow(p[2],2)));
   double loop_factor   = (1-p[3]); 
   double pe=0;
-  for (int r=1;r<=2;++r)
+  for (int r=1;r<=4;++r)
     pe = pe + (exp(-1.0*p[0])*pow(p[0],r)/TMath::Factorial(r))*exp(-1.0*pow(x[0]-p[1]-r*p[4],2)/(2.0*(pow(p[2],2)+r*pow(p[5],2))))/(sqrt(2*PI*(pow(p[2],2)+r*pow(p[5],2))));
   
   double last = p[3]*(1-exp(-1.0*p[0]))*exp(pow(x[0]-p[1]-p[4]/p[6],2)/(2.0*(pow(p[1],2)+pow(p[4],2)/pow(p[6],2))))/(sqrt(2*PI*(pow(p[1],2)+pow(p[4],2)/pow(p[6],2))));
@@ -93,7 +93,8 @@ int main(int argc, char *argv[])
   double xlow =raw_data[len-1].first*scale - 50; //breaks here....
   double xhigh =raw_data[0].first*scale    + 50 ;
   //  int rebin = 4;
-  int rebin = 5;
+    int rebin = 5;
+  //  int rebin = 10;
   
   can->SetLogy();
   TH1D *h1 = new TH1D("Charge",";pVs;Count",len,xlow,xhigh);
@@ -105,20 +106,20 @@ int main(int argc, char *argv[])
      for (int i = 0; i <entry.second;++i)
        h1->Fill(entry.first*scale);
   
-
+  
   TSpectrum *s = new TSpectrum(2);
   int nfound = s->Search(h1,100,"",0.05);
   float *xpeaks = s->GetPositionX();
-    
   
-  the_fit->SetParameter(0,0.5);           //\lambda
-  the_fit->SetParameter(1,xpeaks[0]);    //x_ped
-  the_fit->SetParameter(2,5.0);          //\sigma_ped
-  the_fit->SetParameter(3,0.01);         //d_f
-  the_fit->SetParameter(4,xpeaks[1]);    //x_pe
-  the_fit->SetParameter(5,50.0);          //\sigma_pe
-  the_fit->SetParameter(6,0.05);          //d_s
-  the_fit->SetParameter(7,h1->GetEntries()/10); //N
+  
+  the_fit->SetParameter(0,0.5);                  //\lambda
+  the_fit->SetParameter(1,xpeaks[0]);            //x_ped
+  the_fit->SetParameter(2,5.0);                  //\sigma_ped
+  the_fit->SetParameter(3,0.01);                 //d_f
+  the_fit->SetParameter(4,xpeaks[1]);            //x_pe
+  the_fit->SetParameter(5,50.0);                 //\sigma_pe
+  the_fit->SetParameter(6,0.05);                 //d_s
+  the_fit->SetParameter(7,h1->GetEntries()/10);  //N
   
   the_fit->SetParLimits(0,0,10);
   the_fit->SetParLimits(1,0,1000);

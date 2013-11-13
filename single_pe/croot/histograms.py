@@ -45,7 +45,7 @@ def main():
     ################## Gain Plot ##################
     ################## npe Plot ##################
     c2 = TCanvas("c2","c2")
-    h  = TH1D("h",";Npe;Count",10,0,1)
+    h  = TH1D("h",";Npe;Count",25,0,1)
     for value in npe:
         h.Fill(value)
     h.GetYaxis().CenterTitle()
