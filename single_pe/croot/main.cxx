@@ -90,11 +90,12 @@ int main(int argc, char *argv[])
   std::vector<std::pair<double,double> > raw_data = read_file(filename);
   int len = raw_data.size();
   double scale = -1*pow(10.0,12);
-  double xlow =raw_data[len-1].first*scale - 50; //breaks here....
-  double xhigh =raw_data[0].first*scale    + 50 ;
-  //  int rebin = 4;
-    int rebin = 5;
-  //  int rebin = 10;
+  double xlow =raw_data[len-1].first*scale - 5; //breaks here....
+  double xhigh =raw_data[0].first*scale    + 5 ;
+  //int rebin = 4;
+  //  int rebin = 5;
+    int rebin = 10;
+  
   
   can->SetLogy();
   TH1D *h1 = new TH1D("Charge",";pVs;Count",len,xlow,xhigh);
@@ -108,16 +109,17 @@ int main(int argc, char *argv[])
   
   
   TSpectrum *s = new TSpectrum(2);
-  int nfound = s->Search(h1,100,"",0.05);
+  int nfound = s->Search(h1,15,"",0.1);
   float *xpeaks = s->GetPositionX();
+  
   
   
   the_fit->SetParameter(0,0.5);                  //\lambda
   the_fit->SetParameter(1,xpeaks[0]);            //x_ped
-  the_fit->SetParameter(2,5.0);                  //\sigma_ped
+  the_fit->SetParameter(2,05.0);                  //\sigma_ped
   the_fit->SetParameter(3,0.01);                 //d_f
-  the_fit->SetParameter(4,xpeaks[1]);            //x_pe
-  the_fit->SetParameter(5,50.0);                 //\sigma_pe
+  the_fit->SetParameter(4,xpeaks[0]+30);            //x_pe
+  the_fit->SetParameter(5,5.0);                 //\sigma_pe
   the_fit->SetParameter(6,0.05);                 //d_s
   the_fit->SetParameter(7,h1->GetEntries()/10);  //N
   
@@ -125,14 +127,14 @@ int main(int argc, char *argv[])
   the_fit->SetParLimits(1,0,1000);
   the_fit->SetParLimits(2,0,1000);
   the_fit->SetParLimits(3,0,1);
-  the_fit->SetParLimits(4,0,1000);
+  the_fit->SetParLimits(4,1,1000);
   the_fit->SetParLimits(5,0,1000);
   the_fit->SetParLimits(6,0,1000);
 
   
    
   h1->Rebin(rebin);
-  //  h1->Fit("the_fit","V");
+  //h1->Fit("the_fit","V");
   h1->Fit("the_fit","Q");
   h1->GetXaxis()->CenterTitle();
   h1->GetYaxis()->CenterTitle();
@@ -144,7 +146,9 @@ int main(int argc, char *argv[])
 			 the_fit->GetParameter(0)) << std::endl;
   
   if(par >= 3){
-  
+    std::cout << "ped guess: " << xpeaks[0];
+    std::cout << " 2nd peak guess: " << xpeaks[1] << std::endl;
+    std::cout << "ped + 50 guess" <<  xpeaks[0]+50 << std::endl;
     h1->Draw();
     title->Draw("SAMES");
     can->Draw();
