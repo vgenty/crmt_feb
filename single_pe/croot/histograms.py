@@ -19,7 +19,7 @@ def main():
 
     files  = [f for f in os.listdir("./data")]
     wrange = [float(k[5:9]) for k in files]
-    print wrange
+    
     #running fitter (pretty slow)
     data  = [subprocess.check_output(["./fit","data/%s" % f]).rstrip().split('\n') for f in files]
     
@@ -60,7 +60,7 @@ def main():
     ################## npe Plot ##################
     ################## Volts-Gain wRange ##################
     c3 = TCanvas("c3","c3")
-    tg_wr = TH2D("tg_wr",";;;",20,700,910,1000,100000,100000000)
+    tg_wr = TH2D("tg_wr",";;;",20,700,920,1000,100000,100000000)
     
     for x in xrange(len(wrange)):
         tg_wr.Fill(volts[x],gain[x],wrange[x])
@@ -76,7 +76,7 @@ def main():
     ################## Volts-Gain-wRange ##################
     ################## VoltsGain-npe ##################
     c4 = TCanvas("c4","c4")
-    tg_np = TH2D("tg_np",";;;",20,700,910,1000,100000,100000000)
+    tg_np = TH2D("tg_np",";;;",20,700,920,1000,100000,100000000)
     for x in xrange(len(wrange)):
         tg_np.Fill(volts[x],gain[x],npe[x])
 

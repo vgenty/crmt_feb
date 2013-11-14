@@ -91,8 +91,8 @@ int main(int argc, char *argv[])
   std::vector<std::pair<double,double> > raw_data = read_file(filename);
   int len = raw_data.size();
   double scale = -1*pow(10.0,12);
-  double xlow =raw_data[len-1].first*scale - 5; //breaks here....
-  double xhigh =raw_data[0].first*scale    + 5 ;
+  double xlow =raw_data[len-1].first*scale; //breaks here....
+  double xhigh =raw_data[0].first*scale   ;
   //int rebin = 4;
   //  int rebin = 5;
   int rebin = 10;
@@ -115,8 +115,8 @@ int main(int argc, char *argv[])
   
   double ped_peak  = (double)xpeaks[0];
   double pe_peak   = (double)xpeaks[1];
-  if(pe_peak == 0) pe_peak = ped_peak+10;
-    
+  if(pe_peak < 1) pe_peak = ped_peak+10;
+  
   the_fit->SetParameter(0,0.5);                  //\lambda
   the_fit->SetParameter(1,ped_peak);            //x_ped
   the_fit->SetParameter(2,05.0);                  //\sigma_ped
@@ -124,16 +124,16 @@ int main(int argc, char *argv[])
   the_fit->SetParameter(4,pe_peak);            //x_pe
   the_fit->SetParameter(5,5.0);                 //\sigma_pe
   the_fit->SetParameter(6,0.05);                 //d_s
-  the_fit->SetParameter(7,h1->GetEntries()/10);  //N
+  the_fit->SetParameter(7,h1->GetEntries());  //N
   
   the_fit->SetParLimits(0,0,10);
   the_fit->SetParLimits(1,0,1000);
   the_fit->SetParLimits(2,0,1000);
   the_fit->SetParLimits(3,0,1);
-  the_fit->SetParLimits(4,1,1000);
+  the_fit->SetParLimits(4,0,1000);
   the_fit->SetParLimits(5,0,1000);
   the_fit->SetParLimits(6,0,1000);
-
+  
   
    
   h1->Rebin(rebin);
