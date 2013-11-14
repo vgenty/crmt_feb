@@ -58,26 +58,25 @@ def main():
     c2.Update()
     c2.Modified()
     ################## npe Plot ##################
-    ################## Volts-wRange-Gain Range ##################
+    ################## Volts-Gain wRange ##################
     c3 = TCanvas("c3","c3")
-    tg_wr = TH2D("tg_wr",";;;",10,700,910,35,0,35)
-
+    tg_wr = TH2D("tg_wr",";;;",20,700,910,1000,100000,100000000)
+    
     for x in xrange(len(wrange)):
-        tg_wr.Fill(volts[x],wrange[x],gain[x])
-    tg_wr_title = GetTitle("Volts, WRange, Gain")
-    tg_wr.SetTitle(";Voltage (V);Threshold (mV)")
-    tg_wr.GetZaxis().SetRangeUser(100000,10000000)
+        tg_wr.Fill(volts[x],gain[x],wrange[x])
+    tg_wr_title = GetTitle("Volts, Gain, Window Range")
+    tg_wr.SetTitle(";Voltage (V);Gain)")
     tg_wr.GetXaxis().CenterTitle()
     tg_wr.GetYaxis().CenterTitle()
-    c3.SetLogz()
+    #c3.SetLogz()
     tg_wr.Draw("COLZ")
     tg_wr_title.Draw("SAMES")
     c3.Update()
     c3.Modified()
-    ################## Volts-wRange-Gain Range ##################
-    ################## Volts-wRange-Gain npe ##################
+    ################## Volts-Gain-wRange ##################
+    ################## VoltsGain-npe ##################
     c4 = TCanvas("c4","c4")
-    tg_np = TH2D("tg_np",";;;",10,700,910,100,100000,100000000)
+    tg_np = TH2D("tg_np",";;;",20,700,910,1000,100000,100000000)
     for x in xrange(len(wrange)):
         tg_np.Fill(volts[x],gain[x],npe[x])
 
@@ -90,7 +89,7 @@ def main():
     tg_np_title.Draw("SAMES")
     c3.Update()
     c3.Modified()
-    ################## Volts-wRange-Gain npe ##################
+    ################## Volts-Gain-npe ##################
 
     sys.stdin.readline()
 

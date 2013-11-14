@@ -16,7 +16,8 @@ std::string to_python(double xpe, double xped, double npe)
 {
   std::stringstream ss;
  
-  ss << (xpe - xped)*pow(10,-12)/(50*1.6*pow(10,-19));
+  //ss << (xpe - xped)*pow(10,-12)/(50*1.6*pow(10,-19));
+  ss << (xpe)*pow(10,-12)/(50*1.6*pow(10,-19));
   ss << std::endl;  
   ss << npe;
   
@@ -38,14 +39,14 @@ double fitter(double *x, double *p)
   double ped  = exp(-1.0*p[0])*1/(sqrt(2*PI)*p[2])*exp(-1.0*pow(x[0]-p[1],2)/(2*pow(p[2],2)));
   double loop_factor   = (1-p[3]); 
   double pe=0;
-  for (int r=1;r<=4;++r)
+  for (int r=1;r<=3;++r)
     pe = pe + (exp(-1.0*p[0])*pow(p[0],r)/TMath::Factorial(r))*exp(-1.0*pow(x[0]-p[1]-r*p[4],2)/(2.0*(pow(p[2],2)+r*pow(p[5],2))))/(sqrt(2*PI*(pow(p[2],2)+r*pow(p[5],2))));
   
   double last = p[3]*(1-exp(-1.0*p[0]))*exp(pow(x[0]-p[1]-p[4]/p[6],2)/(2.0*(pow(p[1],2)+pow(p[4],2)/pow(p[6],2))))/(sqrt(2*PI*(pow(p[1],2)+pow(p[4],2)/pow(p[6],2))));
   
   //return p[7]*(ped + loop_factor*pe + last);
-  //return p[7]*(ped + loop_factor*pe);
-  return p[7]*(ped + pe);
+  return p[7]*(ped + loop_factor*pe);
+  //return p[7]*(ped + pe);
   
 
 }
@@ -94,7 +95,7 @@ int main(int argc, char *argv[])
   double xhigh =raw_data[0].first*scale    + 5 ;
   //int rebin = 4;
   //  int rebin = 5;
-    int rebin = 10;
+  int rebin = 10;
   
   
   can->SetLogy();
@@ -107,18 +108,20 @@ int main(int argc, char *argv[])
      for (int i = 0; i <entry.second;++i)
        h1->Fill(entry.first*scale);
   
-  
-  TSpectrum *s = new TSpectrum(2);
-  int nfound = s->Search(h1,15,"",0.1);
+  int n_peaks = 5 ;
+  TSpectrum *s = new TSpectrum(n_peaks);
+  int nfound = s->Search(h1,20.0,"",0.05);
   float *xpeaks = s->GetPositionX();
   
-  
-  
+  double ped_peak  = (double)xpeaks[0];
+  double pe_peak   = (double)xpeaks[1];
+  if(pe_peak == 0) pe_peak = ped_peak+10;
+    
   the_fit->SetParameter(0,0.5);                  //\lambda
-  the_fit->SetParameter(1,xpeaks[0]);            //x_ped
+  the_fit->SetParameter(1,ped_peak);            //x_ped
   the_fit->SetParameter(2,05.0);                  //\sigma_ped
   the_fit->SetParameter(3,0.01);                 //d_f
-  the_fit->SetParameter(4,xpeaks[0]+30);            //x_pe
+  the_fit->SetParameter(4,pe_peak);            //x_pe
   the_fit->SetParameter(5,5.0);                 //\sigma_pe
   the_fit->SetParameter(6,0.05);                 //d_s
   the_fit->SetParameter(7,h1->GetEntries()/10);  //N
@@ -146,9 +149,12 @@ int main(int argc, char *argv[])
 			 the_fit->GetParameter(0)) << std::endl;
   
   if(par >= 3){
-    std::cout << "ped guess: " << xpeaks[0];
-    std::cout << " 2nd peak guess: " << xpeaks[1] << std::endl;
-    std::cout << "ped + 50 guess" <<  xpeaks[0]+50 << std::endl;
+    std::cout << "ped_peak: " << ped_peak << std::endl;
+    std::cout << "pe_peak: "  << pe_peak  << std::endl;
+    for(int i = 2;i<n_peaks;++i)
+      std::cout << "peak : " << (i+1) << ": " << xpeaks[i] << std::endl; 
+      
+      
     h1->Draw();
     title->Draw("SAMES");
     can->Draw();
