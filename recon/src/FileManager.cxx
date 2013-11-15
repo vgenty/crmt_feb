@@ -26,31 +26,31 @@ void FileManager::open_file(std::string file_name)
   
   fReconData = new TFile(file_name.c_str(), "RECREATE");
   fEventTree = new TTree("Event Tree","Recon Tree");  
-  fEventTree->Branch("Event ID",     &fEventID,  "EventID/I"  );
-  fEventTree->Branch("Slope",        &fSlope,    "Slope/D"    );
-  fEventTree->Branch("Yinter",       &fYInter,   "Yinter/D"   );
-  fEventTree->Branch("fChi",         &fChi,      "Chi/D"      );
-  fEventTree->Branch("fNdf",         &fNdf,      "Ndf/D"      );
-  fEventTree->Branch("fPvalue",      &fPvalue,   "Pvalue/D"   ); 
-  fEventTree->Branch("fAngle",       &fAngle,    "Angle/D"    ); 
-  fEventTree->Branch("fCosAngle",    &fCosAngle, "CosAngle/D" ); 
-  fEventTree->Branch("fHitPins",     &fHitPins                );
-  fEventTree->Branch("fStringTracks",&fStringTracks           );
-  fEventTree->Branch("fFibX",&fFibX             );
-  fEventTree->Branch("fFibY",&fFibY             );
-
+  fEventTree->Branch("Event ID"       , &fEventID     , "EventID/I"     );
+  fEventTree->Branch("Slope"          , &fSlope       , "Slope/D"       );
+  fEventTree->Branch("Yinter"         , &fYInter      , "Yinter/D"      );
+  fEventTree->Branch("fChi"           , &fChi         , "Chi/D"         );
+  fEventTree->Branch("fNdf"           , &fNdf         , "Ndf/D"         );
+  fEventTree->Branch("fPvalue"        , &fPvalue      , "Pvalue/D"      ); 
+  fEventTree->Branch("fAngle"         , &fAngle       , "Angle/D"       ); 
+  fEventTree->Branch("fCosAngle"      , &fCosAngle    , "CosAngle/D"    ); 
+  fEventTree->Branch("fHitPins"       , &fHitPins                       );
+  fEventTree->Branch("fStringTracks"  , &fStringTracks                  );
+  fEventTree->Branch("fFibX"          , &fFibX                          );
+  fEventTree->Branch("fFibY"          , &fFibY                          );
+ 
   if(fPSpace) {
-    fEventTree->Branch("fx_Slope",&fx_Slope       );
-    fEventTree->Branch("fx_Yinter",&fx_Yinter     );
-    fEventTree->Branch("fx_Zvalue",&fx_Zvalue     );
-    fEventTree->Branch("fx_LowZValue" ,  &fx_LowZValue, "x_LowZValue/D");
-    fEventTree->Branch("fx_LowSlope"  ,  &fx_LowSlope ,   "x_LowSlope/D");
-    fEventTree->Branch("fx_LowYinter" ,  &fx_LowYinter, "x_LowYinter/D");
+    fEventTree->Branch("fx_Slope"     , &fx_Slope                       );
+    fEventTree->Branch("fx_Yinter"    , &fx_Yinter                      );
+    fEventTree->Branch("fx_Zvalue"    , &fx_Zvalue                      );
+    fEventTree->Branch("fx_LowZValue" , &fx_LowZValue , "x_LowZValue/D" );
+    fEventTree->Branch("fx_LowSlope"  , &fx_LowSlope  , "x_LowSlope/D"  );
+    fEventTree->Branch("fx_LowYinter" , &fx_LowYinter , "x_LowYinter/D" );
   }
   
   //fEventTree->Branch("fxp_Zvalue",     &fxp_Zvalue     );
   //fEventTree->Branch("fxp_LowZValue" ,  &fxp_LowZValue, "xp_LowZValue/D");
-
+  
 }
 
 

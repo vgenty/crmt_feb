@@ -1,9 +1,14 @@
 #crmt_feb
 
-Front end board testing:
+reco
+---- 
+single module reco of MT
 
-muon_rate:       makes a nice graph
+misc_scripts
+------------
+misc scripts
 
-pins_to_display: pins to event display 
+single_pe
+---------
+PMT calibration
 
-recond:          single module reconstruction

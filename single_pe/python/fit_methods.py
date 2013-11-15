@@ -43,7 +43,7 @@ def the_fit(x,par):
     ped_amp = par[9]
     '''
     #Wow this is painful to read
-    first = par[9]*((1.0-par[0])*(1/(TMath.Sqrt(2*TMath.Pi())*par[1]))*TMath.Exp(-((x[0]-par[2])**2/(2*(par[1])**2))) + par[0]*heaviside(x,par[2])*par[3]*TMath.Exp(-1.0*par[3]*(x[0]-par[2]))) *TMath.Exp(-par[4])
+    first = par[9]*((1.0-par[0])*(1/(TMath.Sqrt(2*TMath.Pi())*par[1]))*TMath.Exp(-((x[0]-par[2])**2/(2*(par[1])**2))) + par[0]*heaviside(x[0],par[2])*par[3]*TMath.Exp(-1.0*par[3]*(x[0]-par[2]))) *TMath.Exp(-par[4])
 
     #range 1->x peaks in pe charge spectrum, this is very slow
     for n in xrange(1,10):

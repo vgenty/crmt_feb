@@ -44,8 +44,8 @@ int main(int argc, char *argv[])
     bool _ps = false;
 
     if(args.size() > 2 && args[2] == "-ps") {// build parameterspace?
-      ps->set_NSlopeDivisions(500); // Set number of divisions in parameter space
-      ps->set_NYinterDivisions(80); // Set number of divisions in parameter space
+      ps->set_NSlopeDivisions(500);
+      ps->set_NYinterDivisions(80);
       ps->Fill_Space();
       fm->yes_parameterspace();
       _ps = true;
