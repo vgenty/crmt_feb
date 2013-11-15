@@ -24,11 +24,12 @@ def main():
     gROOT.SetStyle("VStyle")
 
     #Git files and threshold
-    files  = [f for f in os.listdir("./data/pmt_1/")]
+    files  = [f for f in os.listdir("./data/pmt_1_led/")]
     wrange = [float(k[5:9]) for k in files]
+    vled = [float(k[12:16]) for k in files]
     
     #Run fitter (pretty slow)
-    data  = [subprocess.check_output(["./fit","data/pmt_1/%s" % f]).rstrip().split('\n') for f in files]
+    data  = [subprocess.check_output(["./fit","data/pmt_1_led/%s" % f]).rstrip().split('\n') for f in files]
     
     #Data from stdout, write to lists
     volts     =  [float(f[0:3]  ) for f in files   ]
@@ -39,29 +40,51 @@ def main():
     
     ################## Gain Plot ##################
     c1 = TCanvas("c1","c1")
-    fitter = TF1("fitter",myfit,700,900,2)
-    fitter.SetParameters(0.01,10)
-    fitter.SetParLimits(0,0,100)
-    fitter.SetParLimits(1,0,20)
-    gStyle.SetOptFit(1111)
+    #fitter = TF1("fitter",myfit,700,900,2)
+    #fitter.SetParameters(0.01,10)
+    #fitter.SetParLimits(0,0,100)
+    #fitter.SetParLimits(1,0,20)
+    #gStyle.SetOptFit(1111)
     tg = TGraphErrors()
     for x in xrange(len(volts)):
-        tg.SetPoint(x,volts[x],gain[x])
+        tg.SetPoint(x,vled[x],gain[x])
         #tg.SetPointError(x,1,gain_err[x])
         
     tg_title = GetTitle("PMT Gain")
-    tg.SetTitle(";Voltage;Gain")
+    tg.SetTitle(";LED Voltage;Gain")
     tg.GetXaxis().CenterTitle()
     tg.GetYaxis().CenterTitle()
-    tg.Fit("fitter")
+    #tg.Fit("fitter")
     tg.Draw("AP")
     tg_title.Draw("SAMES")
     tg.SetMarkerStyle(8)
+    c1.SetLogy()
     c1.Update()
     c1.Modified()
-    ################## Gain Plot ##################
 
 
+    ######LED npe
+    c1_1 = TCanvas("c1_1","c1_1")
+
+    tg_1 = TGraphErrors()
+    for x in xrange(len(volts)):
+        tg_1.SetPoint(x,vled[x],npe[x])
+        #tg_1.SetPointError(x,1,gain_err[x])
+        
+    tg_1_title = GetTitle("PMT NPE")
+    tg_1.SetTitle(";LED Voltage;NPE")
+    tg_1.GetXaxis().CenterTitle()
+    tg_1.GetYaxis().CenterTitle()
+    #tg_1.Fit("fitter")
+    tg_1.Draw("AP")
+    tg_1_title.Draw("SAMES")
+    tg_1.SetMarkerStyle(8)
+    c1_1.SetLogy()
+    c1_1.Update()
+    c1_1.Modified()
+    ######LED npe
+
+    '''
     ################## npev Plot ##################
 
     c1_2 = TCanvas("c1_2","c1_2",720,610)
@@ -95,14 +118,14 @@ def main():
 
     
 
-    '''
+    
     c2 = TCanvas("c2","c2")
-    '''
+    
     h  = TH1D("h",";;Counts/0.04 NPE",25,0,1)
     for value in npe:
         h.Fill(value)
     
-    '''
+    
     h.GetYaxis().CenterTitle()
     h.GetXaxis().CenterTitle()
     h_title = GetTitle("NPE")    
@@ -113,7 +136,7 @@ def main():
 
     c2.Update()
     c2.Modified()
-    '''
+    
     h.GetXaxis().SetNdivisions(0)
     h.GetYaxis().SetTitleOffset(1.10)
     h.Draw()
@@ -123,6 +146,8 @@ def main():
     c1_2.Update()
     c1_2.Modified()
     ################## npe Plot ##################
+    '''
+    '''
     ################## Volts-Gain wRange ##################
     c3 = TCanvas("c3","c3")
     tg_wr = TH2D("tg_wr",";;;",20,700,920,1000,100000,100000000)
@@ -156,7 +181,7 @@ def main():
     c3.Update()
     c3.Modified()
     ################## Volts-Gain-npe ##################
-
+    '''
     sys.stdin.readline()
 
 if __name__ == '__main__' :
