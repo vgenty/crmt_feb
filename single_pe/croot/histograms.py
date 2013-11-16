@@ -1,18 +1,9 @@
 from ROOT import gStyle, TH1D, TGraphErrors, gROOT, TAxis
-from ROOT import TCanvas, TPaveText, TH2D, TF1, TPad
+from ROOT import TCanvas, TH2D, TF1, TPad, TPaveText
 import sys, os
 import subprocess
+from methods import *
 
-def GetTitle(words):
-    fTitle = TPaveText(0.1412338,0.9321267,0.4399351,0.9886878,"brNDC")
-    fTitleWords = words
-    fTitle.SetTextFont(63)
-    fTitle.SetTextSize(24)
-    fTitle.SetBorderSize(0)
-    fTitle.SetFillColor(0)
-    fTitle.AddText(words)
-    
-    return fTitle
 
 def myfit(x,par):
     a = 0.0
@@ -22,13 +13,13 @@ def myfit(x,par):
 def main():
     #Set vicstyle from .rootlogon.C
     gROOT.SetStyle("VStyle")
-
+    evt = sys.argv[1]
     #Git files and threshold
-    files  = [f for f in os.listdir("./data/pmt_1/")]
+    files  = [f for f in os.listdir("./data/pmt_%s/" % evt)]
     wrange = [float(k[5:9]) for k in files]
     
     #Run fitter (pretty slow)
-    data  = [subprocess.check_output(["./fit","data/pmt_1/%s" % f]).rstrip().split('\n') for f in files]
+    data  = [subprocess.check_output(["./fit","data/pmt_%s/%s" % (evt,f)]).rstrip().split('\n') for f in files]
     
     #Data from stdout, write to lists
     volts     =  [float(f[0:3]  ) for f in files   ]
@@ -47,7 +38,7 @@ def main():
     tg = TGraphErrors()
     for x in xrange(len(volts)):
         tg.SetPoint(x,volts[x],gain[x])
-        #tg.SetPointError(x,1,gain_err[x])
+        tg.SetPointError(x,1,gain_err[x])
         
     tg_title = GetTitle("PMT Gain")
     tg.SetTitle(";Voltage;Gain")
@@ -61,7 +52,7 @@ def main():
     c1.Modified()
     ################## Gain Plot ##################
 
-
+    '''
     ################## npev Plot ##################
 
     c1_2 = TCanvas("c1_2","c1_2",720,610)
@@ -95,14 +86,14 @@ def main():
 
     
 
-    '''
+
     c2 = TCanvas("c2","c2")
-    '''
+
     h  = TH1D("h",";;Counts/0.04 NPE",25,0,1)
     for value in npe:
         h.Fill(value)
     
-    '''
+
     h.GetYaxis().CenterTitle()
     h.GetXaxis().CenterTitle()
     h_title = GetTitle("NPE")    
@@ -113,7 +104,7 @@ def main():
 
     c2.Update()
     c2.Modified()
-    '''
+
     h.GetXaxis().SetNdivisions(0)
     h.GetYaxis().SetTitleOffset(1.10)
     h.Draw()
@@ -156,7 +147,7 @@ def main():
     c3.Update()
     c3.Modified()
     ################## Volts-Gain-npe ##################
-
+    '''
     sys.stdin.readline()
 
 if __name__ == '__main__' :

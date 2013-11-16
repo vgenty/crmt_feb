@@ -102,13 +102,11 @@ int main(int argc, char *argv[])
   int par = argc;
   
   std::vector<std::pair<double,double> > raw_data = read_file(filename);
-  int len = raw_data.size();
+  int len      = raw_data.size();
   double scale = -1*pow(10.0,12);
-  double xlow =raw_data[len-1].first*scale; //breaks here....sometimes
-  double xhigh =raw_data[0].first*scale   ;
-  //if(xhigh>200)xhigh = 200;
-  //if(xlow <-50) xlow = -50;
-  int rebin = 10;
+  double xlow  = raw_data[len-1].first*scale; //breaks here....sometimes
+  double xhigh = raw_data[0].first*scale;
+  int rebin    = 10;
   
   TApplication *tapp = new TApplication("tapp",&argc,argv);
   TCanvas *can = new TCanvas("can","can");    
@@ -122,28 +120,30 @@ int main(int argc, char *argv[])
      for (int i = 0; i <entry.second;++i)
        h1->Fill(entry.first*scale);
   
-  int n_peaks = 5 ;
+  int n_peaks = 5 ; //hopefully we can find 2/5
   TSpectrum *s = new TSpectrum(n_peaks);
   int nfound = s->Search(h1,20.0,"",0.05);
   float *xpeaks = s->GetPositionX();
   
   double ped_peak  = (double)xpeaks[0];
   double pe_peak   = (double)xpeaks[1];
-  if(pe_peak < 1 || voltage > 850) pe_peak = ped_peak+300;
+  if(pe_peak < 3) pe_peak = ped_peak+30;
+  if(pe_peak < 1 && voltage > 850) pe_peak = ped_peak+300;
+ 
   
   the_fit->SetParameter(0,0.5);                  //\lambda
   the_fit->SetParameter(1,ped_peak);            //x_ped
   the_fit->SetParameter(2,10.0);                  //\sigma_ped
-  the_fit->SetParameter(3,0.01);                 //d_f
-  the_fit->SetParameter(4,pe_peak);            //x_pe
+  the_fit->SetParameter(3,0.01);                               //d_f
+  the_fit->SetParameter(4,pe_peak);                               //x_pe
   if (voltage <= 750) the_fit->SetParameter(5,5.0);                 //\sigma_pe
-  if (voltage > 750) the_fit->SetParameter(5,5.0);                 //\sigma_pe
-  if (voltage > 800) the_fit->SetParameter(5,30.0);                 //\sigma_pe
+  if (voltage > 750)  the_fit->SetParameter(5,5.0);                 //\sigma_pe
+  if (voltage > 800)  the_fit->SetParameter(5,30.0);                 //\sigma_pe
   the_fit->SetParameter(6,0.05);                 //d_s
   the_fit->SetParameter(7,h1->GetEntries());  //N
   
   the_fit->SetParLimits(0,0,10);
-  the_fit->SetParLimits(1,0,1000);
+  the_fit->SetParLimits(1,-10,1000);
   the_fit->SetParLimits(2,0,1000);
   the_fit->SetParLimits(3,0,1);
   the_fit->SetParLimits(4,0,1000);
