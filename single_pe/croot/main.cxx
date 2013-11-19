@@ -53,9 +53,9 @@ double fitter(double *x, double *p)
   double last = p[3]*(1-exp(-1.0*p[0]))*exp(pow(x[0]-p[1]-p[4]/p[6],2)/(2.0*(pow(p[1],2)+pow(p[4],2)/pow(p[6],2))))/(sqrt(2*PI*(pow(p[1],2)+pow(p[4],2)/pow(p[6],2))));
   
   //return p[7]*(ped + loop_factor*pe + last);
-  return p[7]*(ped+ loop_factor*pe);
+  //return p[7]*(ped+ loop_factor*pe);
   //return p[7]*(ped + pe);
-  
+  return p[7]*ped+ p[8]*loop_factor*pe;
 
 }
 
@@ -112,7 +112,8 @@ int main(int argc, char *argv[])
   TCanvas *can = new TCanvas("can","can");    
 
   TH1D *h1 = new TH1D("Charge",";pVs;Count",len,xlow,xhigh);
-  TF1 *the_fit = new TF1("the_fit",fitter,xlow,xhigh,8);
+  //TF1 *the_fit = new TF1("the_fit",fitter,xlow,xhigh,8);
+  TF1 *the_fit = new TF1("the_fit",fitter,xlow,xhigh,9);
 
     
   
@@ -128,7 +129,7 @@ int main(int argc, char *argv[])
   double ped_peak  = (double)xpeaks[0];
   double pe_peak   = (double)xpeaks[1];
   if(pe_peak < 3) pe_peak = ped_peak+30;
-  if(pe_peak < 1 && voltage > 850) pe_peak = ped_peak+300;
+  if(pe_peak < 10 && voltage > 850 ) pe_peak = ped_peak+300;
  
   
   the_fit->SetParameter(0,0.5);                  //\lambda
@@ -141,6 +142,7 @@ int main(int argc, char *argv[])
   if (voltage > 800)  the_fit->SetParameter(5,30.0);                 //\sigma_pe
   the_fit->SetParameter(6,0.05);                 //d_s
   the_fit->SetParameter(7,h1->GetEntries());  //N
+  the_fit->SetParameter(8,h1->GetEntries());  //N
   
   the_fit->SetParLimits(0,0,10);
   the_fit->SetParLimits(1,-100,1000);
@@ -148,7 +150,7 @@ int main(int argc, char *argv[])
   the_fit->SetParLimits(3,0,1);
   the_fit->SetParLimits(4,0,1000);
   the_fit->SetParLimits(5,0,1000);
-  if(voltage > 875)the_fit->SetParLimits(5,0,300);
+  //if(voltage > 875)the_fit->SetParLimits(5,0,300);
   the_fit->SetParLimits(6,0,1000);
   
   
