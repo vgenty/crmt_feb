@@ -30,9 +30,8 @@ int main(int argc, char *argv[])
     usage();
     exit(0);
   }
-  std::cout << "Have : " << (argc-1) << " arguments" << std::endl;
-  std::vector<std::string> args;
   
+  std::vector<std::string> args;
   for(int k = 1  ; k < argc; ++k)
     args.push_back(argv[k]);
   

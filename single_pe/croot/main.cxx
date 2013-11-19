@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
   the_fit->SetParameter(7,h1->GetEntries());  //N
   
   the_fit->SetParLimits(0,0,10);
-  the_fit->SetParLimits(1,-10,1000);
+  the_fit->SetParLimits(1,-100,1000);
   the_fit->SetParLimits(2,0,1000);
   the_fit->SetParLimits(3,0,1);
   the_fit->SetParLimits(4,0,1000);
