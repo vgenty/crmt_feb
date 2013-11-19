@@ -48,6 +48,7 @@ def main():
     tg.Draw("AP")
     tg_title.Draw("SAMES")
     tg.SetMarkerStyle(8)
+    c1.SetLogy()
     c1.Update()
     c1.Modified()
     ################## Gain Plot ##################
