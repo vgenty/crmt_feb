@@ -10,15 +10,15 @@ import sys
 import math
       
 def main():
+    #Set Style, input file
     gROOT.SetStyle("DStyle")
     gStyle.SetOptStat(0)
     f = TFile("../output/recodata.root","READ")
     event = sys.argv[1]
-    
-    #this is for the event display
-    #c1     = TCanvas("c1","c1",800,500)
-    c1     = TCanvas("c1","c1")
-    module = TH2D("mod",";x #rightarrow;y #rightarrow",64,0,64,4,0,4)
+
+    #Event Display
+    c1               = TCanvas("c1","c1")
+    module           = TH2D("mod",";x #rightarrow;y #rightarrow",64,0,64,4,0,4)
     module.GetXaxis().CenterTitle()
     module.GetYaxis().CenterTitle()
     pins_to_pixels   =  pins("../input/pins.csv")
@@ -44,19 +44,17 @@ def main():
     
     
     module.Draw("COLZ")
-    #module.Draw("LEGO")
     title.Draw("SAMES")
     c1.Update()
     c1.Modified()
 
         
     
-    #this is for the TRUE line display
-    #c2     = TCanvas("c2","c2",800,500)
-    c2     = TCanvas("c2","c2")
+    #TRUE line display
+    c2         = TCanvas("c2","c2")
     c2.cd()
-    slope  = get_slope(f,event)
-    yinter = get_inter(f,event,slope)
+    slope      = get_slope(f,event)
+    yinter     = get_inter(f,event,slope)
     fit_function = TF1("fit_function","%f*x + %f" % (slope,yinter),0,70)
 
     all_coords = get_allcoords()
@@ -93,10 +91,9 @@ def main():
     fit_function.Draw("SAMES")
     c2.Update()
     c2.Modified()
-    #fit_function.Draw()
+
     
-
-
+    #Fitter Display with x-intercept, 1/realslope
     c3     = TCanvas("c3","c3")
     c3.cd()
     xy_slope  = get_xyslope(f,event)
@@ -118,9 +115,6 @@ def main():
     xy_tg_hit.SetMarkerSize(1.2)
     xy_tg_all.SetMarkerStyle(8)
     
-    
-    
-    
     xy_tmulti.Add(xy_tg_all)
     xy_tmulti.Add(xy_tg_hit)
     xy_tmulti.Draw("AP")
@@ -138,16 +132,15 @@ def main():
     c3.Modified()
 
 
-
+    #Parameter space plot
     c4 = TCanvas("c4","c4")
     c4.cd()
     
-    fx_slope  = get_fx_slope(f,event) #these are in specific order
+    fx_slope  = get_fx_slope(f,event)  #these are in specific order
     fx_yinter = get_fx_yinter(f,event) #these are in specific order
     fx_zvalue = get_fx_zvalue(f,event) #these are in specific order
     
     num = len(fx_slope)
-    
     
     sorted_fx_slope  = sorted( fx_slope  )
     sorted_fx_yinter = sorted( fx_yinter )
@@ -158,56 +151,38 @@ def main():
     ylow  = sorted_fx_yinter[0]
     yhigh = sorted_fx_yinter[num - 1]
 
-    
-    #ok is there going to be a conversion issue here? im scared
-
-    #h3 = TH2D("Xvalue",";Slope #Deltax/#Deltay;X-inter",
     h3 = TH2D("Xinter",";tan#theta;X-Intercept",
-              500,xlow,xhigh,
+              200,xlow,xhigh,
               80,ylow,yhigh)
     
     title_ps=GetTitle("Reco PS - Event %d" % int(event))
-    #for x in xrange(num):
-    # print "(" + str(fx_slope[x]) + "," + str(fx_yinter[x]) + "," + str(fx_zvalue[x])
-
-  
     low_values = get_fx_lowvals(f,event)
     
     for x in xrange(num):
         h3.Fill(fx_slope[x],fx_yinter[x],fx_zvalue[x])
-    
+        
         
     h3_low = TH2D("Xinter_low",";tan#theta;X-Intercept",
-              500,xlow,xhigh,
+              200,xlow,xhigh,
               80,ylow,yhigh)
 
     h3_low.Fill(low_values[1],low_values[2],low_values[0])
     h3_low.SetMarkerStyle(8)
 
-    '''
-    minslope= 0
-    miny    = 0
-    minnull = 0
-    
-    h3.GetMinimumBin(minslope,miny,minnull)
-    
-    print h3.GetXaxis().GetBinCenter(minslope)
-    print h3.GetYaxis().GetBinCenter(miny)
-    '''
     h3.GetXaxis().CenterTitle()
     h3.GetYaxis().CenterTitle()
-    #h3.Draw("CONT4Z")
+    
+    #h3.Draw("CONT4Z") #CONT4Z looks really nice
     h3.Draw("COLZ")
+    
     h3_low.Draw("SAMES")
     title_ps.Draw("SAMES")
-    #c4.SetLogz()
+    
     c4.Update()
     c4.Modified()
 
     sys.stdin.readline()
     f.Close()    
-    
-    
     
 if __name__ == '__main__' :
     main()

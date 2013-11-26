@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     bool _ps = false;
 
     if(args.size() > 2 && args[2] == "-ps") {// build parameterspace?
-      ps->set_NSlopeDivisions(500);
+      ps->set_NSlopeDivisions(200);
       ps->set_NYinterDivisions(80);
       ps->Fill_Space();
       fm->yes_parameterspace();
@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
       
       if(evt%10==0){
 	std::cout << "-------------------" << std::endl;
-	std::cout << "Event: " << evt << std::endl;
+	std::cout << "Event:   " << evt << std::endl;
       }
       
       mm -> find_hit_fibers((*itr).second);
