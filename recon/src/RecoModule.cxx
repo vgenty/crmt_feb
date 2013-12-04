@@ -8,6 +8,8 @@
 #include "RecoModule.h"
 #include "TGraphErrors.h"
 #include "TMath.h"
+#include "TFile.h"
+#include "TTree.h"
 
 RecoModule::RecoModule() {
   fGoodTrackIndex = -1;
@@ -96,6 +98,82 @@ void RecoModule::initfibs()
 
 void RecoModule::initfile()
 {
+  //  std::cout << "in initfile()" << std::endl;
+  
+  //Local vars
+  static const int LARGE_NUMBER=128;
+  int    _nsignals;
+  int    _nchannels_per_event[100];
+  int    _packet_number[100];
+  bool   _type[100];
+  int    _event_number[100];
+  int    _board_address[100];
+  double _time[100];
+  int    _channels[100][LARGE_NUMBER];
+  
+  int evt = 1;
+  TFile *input = new TFile(fEventFile.c_str(),"READ"); 
+  TTree *data_tree = (TTree*)(input->Get("data_tree"));
+  
+  //  std::cout << "opened file" << std::endl;
+  
+  if( !data_tree ){             
+    std::cout << " problem: cannot read the tree; quitting " << std::endl;
+    exit(0);      
+  }
+  
+  data_tree->SetBranchAddress("nsignals",&_nsignals);
+  data_tree->SetBranchAddress("nchannels_per_event",_nchannels_per_event);    
+  data_tree->SetBranchAddress("event_number",_event_number);
+  data_tree->SetBranchAddress("packet_number",_packet_number);      
+  data_tree->SetBranchAddress("type",_type);
+  data_tree->SetBranchAddress("board_address",_board_address);
+  data_tree->SetBranchAddress("time",_time);
+  data_tree->SetBranchAddress("channels",_channels);
+  TBranch *b_nsignals = data_tree->GetBranch("nsignals");
+  TBranch *b_nchannels_per_event = data_tree->GetBranch("nchannels_per_event");
+  TBranch *b_event_number = data_tree->GetBranch("event_number");
+  TBranch *b_packet_number = data_tree->GetBranch("packet_number");
+  TBranch *b_type = data_tree->GetBranch("type");
+  TBranch *b_board_address = data_tree->GetBranch("board_address");
+  TBranch *b_time = data_tree->GetBranch("time");
+  TBranch *b_channels = data_tree->GetBranch("channels");    
+
+  //  std::cout << "Branches set" << std::endl;
+
+  for ( int ient = 0; ient < data_tree-> GetEntries(); ++ient ) {
+    
+    //std::cout << "looking at event: " << ient << std::endl;
+    
+    b_nsignals->GetEvent(ient);
+    b_nchannels_per_event->GetEvent(ient);
+    b_event_number->GetEvent(ient);
+    b_packet_number->GetEvent(ient);        
+    b_type->GetEvent(ient);
+    b_board_address->GetEvent(ient);
+    b_time->GetEvent(ient);    
+    b_channels->GetEvent(ient); 
+    //std::cout << "got event" << std::endl;
+    
+    //output_list << _event_number[0]; //event number, many times this is -666
+    //std::cout << "found _nsignals: " << _nsignals << std::endl;
+    for(size_t is=0; is<_nsignals; is++){
+      for(size_t ich=0; ich<_nchannels_per_event[is]; ich++){
+	//std::cout << "_channels[is][ich]:" << _channels[is][ich]  << std::endl;
+        fEventData[evt].push_back(_channels[is][ich]);
+	//output_list << "," << _channels[is][ich];
+      }   
+    }
+    //output_list << "\n";
+    // std::cout << "evt: " << evt << std::endl;
+    evt++;
+  }
+
+
+  //Goal is to fill fEventData[evt].push_back(atoi(str_number.c_str()));
+
+  /*
+  //Used to read text file
   std::ifstream events;
   events.open(fEventFile.c_str());
   
@@ -132,6 +210,7 @@ void RecoModule::initfile()
   }else{
     std::cout << "Bad file descriptor" << std::endl;
   }
+  */
 }
 
 bool RecoModule::check_event(std::vector<int>& pin_data)
