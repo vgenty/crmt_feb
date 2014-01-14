@@ -40,7 +40,7 @@ def histogram():
         tg.SetPoint(x,volts[x],gain[x])
         tg.SetPointError(x,1,gain_err[x])
         
-    tg_title = GetTitle("PMT Gain")
+    tg_title = GetTitle("PMT %d Gain" % int(evt))
     tg.SetTitle(";Voltage;Gain")
     tg.GetXaxis().CenterTitle()
     tg.GetYaxis().CenterTitle()

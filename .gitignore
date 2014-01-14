@@ -12,3 +12,7 @@ tracks.txt
 *.C
 FixROOT.py
 fit
+biuld
+build
+*.dylib
+*.so

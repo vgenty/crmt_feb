@@ -54,7 +54,7 @@ double fitter(double *x, double *p)
   
   //return p[7]*(ped + loop_factor*pe + last);
   //return p[7]*(ped+ loop_factor*pe);
-  //return p[7]*(ped + pe);
+  //return p[7]*ped + p[8]*pe;
   return p[7]*ped+ p[8]*loop_factor*pe;
 
 }
@@ -175,7 +175,7 @@ int main(int argc, char *argv[])
     title->SetTextSize(25);
     title->SetBorderSize(0);
     title->SetFillColor(0);
-    title->AddText("Title");  
+    title->AddText("Title");
     h1->Draw();
     title->Draw("SAMES");
     can->SetLogy();
