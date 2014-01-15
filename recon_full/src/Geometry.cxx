@@ -34,31 +34,36 @@ void Geometry::dump()
 
 void Geometry::set_coordinates()
 {
-  //std::ofstream myfile;
-  //myfile.open ("geometry.dat");
-
    for(int i=0;i<4;i++){
     for(int j=0;j<64;++j){
       if(i==0 || i== 2){
-	fLocation[i][j] = std::make_pair(double(j)*fWidth+fOffset,
+	fLocation[i][j] = std::make_pair(fWidth/2.0 + double(j)*fWidth+fOffset,
 					 (double(3-i)*2.0 + 1.0)*fHalfHeight
 					 + double(3-i)*fStopGap + fBottom);
       }
       if(i==1){
-	fLocation[i][j] = std::make_pair(double(j)*fWidth+2.0*fOffset,
+	fLocation[i][j] = std::make_pair(fWidth/2.0 + double(j)*fWidth+2.0*fOffset,
 					 (double(3-i)*2.0 + 1.0)*fHalfHeight
 					 + double(3-i)*fStopGap + fBottom);
       }
       if(i==3){
-	fLocation[i][j] = std::make_pair(double(j)*fWidth,
+	fLocation[i][j] = std::make_pair(fWidth/2.0 + double(j)*fWidth,
 					 double(4-i)*fHalfHeight + fBottom);
       }
-      //myfile << fLocation[i][j].first << "," << fLocation[i][j].second << std::endl;
+   
     }
-  }
-  
-  
-   // myfile.close();
+   }
+   
+   /*   
+   if(fId == 0.0){
+     std::ofstream myfile;
+     myfile.open ("geometry.dat");
+     for(int i=0;i<4;i++)
+       for(int j=0;j<64;++j)
+	 myfile << fLocation[i][j].first << "," << fLocation[i][j].second << std::endl;
+     myfile.close();  
+   }
+   */
   
 
 }
