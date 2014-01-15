@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     args.push_back(argv[k]);
   
   if(args[0] == "-r") { // go ahead with reco
-    Detector       *dd = new Detector(100.0);
+    Detector       *dd = new Detector(20.0);
     //RecoModule     *mm = new RecoModule();
     //FileManager    *fm = new FileManager();
     //ParameterSpace *ps = new ParameterSpace();
@@ -69,6 +69,7 @@ int main(int argc, char *argv[])
     TFile *fff = new TFile("./input/afile.root","READ");
     TTree *simtree = (TTree*)(fff->Get("SimulationTree"));
     
+    bool coincidence;
     bool tMod0[32];
     bool tMod1[32];
     bool tMod2[32];
@@ -78,30 +79,36 @@ int main(int argc, char *argv[])
     simtree->SetBranchAddress("PinsArray1",tMod1);
     simtree->SetBranchAddress("PinsArray2",tMod2);
     simtree->SetBranchAddress("PinsArray3",tMod3);
-    TBranch *b_PinsArray0 = simtree->GetBranch("PinsArray0");
-    TBranch *b_PinsArray1 = simtree->GetBranch("PinsArray1");
-    TBranch *b_PinsArray2 = simtree->GetBranch("PinsArray2");
-    TBranch *b_PinsArray3 = simtree->GetBranch("PinsArray3");
+    simtree->SetBranchAddress("Coincidence",&coincidence);
+    TBranch *b_PinsArray0  = simtree->GetBranch("PinsArray0");
+    TBranch *b_PinsArray1  = simtree->GetBranch("PinsArray1");
+    TBranch *b_PinsArray2  = simtree->GetBranch("PinsArray2");
+    TBranch *b_PinsArray3  = simtree->GetBranch("PinsArray3");
+    TBranch *b_Coincidence = simtree->GetBranch("Coincidence");
 
-
+    int good_ones=0;
     for ( int ient = 0; ient < simtree-> GetEntries(); ++ient ) {
       
       b_PinsArray0->GetEvent(ient);   
       b_PinsArray1->GetEvent(ient);
       b_PinsArray2->GetEvent(ient);
       b_PinsArray3->GetEvent(ient);
-    
+      b_Coincidence->GetEvent(ient);
+      
       for (int xx = 0; xx < 32; ++xx){
 	if (tMod0[xx]) eventdata[0].push_back(xx);
 	if (tMod1[xx]) eventdata[1].push_back(xx);
 	if (tMod2[xx]) eventdata[2].push_back(xx);
 	if (tMod3[xx]) eventdata[3].push_back(xx);  
       }
-      break; 
-
+      dd->recon_event(eventdata,good_ones);
+      eventdata.clear();
+      std::cout << "ient: " << ient << " ";
+      std::cout << "good: " << good_ones << " ";
+      std::cout << "Coin: " << coincidence << "\n";
     }
+    
 
-    dd->recon_event(eventdata);
     
     /*
       for(itr=eventdata.begin();itr!=eventdata.end();++itr){

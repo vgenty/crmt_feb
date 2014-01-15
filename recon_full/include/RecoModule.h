@@ -33,6 +33,8 @@ private:
   Geometry *g;
   double fId;
   double fGap;
+
+  int goodpins[8] =  {8,9,10,11,12,13,14,15}; //this must be manually entered at the moment sorry
   
 public:
   RecoModule();

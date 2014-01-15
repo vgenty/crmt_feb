@@ -112,8 +112,7 @@ void RecoModule::initfibs()
 bool RecoModule::check_event(std::vector<int>& pin_data)
 {
   bool check      =  false;
-  int goodpins[8] =  {8,9,10,11,12,13,14,15}; //this must be manually entered at the moment sorry
-  if(pin_data.size()>=4){      //Must have at least 4 pins hit  
+  if(pin_data.size()>=3){      //Must have at least 4 pins hit  
     for(auto pin : pin_data){  //Loop over pins              
       for(int j=0;j<8;++j){    //check against goodpins (which are identifier row pins
 	if(pin == goodpins[j]){

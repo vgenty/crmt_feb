@@ -14,21 +14,33 @@ void Detector::init_modules() {
 
 }
 
-void Detector::recon_event(const std::map<int, std::vector<int> >& eventdata) {  
- 
+void Detector::recon_event(std::map<int, std::vector<int> >& eventdata,int &good_ones) {  
+
+  bool good = false;
   for(auto module : eventdata){
-    if(fModules[module.first]->check_event(module.second)) { //dont even try if not enough pins
-     
+    if(fModules[module.first]->check_event(module.second)) { //dont even try if not enough pins, or no identifier row
+      //      std::cout << "good module: " << module.first << "\n";
       fModules[module.first] -> find_hit_fibers(module.second);
       fModules[module.first] -> fill_fibers();
       fModules[module.first] -> clusterize();
       fModules[module.first] -> attach();
-      fModules[module.first] -> print_tracks();
+      good = true;
+    } else {
+      //std::cout << "false on module.first: " << module.first << std::endl;
+      good  = false;
+      break;
     }
   }
   
-  //Need to now pairwise reconstruct angle and create the Lines.
-
+  if(good){
+    //std::cout << "doing good\n";
+    fLines.first  -> do_tracks(fModules[1]->get_Tracks(),
+			       fModules[3]->get_Tracks()); //XZ
+    
+    fLines.second -> do_tracks(fModules[0]->get_Tracks(),
+			       fModules[2]->get_Tracks()); //YZ
+    good_ones++;
+  }
   
   //cleaning
   clean_event();
@@ -36,7 +48,9 @@ void Detector::recon_event(const std::map<int, std::vector<int> >& eventdata) {
 
 void Detector::clean_event(){
   
-  for(const auto& module : fModules)
+  for(auto module : fModules)
     module->clear();
-  
+
+  fLines.first ->clear_lines();
+  fLines.second->clear_lines();
 }

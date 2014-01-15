@@ -13,15 +13,19 @@
 #include "TF1.h"
 #include "math.h"
 #include "Track.h"
-
+#include "TMath.h"
 
 class Line {
   
 private:
+ 
+  bool fisXZ;
   
   TGraphErrors *fTG;
-  TF1 *fFit;
+  std::vector<TF1*> fFits;
+  std::pair<std::vector<Track>,std::vector<Track> > fTracks;
   
+  TF1 fBestLine;
   double fSlope;
   double fYinter;
   double fAngle;
@@ -29,11 +33,17 @@ private:
   double fChi;
   double fNdf;
   double fPvalue;
-  bool   fChosen;
   
 public:
-  Line(const Track &top,const Track &bot);
+  Line(bool isXZ);
   ~Line();
+  
+  void do_tracks(std::vector<Track> tracks_top,std::vector<Track> tracks_bot);
+  void fit_tracks();
+  void clear_lines();
+  void choose_best();
+
+  void dump();
   
   double slope(){return fSlope;}
   double yinter(){return fYinter;}
@@ -42,7 +52,9 @@ public:
   double ndf(){return fNdf;}
   double pvalue(){return fPvalue;}
   double cosangle(){return fCosAngle;}
-
+  bool   plane(){return fisXZ;}
+  
+  
 };
 
 #endif
