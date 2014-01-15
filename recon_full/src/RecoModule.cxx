@@ -13,14 +13,27 @@
 
 RecoModule::RecoModule() {
   fGoodTrackIndex = -1;
-  fAngleThreshold = 1.4;
+  //fAngleThreshold = 1.4;
+}
+
+RecoModule::RecoModule(int id, double gap) {
+  fGoodTrackIndex = -1;
+
+  fId = id;
+  if(id <= 1)
+    fGap = gap;
+  else
+    fGap = 0;
+
+  getfiles("./input/pins.csv");
+  init_module();
+
 }
 
 RecoModule::~RecoModule() {}
 
-void RecoModule::getfiles(std::string efile, std::string pfile)
+void RecoModule::getfiles(std::string pfile)
 {
-  fEventFile = efile;
   fPinFile   = pfile;
 }
 
@@ -74,7 +87,7 @@ void RecoModule::initfibs()
 {
   int seeds[3][8] = {{9  ,33,73,97,  1,41,65,105},
 		     {104,80,40,16,112,72,48,  8},
-		     {120,96,56,32,128,88,64,24 }};
+		     {120,96,56,32,128,88,64, 24}};
   
   //Fill identifier row                                                                                     
   for(int kk=0; kk<8;++kk) {
@@ -96,133 +109,14 @@ void RecoModule::initfibs()
           fFiberLocations[o+1][8*e+i]=seeds[o][i]-e;
 }
 
-void RecoModule::initfile()
-{
-  //  std::cout << "in initfile()" << std::endl;
-  
-  //Local vars
-  static const int LARGE_NUMBER=128;
-  int    _nsignals;
-  int    _nchannels_per_event[100];
-  int    _packet_number[100];
-  bool   _type[100];
-  int    _event_number[100];
-  int    _board_address[100];
-  double _time[100];
-  int    _channels[100][LARGE_NUMBER];
-  
-  int evt = 1;
-  TFile *input = new TFile(fEventFile.c_str(),"READ"); 
-  TTree *data_tree = (TTree*)(input->Get("data_tree"));
-  
-  //  std::cout << "opened file" << std::endl;
-  
-  if( !data_tree ){             
-    std::cout << " problem: cannot read the tree; quitting " << std::endl;
-    exit(0);      
-  }
-  
-  data_tree->SetBranchAddress("nsignals",&_nsignals);
-  data_tree->SetBranchAddress("nchannels_per_event",_nchannels_per_event);    
-  data_tree->SetBranchAddress("event_number",_event_number);
-  data_tree->SetBranchAddress("packet_number",_packet_number);      
-  data_tree->SetBranchAddress("type",_type);
-  data_tree->SetBranchAddress("board_address",_board_address);
-  data_tree->SetBranchAddress("time",_time);
-  data_tree->SetBranchAddress("channels",_channels);
-  TBranch *b_nsignals = data_tree->GetBranch("nsignals");
-  TBranch *b_nchannels_per_event = data_tree->GetBranch("nchannels_per_event");
-  TBranch *b_event_number = data_tree->GetBranch("event_number");
-  TBranch *b_packet_number = data_tree->GetBranch("packet_number");
-  TBranch *b_type = data_tree->GetBranch("type");
-  TBranch *b_board_address = data_tree->GetBranch("board_address");
-  TBranch *b_time = data_tree->GetBranch("time");
-  TBranch *b_channels = data_tree->GetBranch("channels");    
-
-  //  std::cout << "Branches set" << std::endl;
-
-  for ( int ient = 0; ient < data_tree-> GetEntries(); ++ient ) {
-    
-    //std::cout << "looking at event: " << ient << std::endl;
-    
-    b_nsignals->GetEvent(ient);
-    b_nchannels_per_event->GetEvent(ient);
-    b_event_number->GetEvent(ient);
-    b_packet_number->GetEvent(ient);        
-    b_type->GetEvent(ient);
-    b_board_address->GetEvent(ient);
-    b_time->GetEvent(ient);    
-    b_channels->GetEvent(ient); 
-    //std::cout << "got event" << std::endl;
-    
-    //output_list << _event_number[0]; //event number, many times this is -666
-    //std::cout << "found _nsignals: " << _nsignals << std::endl;
-    for(size_t is=0; is<_nsignals; is++){
-      for(size_t ich=0; ich<_nchannels_per_event[is]; ich++){
-	//std::cout << "_channels[is][ich]:" << _channels[is][ich]  << std::endl;
-        fEventData[evt].push_back(_channels[is][ich]);
-	//output_list << "," << _channels[is][ich];
-      }   
-    }
-    //output_list << "\n";
-    // std::cout << "evt: " << evt << std::endl;
-    evt++;
-  }
-
-
-  //Goal is to fill fEventData[evt].push_back(atoi(str_number.c_str()));
-
-  /*
-  //Used to read text file
-  std::ifstream events;
-  events.open(fEventFile.c_str());
-  
-  int evt=1;
-  bool found;
-  bool channel;
-  std::string line;
-  
-  if ( events.is_open() ) {
-    while( !events.eof() ){
-      
-      std::getline(events,line);
-      std::string::iterator it;
-      std::string           str_number;
-      
-      found    = false;
-      channel  = false;
-      for ( it = line.begin();it<=line.end(); ++it) {
-        if (found) {
-          if (*it == ',' || it == line.end()) {
-            channel=true;
-            fEventData[evt].push_back(atoi(str_number.c_str()));
-            str_number="";
-          }
-          if (!channel)
-            str_number += *it;
-          channel=false;
-        }
-        if (*it == ',')
-          found = true;
-      }
-      evt++;
-    }
-  }else{
-    std::cout << "Bad file descriptor" << std::endl;
-  }
-  */
-}
-
 bool RecoModule::check_event(std::vector<int>& pin_data)
-{						
+{
   bool check      =  false;
-  int goodpins[8] =  {22,19,20,23,17,18,16,21};
+  int goodpins[8] =  {8,9,10,11,12,13,14,15}; //this must be manually entered at the moment sorry
   if(pin_data.size()>=4){      //Must have at least 4 pins hit  
-    for(auto pin : pin_data){ //Loop over pins              
-      for(int j=0;j<8;++j){    //check against goodpins (which are identifier rows)
-	if(pin == goodpins[j] && 
-	   ( (pin >=8  && pin<=23)
-	     || (pin<=23 && pin <=55) ) ){ //kill events with noisy channels
+    for(auto pin : pin_data){  //Loop over pins              
+      for(int j=0;j<8;++j){    //check against goodpins (which are identifier row pins
+	if(pin == goodpins[j]){
 	  check=true;
 	}//end if good pin
       }//end looping good pins
@@ -242,7 +136,7 @@ void RecoModule::find_hit_fibers(std::vector<int>& hit_pins){
       pin   = fPinsToPixels[j][0];
       pixel = fPinsToPixels[j][1];
 
-      if(pin<32) //pins less than 32 are the top PMT
+      if(pin<16) //pins less than 16 are the top PMT. Yes it's true the FEB is rotated.
         for(int k=0;k<8;++k){
           fHitFibers[0].push_back(fPixelsToFibers[pixel-1][k]);
 	  fFiberPinPixel[0][fPixelsToFibers[pixel-1][k]] = std::make_pair(pin,pixel);
@@ -259,25 +153,11 @@ void RecoModule::find_hit_fibers(std::vector<int>& hit_pins){
 void RecoModule::init_module()
 {
  
-  std::map<int, std::vector<int> >::iterator itr;
-   
-  getfiles(fEventFile.c_str(),fPinFile.c_str());
+  getfiles(fPinFile.c_str());
   initfibs();
   initpins();
   initpixels();
-  initfile();
-  g.set_coordinates();
-
-  itr=fEventData.begin();
-  while (itr != fEventData.end()) {
-    if(!check_event((*itr).second))
-      fEventData.erase(itr++); 
-    else
-      itr++;
-  }  
-  //Eventwise loop
-  
-  //  fNEvents = fEventData.size();
+  g = new Geometry(fId,fGap);
   
 }
   //Fill fHitFibers key 0 or 1; 0==top, 1==bottom (top/bot pmt)
@@ -321,7 +201,7 @@ void RecoModule::fill_fibers(){
       f.set_x(x);
       f.set_y(y);
       
-      f.set_coords(g.location(y,x));
+      f.set_coords(g->location(y,x));
       
       get_pixel(f.id(),&pixel,top);
       get_pin(f.id(),&pin,top);
@@ -411,7 +291,7 @@ void RecoModule::attach()
   bool found;
   //This is such a BS way to delete track pls fix
   std::vector<Track>::iterator track  = fTracks.begin();
-  std::vector<Track>::iterator lasttrack  = fTracks.end();
+  //std::vector<Track>::iterator lasttrack  = fTracks.end();
   size_t counter=0;
   while(track != fTracks.begin() + fTracks.size()){
     if( track - fTracks.begin() == fTracks.size()) 
@@ -438,45 +318,12 @@ void RecoModule::attach()
 }
 void RecoModule::print_tracks()
 {
+  std::cout << "!!!!!!!!!Module id: " << fId << " status!!!!!!!!!\n";
   for(auto tr : fTracks){
     tr.dump();
   }
-}
-/*
-void RecoModule::fill_root()
-{
-  fm.make_tree("recodata.root",fLocalAngles.size(),fLocalAngles);
-}
-*/
-
-void RecoModule::choose_angles()
-{
-  std::vector<Track>::iterator track;
-
-  for (track = fTracks.begin();track != fTracks.end();++track)
-    track->reconstruct();
-
-  int index=0;
-  int good_index=-1;
-  double value=10000;
-  for(auto track : fTracks){ //doing THIS MEANS YOU CAN NOT MODIFY fTRACKS
-    if(track.pvalue() < value) {
-      value      = track.pvalue();
-      good_index = index;
-    }
-    index++;
-  }		
   
-  fGoodTrackIndex = good_index;
-  if(is_good_track() && one_each_layer(fTracks.at(good_index))){//need something here
-    fTracks.at(good_index).chosen(true);
-    fTracks.at(good_index).hasoneeach(true);
-  }
 }
-
-
-// below this line okay my failure is showing
-// require good track index AND an angle less than fAngleTreshold <1.4????
 
 bool RecoModule::is_good_track(){
   if (fGoodTrackIndex >=0)
@@ -484,6 +331,7 @@ bool RecoModule::is_good_track(){
   else
     return false;
 }
+
 bool RecoModule::is_good_layers(){
   if (is_good_track()){
     if(fTracks.at(fGoodTrackIndex).is_hasoneeach()){
@@ -496,53 +344,14 @@ bool RecoModule::is_good_layers(){
     return false;
 
 }
-bool RecoModule::is_good_angle(){
-  if (is_good_track()){
-    if(fabs(fTracks.at(fGoodTrackIndex).angle()) <fAngleThreshold ){
-      return true;
-    }
-    else
-      return false;
-  }
-  else
-    return false;
-  
-}
+
 bool RecoModule::conditions_are_met(){
-  if(is_good_angle() && is_good_track() && is_good_layers())
+  if(is_good_track() && is_good_layers())
     return true;
   else
     return false;
 }
 
-double RecoModule::get_Slope()
-{
-  return fTracks.at(fGoodTrackIndex).slope();
-}
-double RecoModule::get_YInter()
-{
-  return fTracks.at(fGoodTrackIndex).yinter();
-}
-double RecoModule::get_Chi()
-{
-  return fTracks.at(fGoodTrackIndex).chi();
-}
-double RecoModule::get_Ndf()
-{
-  return fTracks.at(fGoodTrackIndex).ndf();
-}
-double RecoModule::get_Pvalue()
-{
-  return fTracks.at(fGoodTrackIndex).pvalue();
-}
-double RecoModule::get_Angle()
-{
-  return fTracks.at(fGoodTrackIndex).angle();
-}
-double RecoModule::get_CosAngle()
-{
-  return fTracks.at(fGoodTrackIndex).cosangle();
-}
 
 bool RecoModule::one_each_layer(Track trakk) 
 {
