@@ -8,6 +8,13 @@
 #include <string>
 #include <stdlib.h>
 #include <algorithm>
+
+#include "TGraphErrors.h"
+#include "TMath.h"
+#include "TFile.h"
+#include "TTree.h"
+
+
 #include "Fiber.h"
 #include "Track.h"
 #include "Geometry.h"

@@ -8,6 +8,7 @@
 #include <string>
 #include <stdlib.h>
 #include <algorithm>
+#include <cmath>
 
 
 class Fiber {
@@ -24,6 +25,7 @@ public:
   Fiber();
   ~Fiber();
   
+
   void set_id(int a);
   void set_x(double a);
   void set_y(double a);

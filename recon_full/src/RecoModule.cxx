@@ -1,19 +1,7 @@
-#include <iostream>
-#include <map>
-#include <vector>
-#include <fstream>
-#include <string>
-#include <stdlib.h>
-#include <algorithm>
 #include "RecoModule.h"
-#include "TGraphErrors.h"
-#include "TMath.h"
-#include "TFile.h"
-#include "TTree.h"
 
 RecoModule::RecoModule() {
   fGoodTrackIndex = -1;
-  //fAngleThreshold = 1.4;
 }
 
 RecoModule::RecoModule(int id, double gap) {

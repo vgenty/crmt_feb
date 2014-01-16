@@ -9,11 +9,15 @@
 #include <string>
 #include <stdlib.h>
 #include <algorithm>
+#include "math.h"
+
+
 #include "TGraphErrors.h"
 #include "TF1.h"
-#include "math.h"
-#include "Track.h"
 #include "TMath.h"
+
+#include "Track.h"
+
 
 class Line {
   
@@ -38,22 +42,21 @@ public:
   Line(bool isXZ);
   ~Line();
   
-  void do_tracks(std::vector<Track> tracks_top,std::vector<Track> tracks_bot);
+  void do_track_reco(std::vector<Track> tracks_top,std::vector<Track> tracks_bot);
   void fit_tracks();
   void clear_lines();
   void choose_best();
 
   void dump();
   
-  double slope(){return fSlope;}
-  double yinter(){return fYinter;}
-  double angle(){return fAngle;}
-  double chi(){return fChi;}
-  double ndf(){return fNdf;}
-  double pvalue(){return fPvalue;}
-  double cosangle(){return fCosAngle;}
-  bool   plane(){return fisXZ;}
-  
+  double slope()    {return fSlope;}
+  double yinter()   {return fYinter;}
+  double angle()    {return fAngle;}
+  double chi()      {return fChi;}
+  double ndf()      {return fNdf;}
+  double pvalue()   {return fPvalue;}
+  double cosangle() {return fCosAngle;}
+    
   
 };
 

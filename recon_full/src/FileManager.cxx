@@ -1,16 +1,8 @@
-#include <iostream>
-#include <fstream>
 #include "FileManager.h"
-#include "Track.h"
-#include "Fiber.h"
-#include <cmath>
-#include <stdio.h>
-#include <sstream>
-#include "TMath.h"
 
 FileManager::FileManager()
 {
-  fPSpace = false;
+  //empty constructor
 }
 
 FileManager::~FileManager() {}
@@ -21,147 +13,114 @@ std::string FileManager::to_string(char let, int id)
   ss << let << id;
   return ss.str();
 }
-void FileManager::open_file(std::string file_name)
+
+std::map<int, std::vector<int> > FileManager::get_raw_data(int event){
+  fRawEventData.clear();
+
+  //bool coincidence;
+  bool tMod0[32];
+  bool tMod1[32];
+  bool tMod2[32];
+  bool tMod3[32];
+  
+  fRawDataTree->SetBranchAddress("PinsArray0",tMod0);
+  fRawDataTree->SetBranchAddress("PinsArray1",tMod1);
+  fRawDataTree->SetBranchAddress("PinsArray2",tMod2);
+  fRawDataTree->SetBranchAddress("PinsArray3",tMod3);
+  //fRawDataTree->SetBranchAddress("Coincidence",&coincidence);
+  TBranch *b_PinsArray0  = fRawDataTree->GetBranch("PinsArray0");
+  TBranch *b_PinsArray1  = fRawDataTree->GetBranch("PinsArray1");
+  TBranch *b_PinsArray2  = fRawDataTree->GetBranch("PinsArray2");
+  TBranch *b_PinsArray3  = fRawDataTree->GetBranch("PinsArray3");
+  //TBranch *b_Coincidence = fRawDataTree->GetBranch("Coincidence");
+  
+  
+  
+  b_PinsArray0->GetEvent(event);   
+  b_PinsArray1->GetEvent(event);
+  b_PinsArray2->GetEvent(event);
+  b_PinsArray3->GetEvent(event);
+  //b_Coincidence->GetEvent(event);
+  
+  for (int xx = 0; xx < 32; ++xx){
+    if (tMod0[xx]) fRawEventData[0].push_back(xx);
+    if (tMod1[xx]) fRawEventData[1].push_back(xx);
+    if (tMod2[xx]) fRawEventData[2].push_back(xx);
+    if (tMod3[xx]) fRawEventData[3].push_back(xx);  
+  }
+ 
+  return fRawEventData;
+}
+
+void FileManager::set_raw_data_name(std::string name){
+  
+  fRawDataFileName = name;
+  fRawData     = new TFile(fRawDataFileName.c_str(),"READ");
+  //fRawData     = new TFile("input/afile.root","READ");
+  fRawDataTree = (TTree*)fRawData->Get("SimulationTree");   
+  fNRawEvents = fRawDataTree->GetEntries();
+}
+
+void FileManager::load_output_data(std::string file_name)
 {
   
-  fReconData = new TFile(file_name.c_str(), "RECREATE");
-  fEventTree = new TTree("Event Tree","Recon Tree");  
-  fEventTree->Branch("Event ID"       , &fEventID     , "EventID/I"     );
-  fEventTree->Branch("Slope"          , &fSlope       , "Slope/D"       );
-  fEventTree->Branch("Yinter"         , &fYInter      , "Yinter/D"      );
-  fEventTree->Branch("fChi"           , &fChi         , "Chi/D"         );
-  fEventTree->Branch("fNdf"           , &fNdf         , "Ndf/D"         );
-  fEventTree->Branch("fPvalue"        , &fPvalue      , "Pvalue/D"      ); 
-  fEventTree->Branch("fAngle"         , &fAngle       , "Angle/D"       ); 
-  fEventTree->Branch("fCosAngle"      , &fCosAngle    , "CosAngle/D"    ); 
-  fEventTree->Branch("fHitPins"       , &fHitPins                       );
-  fEventTree->Branch("fStringTracks"  , &fStringTracks                  );
-  fEventTree->Branch("fFibX"          , &fFibX                          );
-  fEventTree->Branch("fFibY"          , &fFibY                          );
- 
-  if(fPSpace) {
-    fEventTree->Branch("fx_Slope"     , &fx_Slope                       );
-    fEventTree->Branch("fx_Yinter"    , &fx_Yinter                      );
-    fEventTree->Branch("fx_Zvalue"    , &fx_Zvalue                      );
-    fEventTree->Branch("fx_LowZValue" , &fx_LowZValue , "x_LowZValue/D" );
-    fEventTree->Branch("fx_LowSlope"  , &fx_LowSlope  , "x_LowSlope/D"  );
-    fEventTree->Branch("fx_LowYinter" , &fx_LowYinter , "x_LowYinter/D" );
-  }
+  fReconData    = new TFile(file_name.c_str(), "RECREATE");
   
-  //fEventTree->Branch("fxp_Zvalue",     &fxp_Zvalue     );
-  //fEventTree->Branch("fxp_LowZValue" ,  &fxp_LowZValue, "xp_LowZValue/D");
+  fEventTreeXZ  = new TTree("Event Tree XZ","Recon Tree XZ");  
+  fEventTreeXZ->Branch("Slope"          , &fSlope_XZ       , "Slope/D"       );
+  fEventTreeXZ->Branch("Yinter"         , &fYInter_XZ      , "Yinter/D"      );
+  fEventTreeXZ->Branch("fChi"           , &fChi_XZ         , "Chi/D"         );
+  fEventTreeXZ->Branch("fNdf"           , &fNdf_XZ         , "Ndf/D"         );
+  fEventTreeXZ->Branch("fPvalue"        , &fPvalue_XZ      , "Pvalue/D"      ); 
+  fEventTreeXZ->Branch("fAngle"         , &fAngle_XZ       , "Angle/D"       ); 
+  fEventTreeXZ->Branch("fCosAngle"      , &fCosAngle_XZ    , "CosAngle/D"    ); 
+
+
+      
+  
+  fEventTreeYZ  = new TTree("Event Tree YZ","Recon Tree YZ");  
+  fEventTreeYZ->Branch("Slope"          , &fSlope_YZ       , "Slope/D"       );
+  fEventTreeYZ->Branch("Yinter"         , &fYInter_YZ      , "Yinter/D"      );
+  fEventTreeYZ->Branch("fChi"           , &fChi_YZ         , "Chi/D"         );
+  fEventTreeYZ->Branch("fNdf"           , &fNdf_YZ         , "Ndf/D"         );
+  fEventTreeYZ->Branch("fPvalue"        , &fPvalue_YZ      , "Pvalue/D"      ); 
+  fEventTreeYZ->Branch("fAngle"         , &fAngle_YZ       , "Angle/D"       ); 
+  fEventTreeYZ->Branch("fCosAngle"      , &fCosAngle_YZ    , "CosAngle/D"    ); 
+  
+  fEventTree3D  = new TTree("Event Tree 3D","Recon Tree 3D");
   
 }
 
 
-void FileManager::fill_event_tree(int EventID,
-				  double Slope, double YInter, double Chi,
-				  double Ndf,   double Pvalue, double Angle,
-				  double CosAngle, std::vector<int> HitPins,
-				  std::vector<Track> Tracks,
-				  std::map<std::pair<double,double> , double  > Xvalues)
-{
-  
-  fEventID  =  EventID;
-  fSlope    =  Slope;
-  fYInter   =  YInter;
-  fChi      =  Chi;
-  fNdf      =  Ndf;
-  fPvalue   =  Pvalue;
-  fHitPins  =  HitPins; //this might error trying to copy vector
-  fAngle    =  Angle;
-  fCosAngle =  CosAngle;
-  
-  if(fPSpace){
-    double current = 0;
-    fx_LowZValue  = 10000;
-  
-    for(auto coord_pair : Xvalues){
-      current = coord_pair.second;
-    
-      if (current < fx_LowZValue){
-	fx_LowZValue = current;
-	fx_LowSlope  = (coord_pair.first).first;
-	fx_LowYinter = (coord_pair.first).second;
-	fxp_LowZValue = TMath::Prob(current,4);
-      }
+void FileManager::fill_event_tree(std::pair<Line,Line>& lines) {
 
-      fx_Slope.push_back((coord_pair.first).first);
-      fx_Yinter.push_back((coord_pair.first).second);
-      fx_Zvalue.push_back(coord_pair.second);
-      fxp_Zvalue.push_back(TMath::Prob(coord_pair.second,4));  
+  fSlope_XZ    =  lines.first.slope();
+  fYInter_XZ   =  lines.first.yinter();
+  fChi_XZ      =  lines.first.angle();
+  fNdf_XZ      =  lines.first.chi();
+  fPvalue_XZ   =  lines.first.pvalue();
+  fAngle_XZ    =  lines.first.angle();
+  fCosAngle_XZ =  lines.first.cosangle();
 
-    }
-
-  }
   
-  fPvalue = TMath::Prob(fChi,fNdf);
-  for (auto tracks : Tracks){
-    for (auto fiber : tracks.fibers()){
-      if(fiber.y() <= 1)
-	fStringTracks.push_back(to_string('t',fiber.id()));
-      else 
-	fStringTracks.push_back(to_string('b',fiber.id()));
-    }
-    
-    if (tracks.is_chosen())  { //do it again if its the chosen one..
-      for (auto fiber : tracks.fibers()){
-	if(fiber.y() <= 1)
-	  fStringTracks.push_back(to_string('t',fiber.id()));
-	else 
-	  fStringTracks.push_back(to_string('b',fiber.id()));
-	
-	fFibX.push_back((fiber.get_coords()).first);
-	fFibY.push_back((fiber.get_coords()).second);
-	
-      }
-      
-      
-      
-    }
-    
-  }
+  fSlope_YZ    =  lines.second.slope();
+  fYInter_YZ   =  lines.second.yinter();
+  fChi_YZ      =  lines.second.angle();
+  fNdf_YZ      =  lines.second.chi();
+  fPvalue_YZ   =  lines.second.pvalue();
+  fAngle_YZ    =  lines.second.angle();
+  fCosAngle_YZ =  lines.second.cosangle();
   
-  fHitPins      = HitPins;
-  fEventTree->Fill();
-  fStringTracks.clear(); //empty string tracks after fill??
-  fFibY.clear(); //empty y
-  fFibX.clear(); //empt  x
-  if(fPSpace){
-    fx_Slope.clear();
-    fx_Yinter.clear();
-    fx_Zvalue.clear();
-    fxp_Zvalue.clear();
-  }
+  fEventTreeXZ->Fill();
+  fEventTreeYZ->Fill();
+  
 }
 
 
 void FileManager::finish(){
-  fEventTree->Write();
+  fEventTreeXZ->Write();
+  fEventTreeYZ->Write();
+  
   fReconData->Close();
 }
-
-
-
-
-/*
-void FileManager::make_display(std::vector<int>& pins,
-			      std::vector<Track>& fTracks){
-  
-  if (fTracks.size() >= 1){
-    pin_display.open ("pins.txt",std::ios::app);
-    track_display.open ("tracks.txt",std::ios::app);
-    pin_display << "1";
-    
-    for (auto pin : pins)
-      pin_display << "," << pin ;
-    
-
-    pin_display << std::endl;
-    pin_display.close();
-    track_display << std::endl;
-    track_display.close();
-  }
-}
-*/
 

@@ -1,17 +1,14 @@
 #include <iostream>
+
 #include <map>
 #include <vector>
+
 #include <fstream>
 #include <cstdlib>
 #include <stdlib.h>
 
-#include "Fiber.h"
-#include "RecoModule.h"
-#include "Track.h"
 #include "FileManager.h"
-#include "ParameterSpace.h"
 #include "Detector.h"
-
 
 #include "TTree.h"
 #include "TFile.h"
@@ -23,9 +20,8 @@ void usage()
 {
   std::cout << "Reco usage:                       " << std::endl;
   std::cout << "./Reco -r [filename]              " << std::endl;
-  std::cout << "./Reco -r [filename] -ps          " << std::endl;
-  std::cout << "./Reco -d [filename] -o [event #] " << std::endl;
-  std::cout << "./Reco -d [filename] -a           " << std::endl;
+  //std::cout << "./Reco -d [filename] -o [event #] " << std::endl;
+  //std::cout << "./Reco -d [filename] -a           " << std::endl;
 }
 
 int main(int argc, char *argv[])
@@ -40,113 +36,36 @@ int main(int argc, char *argv[])
   for(int k = 1  ; k < argc; ++k)
     args.push_back(argv[k]);
   
+  
+  FileManager *fm = new FileManager();
+  int nevents;
+  
   if(args[0] == "-r") { // go ahead with reco
-    Detector       *dd = new Detector(20.0);
-    //RecoModule     *mm = new RecoModule();
-    //FileManager    *fm = new FileManager();
-    //ParameterSpace *ps = new ParameterSpace();
-    
-    bool _ps = false;
-    /*
-    if(args.size() > 2 && args[2] == "-ps") {// build parameterspace?
-      ps->set_NSlopeDivisions(200);
-      ps->set_NYinterDivisions(80);
-      ps->Fill_Space();
-      fm->yes_parameterspace();
-      _ps = true;
-    }
-    */
-    
-    
-    //fm->open_file("./output/recodata.root");
-    
-    //std::map<std::pair<double,double> , double  > Xvalues;
-    //std::map<int, std::vector<int> >::iterator itr;
-    //    int evt=1;
-    //    std::map<int, std::vector<int> > eventdata = mm->get_event_data();//will soon come from filemanager
-    std::map<int, std::vector<int> > eventdata;
+    std::cout << "Loading RAW file: " << args[1] << "\n";
+    fm->set_raw_data_name(args[1]);
+    nevents = fm->get_n_events();
+    std::cout << "Got N: " << nevents << " events" << std::endl;
+    std::cout << "Creating RECO file: " << "recodata.root" << "\n";
+    fm->load_output_data("./output/recodata.root");
 
-    TFile *fff = new TFile("./input/afile.root","READ");
-    TTree *simtree = (TTree*)(fff->Get("SimulationTree"));
+    std::cout << "Creating Detector\n";
+    Detector *dd = new Detector(20.0); //gap is 20, will read from ROOT file at some point
     
-    bool coincidence;
-    bool tMod0[32];
-    bool tMod1[32];
-    bool tMod2[32];
-    bool tMod3[32];
-
-    simtree->SetBranchAddress("PinsArray0",tMod0);
-    simtree->SetBranchAddress("PinsArray1",tMod1);
-    simtree->SetBranchAddress("PinsArray2",tMod2);
-    simtree->SetBranchAddress("PinsArray3",tMod3);
-    simtree->SetBranchAddress("Coincidence",&coincidence);
-    TBranch *b_PinsArray0  = simtree->GetBranch("PinsArray0");
-    TBranch *b_PinsArray1  = simtree->GetBranch("PinsArray1");
-    TBranch *b_PinsArray2  = simtree->GetBranch("PinsArray2");
-    TBranch *b_PinsArray3  = simtree->GetBranch("PinsArray3");
-    TBranch *b_Coincidence = simtree->GetBranch("Coincidence");
-
-    int good_ones=0;
-    for ( int ient = 0; ient < simtree-> GetEntries(); ++ient ) {
-      
-      b_PinsArray0->GetEvent(ient);   
-      b_PinsArray1->GetEvent(ient);
-      b_PinsArray2->GetEvent(ient);
-      b_PinsArray3->GetEvent(ient);
-      b_Coincidence->GetEvent(ient);
-      
-      for (int xx = 0; xx < 32; ++xx){
-	if (tMod0[xx]) eventdata[0].push_back(xx);
-	if (tMod1[xx]) eventdata[1].push_back(xx);
-	if (tMod2[xx]) eventdata[2].push_back(xx);
-	if (tMod3[xx]) eventdata[3].push_back(xx);  
+    bool good;
+    int good_cnt = 1;
+    for(int i = 0; i < nevents; ++i) {
+      auto raw_data   = fm->get_raw_data(i);
+      auto recon_data = dd->recon_event(raw_data,good);
+      if(good){
+	fm->fill_event_tree(recon_data);
+	good_cnt++;
       }
-      dd->recon_event(eventdata,good_ones);
-      eventdata.clear();
-      std::cout << "ient: " << ient << " ";
-      std::cout << "good: " << good_ones << " ";
-      std::cout << "Coin: " << coincidence << "\n";
-    }
-    
-
-    
-    /*
-      for(itr=eventdata.begin();itr!=eventdata.end();++itr){
+      std::cout << "i: " << i << ", good: " << good_cnt <<std::endl;fflush(stdout);
       
-      if(evt%10==0){
-	std::cout << "-------------------" << std::endl;
-	std::cout << "Event:   " << evt << std::endl;
-      }
-      
-      mm -> find_hit_fibers((*itr).second);
-      mm -> fill_fibers();
-      mm -> clusterize();
-      mm -> attach();
-      mm -> choose_angles();
-      if (mm->conditions_are_met()){
-	if(_ps) ps -> TrackOpener(mm->get_Tracks());
-	if(_ps) fm -> fill_event_tree(evt,
-				      mm->get_Slope(),mm->get_YInter(),
-				      mm->get_Chi(),mm->get_Ndf(),
-				      mm->get_Pvalue(),mm->get_Angle(),
-				      mm->get_CosAngle(),(*itr).second,
-				      mm->get_Tracks(),
-				      ps->CreateSpace()); //only diff is this line
-	else    fm -> fill_event_tree(evt,
-				      mm->get_Slope(),mm->get_YInter(),
-				      mm->get_Chi(),mm->get_Ndf(),
-				      mm->get_Pvalue(),mm->get_Angle(),
-				      mm->get_CosAngle(),(*itr).second,
-				      mm->get_Tracks(),
-				      Xvalues);
-	evt++;	
-      }
-      mm -> clear();   
     }
-    fm -> finish();
-  }
-    */
 
+    fm->finish();
+    
     /*
   if(args[0] == "-d") { // go ahead with reco
     std::stringstream ss;

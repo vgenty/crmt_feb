@@ -3,73 +3,72 @@
 
 #include <iostream>
 #include <map>
+#include <sstream>
 #include <vector>
 #include <fstream>
 #include <string>
 #include <stdlib.h>
 #include <algorithm>
-#include "Fiber.h"
+#include <utility>
 #include "math.h"
+#include <cmath>
+
 #include "TFile.h"
 #include "TTree.h"
-#include "Track.h"
-#include "Fiber.h"
+
+#include "Line.h"
 
 class FileManager {
   
 private:
   
   TFile *fReconData;
-  TTree *fEventTree;
-  TTree *fReconTree;
-  
-  int    fEventID;
-  double fSlope;
-  double fYInter;
-  double fChi;
-  double fNdf;
-  double fPvalue;
-  double fAngle;
-  double fCosAngle;
-  double fx_LowZValue;
-  double fx_LowSlope;
-  double fx_LowYinter;
-  double fxp_LowZValue;
+  TFile *fRawData;
 
-  bool fPSpace;
+  TTree *fRawDataTree;
+  //TTree *fEventTree;
+  TTree *fEventTreeXZ;
+  TTree *fEventTreeYZ;
+  TTree *fEventTree3D;
   
-  std::vector<double> fFibX;
-  std::vector<double> fFibY;
-   
-  std::vector<double> fx_Slope;
-  std::vector<double> fx_Yinter;
-  std::vector<double> fx_Zvalue;
+  std::string fRawDataFileName;
+  std::map<int, std::vector<int> > fRawEventData;
+  
+  
+  int fNRawEvents;
 
-  std::vector<double> fxp_Zvalue;
+  double fSlope_XZ;
+  double fYInter_XZ;
+  double fChi_XZ;
+  double fNdf_XZ;
+  double fPvalue_XZ;
+  double fAngle_XZ;
+  double fCosAngle_XZ;
   
-  std::vector<int>   fHitPins;
-  std::vector<std::string> fStringTracks;
+
+  double fSlope_YZ;
+  double fYInter_YZ;
+  double fChi_YZ;
+  double fNdf_YZ;
+  double fPvalue_YZ;
+  double fAngle_YZ;
+  double fCosAngle_YZ;
   
   
 public:
   FileManager();
   ~FileManager();
-  void yes_parameterspace(){fPSpace = true;};
-  std::string to_string(char let, int id);
-  void open_file(std::string file_name);
-  void fill_event_tree(int EventID,
-		       double Slope,
-		       double YInter,
-		       double Chi,
-		       double Ndf,
-		       double Pvalue,
-		       double Angle,
-		       double CosAngle,
-		       std::vector<int>   HitPins,
-		       std::vector<Track> Tracks,
-		       std::map<std::pair<double,double> , double  > Xvalues);
   
-  void fill_reco_tree(std::vector<double> angles);
+  std::string to_string(char let, int id);
+  std::map<int, std::vector<int> > get_raw_data(int event);
+  void load_output_data(std::string file_name);
+
+  int get_n_events(){return fNRawEvents;}
+
+  void set_raw_data_name(std::string name);
+  void fill_event_tree(std::pair<Line,Line>& lines);
+  
+  
   void finish();
 };
 

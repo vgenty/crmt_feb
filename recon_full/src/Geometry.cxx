@@ -55,14 +55,14 @@ void Geometry::set_coordinates()
    }
    
    /*   
-   if(fId == 0.0){
-     std::ofstream myfile;
-     myfile.open ("geometry.dat");
-     for(int i=0;i<4;i++)
-       for(int j=0;j<64;++j)
-	 myfile << fLocation[i][j].first << "," << fLocation[i][j].second << std::endl;
-     myfile.close();  
-   }
+	if(fId == 0.0){
+	std::ofstream myfile;
+	myfile.open ("geometry.dat");
+	for(int i=0;i<4;i++)
+	for(int j=0;j<64;++j)
+	myfile << fLocation[i][j].first << "," << fLocation[i][j].second << std::endl;
+	myfile.close();  
+	}
    */
   
 

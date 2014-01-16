@@ -16,19 +16,17 @@ link_directories(${ROOT_LIB_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/include)
 link_directories(${CMAKE_SOURCE_DIR}/lib)
 
-##### COMPILE CRMT LIBRARIES
 ## -- setup to compile libraries
-#add_library(etc SHARED src/ParameterSpace.cxx src/FileManager.cxx src/Geometry.cxx)
-#add_library(particle SHARED src/Track.cxx src/Fiber.cxx src/RecoModule.cxx src/ParameterSpace.cxx src/FileManager.cxx src/Geometry.cxx src/Detector.cxx src/Line.cxx)
-#add_library(particle SHARED src/Track.cxx src/Fiber.cxx src/RecoModule.cxx src/FileManager.cxx src/Geometry.cxx src/Detector.cxx src/Line.cxx)
-add_library(particle SHARED src/Track.cxx src/Fiber.cxx src/RecoModule.cxx src/Geometry.cxx src/Detector.cxx src/Line.cxx)
-## -- add library dependencies
-target_link_libraries(particle ${ROOT_LIBS})
-#target_link_libraries(particle ${ROOT_LIBS} Geo)
-#target_link_libraries(particle ${ROOT_LIBS})	
+add_library(base SHARED src/Fiber.cxx src/Track.cxx src/Geometry.cxx src/Line.cxx)
+add_library(particle SHARED src/Detector.cxx src/FileManager.cxx src/RecoModule.cxx )
 
-##### COMPILE CRMT EXECUTABLE
+## -- add library dependencies
+target_link_libraries(base ${ROOT_LIBS})
+target_link_libraries(particle ${ROOT_LIBS} base)
+
+
+##### COMPILE Recon EXECUTABLE
 ## -- setup to compile executable 
 add_executable(Recon src/test_reco.cxx)
 ## -- add executable dependencies
-target_link_libraries(Recon ${ROOT_LIBS} particle)
+target_link_libraries(Recon ${ROOT_LIBS} particle base)
