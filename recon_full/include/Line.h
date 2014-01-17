@@ -22,7 +22,7 @@
 class Line {
   
 private:
- 
+  double fGap;
   bool fisXZ;
   
   TGraphErrors *fTG;
@@ -41,8 +41,7 @@ private:
 public:
   Line(bool isXZ);
   ~Line();
-  
-  void do_track_reco(std::vector<Track> tracks_top,std::vector<Track> tracks_bot);
+  void do_track_reco(std::vector<Track> tracks_top,std::vector<Track> tracks_bot,double& gap);  
   void fit_tracks();
   void clear_lines();
   void choose_best();

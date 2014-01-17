@@ -56,7 +56,6 @@ void FileManager::set_raw_data_name(std::string name){
   
   fRawDataFileName = name;
   fRawData     = new TFile(fRawDataFileName.c_str(),"READ");
-  //fRawData     = new TFile("input/afile.root","READ");
   fRawDataTree = (TTree*)fRawData->Get("SimulationTree");   
   fNRawEvents = fRawDataTree->GetEntries();
 }
@@ -119,8 +118,36 @@ void FileManager::fill_event_tree(std::pair<Line,Line>& lines) {
 
 void FileManager::finish(){
   fEventTreeXZ->Write();
-  fEventTreeYZ->Write();
-  
+  fEventTreeYZ->Write();  
   fReconData->Close();
 }
 
+void FileManager::setup_reco_viewer(std::string reco_file,int event){  
+  printf("okay");
+  fInputRecoData = new TFile(reco_file.c_str(),"READ");
+  fXZTree = (TTree*)fInputRecoData->Get("Event Tree XZ");
+  fYZTree = (TTree*)fInputRecoData->Get("Event Tree YZ"); 
+
+  fEvent = event;
+  printf("fEvent: %d", fEvent);
+}
+
+std::pair<std::pair<double,double>,std::pair<double,double> > FileManager::get_slope_yinter(){
+  
+  
+  //std::pair<std::pair<double,double>,std::pair<double,double> > localinfo;
+ 
+  double sXZ,yXZ,sYZ,yYZ;
+  
+  fXZTree->SetBranchAddress("Slope" ,&sXZ);
+  fXZTree->SetBranchAddress("Yinter",&yXZ);
+  fYZTree->SetBranchAddress("Slope" ,&sYZ);
+  fYZTree->SetBranchAddress("Yinter",&yYZ);
+  
+  fXZTree->GetEntry(fEvent);
+  fYZTree->GetEntry(fEvent);
+  printf("\nsXZ: %f sYZ: %f yXZ: %f yYZ: %f\n",sXZ,sYZ,yXZ,yYZ);
+  return std::make_pair(std::make_pair(sXZ,sYZ),std::make_pair(yXZ,yYZ));
+  
+
+}

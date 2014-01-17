@@ -6,8 +6,9 @@ Line::Line(bool isXZ){
 
 Line::~Line(){}
 
-void Line::do_track_reco(std::vector<Track> tracks_top,std::vector<Track> tracks_bot){
+void Line::do_track_reco(std::vector<Track> tracks_top,std::vector<Track> tracks_bot,double& gap){
   
+  fGap = gap;
   fTracks = std::make_pair(tracks_top,tracks_bot);
   fit_tracks();
   choose_best();
@@ -30,7 +31,7 @@ void Line::fit_tracks(){
     }
     
     for(auto& bot_track : fTracks.second) { 
-      TF1 *ffit = new TF1("fit","[0]+[1]*x",-1,74); 
+      TF1 *ffit = new TF1("fit","[0]+[1]*x",-1.0,2.0*74.0+fGap);
       bot_cnt = top_cnt + 1;
       
       for(auto& j : bot_track.fibers()){

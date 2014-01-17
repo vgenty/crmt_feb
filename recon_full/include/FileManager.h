@@ -22,16 +22,18 @@ class FileManager {
   
 private:
   
+  //Do Reco
   TFile *fReconData;
   TFile *fRawData;
 
+
+std::string fRawDataFileName;  
   TTree *fRawDataTree;
   //TTree *fEventTree;
   TTree *fEventTreeXZ;
   TTree *fEventTreeYZ;
   TTree *fEventTree3D;
   
-  std::string fRawDataFileName;
   std::map<int, std::vector<int> > fRawEventData;
   
   
@@ -54,22 +56,32 @@ private:
   double fAngle_YZ;
   double fCosAngle_YZ;
   
+
+  //Display Reco
+  TFile *fInputRecoData;
+  TTree *fXZTree;
+  TTree *fYZTree;
+  
+  int fEvent;
   
 public:
   FileManager();
   ~FileManager();
   
+  
+  //Do Reco
   std::string to_string(char let, int id);
   std::map<int, std::vector<int> > get_raw_data(int event);
   void load_output_data(std::string file_name);
-
   int get_n_events(){return fNRawEvents;}
-
   void set_raw_data_name(std::string name);
   void fill_event_tree(std::pair<Line,Line>& lines);
-  
-  
   void finish();
+
+  //View Reco
+  void setup_reco_viewer(std::string reco_file,int event);
+  std::pair<std::pair<double,double>,std::pair<double,double> > get_slope_yinter();
+
 };
 
 #endif

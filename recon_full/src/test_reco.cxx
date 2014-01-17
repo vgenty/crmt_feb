@@ -9,9 +9,13 @@
 
 #include "FileManager.h"
 #include "Detector.h"
+#include "Viewer.h"
 
+#include "TCanvas.h"
+#include "TApplication.h"
 #include "TTree.h"
 #include "TFile.h"
+#include "TMultiGraph.h"
 
 #include <sstream>
 
@@ -66,21 +70,48 @@ int main(int argc, char *argv[])
 
     fm->finish();
     
-    /*
-  if(args[0] == "-d") { // go ahead with reco
-    std::stringstream ss;
-    if(args.size() > 2){
-      ss << "cd viewer && python view_me.py ";
-      ss << args[3];
-      std::system((ss.str()).c_str());    
-    }
+  }   
+  if(args[0] == "-d") { // go ahead with display
+    printf("Setting up event display\n"); fflush(stdout);
+    const auto event = args[3].c_str();
+    std::cout << "event: " << event << "\n";
+    fm->setup_reco_viewer(args[1],atoi(event));
+    Viewer *vv = new Viewer(2.0,fm->get_slope_yinter()); //20.0 gap
     
-    else{
-      std::cout << "Not implemented yet, aborting" << std::endl;
-    }
+    vv->setup();
+    
+    
+    TApplication *tapp = new TApplication("app",&argc,argv);
+    TCanvas *can = new TCanvas("tgModules","tgModules",1300,570);
+    TPad *padXZ = new TPad("padXZ","padXZ",0.0,0.0,0.5,1.0);
+    TPad *padYZ = new TPad("padYZ","padYZ",0.5,0.0,1.0,1.0);
+    printf("b\n"); fflush(stdout);
+    padXZ->cd();
+    TMultiGraph *tmgXZ = new TMultiGraph();
+    tmgXZ->Add(vv->get_modules(0));
+    tmgXZ->Add(vv->get_modules(2));
+    tmgXZ->Draw("AP");
+    (vv->get_recolines().first)->Draw("SAMES");
+    padXZ->Update();
+    padXZ->Modified();
+    
+    
+    padYZ->cd();
+    TMultiGraph *tmgYZ = new TMultiGraph();
+    tmgYZ->Add(vv->get_modules(1));
+    tmgYZ->Add(vv->get_modules(3));
+    tmgYZ->Draw("AP");
+    (vv->get_recolines().second)->Draw("SAMES");
+    padYZ->Update();
+    padYZ->Modified();
+
+    can->cd();
+    padXZ->Draw();
+    padYZ->Draw();
+    tapp->Run();
+    
   }
   
-    */
-  }
   return 0;  
-}    
+  
+}

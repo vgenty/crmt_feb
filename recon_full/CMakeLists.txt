@@ -19,9 +19,11 @@ link_directories(${CMAKE_SOURCE_DIR}/lib)
 ## -- setup to compile libraries
 add_library(base SHARED src/Fiber.cxx src/Track.cxx src/Geometry.cxx src/Line.cxx)
 add_library(particle SHARED src/Detector.cxx src/FileManager.cxx src/RecoModule.cxx )
+add_library(display SHARED src/Viewer.cxx )
 
 ## -- add library dependencies
 target_link_libraries(base ${ROOT_LIBS})
+target_link_libraries(display ${ROOT_LIBS} base)
 target_link_libraries(particle ${ROOT_LIBS} base)
 
 
@@ -29,4 +31,4 @@ target_link_libraries(particle ${ROOT_LIBS} base)
 ## -- setup to compile executable 
 add_executable(Recon src/test_reco.cxx)
 ## -- add executable dependencies
-target_link_libraries(Recon ${ROOT_LIBS} particle base)
+target_link_libraries(Recon ${ROOT_LIBS} particle base display)

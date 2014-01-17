@@ -8,11 +8,11 @@ Detector::Detector(double gap){
 Detector::~Detector(){}
 
 void Detector::init_modules() {
- 
   for (int i = 0; i<4; ++i)
     fModules.push_back(new RecoModule(i,fGap));
   
 }
+
 
 std::pair<Line,Line> Detector::recon_event(std::map<int, std::vector<int> >& eventdata,bool& good) {  
   //Clear reco events before new
@@ -35,9 +35,11 @@ std::pair<Line,Line> Detector::recon_event(std::map<int, std::vector<int> >& eve
   
   if(good){
     fLines.first.do_track_reco(fModules[1]->get_Tracks(),
-			       fModules[3]->get_Tracks()); //XZ
+			       fModules[3]->get_Tracks(),
+			       fGap); //XZ
     fLines.second.do_track_reco(fModules[0]->get_Tracks(),
-				fModules[2]->get_Tracks()); //YZ
+				fModules[2]->get_Tracks(),
+				fGap); //YZ
   }
   
   return fLines;

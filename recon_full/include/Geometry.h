@@ -16,10 +16,10 @@ private:
   double fGap;
   
   double fBottom;
-  double fWidth      = 1.04  ;
-  double fOffset     = 0.3333;
-  double fStopGap    = 0.48  ;
-  double fHalfHeight = 1.54  ;
+  const double fWidth      = 1.04  ;
+  const double fOffset     = 0.3333;
+  const double fStopGap    = 0.48  ;
+  const double fHalfHeight = 1.54  ;
 
 
 public:

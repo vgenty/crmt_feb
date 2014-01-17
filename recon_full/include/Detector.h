@@ -23,7 +23,7 @@ public:
   std::pair<Line,Line> recon_event(std::map<int, std::vector<int> >& eventdata,bool& good); 
     
   void clean_event();
-  
+
 };
 
 #endif
