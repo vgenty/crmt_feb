@@ -342,7 +342,7 @@ bool RecoModule::conditions_are_met(){
 
 bool RecoModule::one_each_layer(Track trakk) 
 {
-  bool one_each[4] = {false,false,false};
+  bool one_each[4] = {false,false,false,false};
 
   for (auto fiber : trakk.fibers())
     for(size_t layer=0;layer<4;++layer)

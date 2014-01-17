@@ -53,10 +53,10 @@ int main(int argc, char *argv[])
     fm->load_output_data("./output/recodata.root");
 
     std::cout << "Creating Detector\n";
-    Detector *dd = new Detector(20.0); //gap is 20, will read from ROOT file at some point
+    Detector *dd = new Detector(2.0); //gap is 20, will read from ROOT file at some point
     
-    bool good;
-    int good_cnt = 1;
+    bool good = false;
+    int good_cnt = 0;
     for(int i = 0; i < nevents; ++i) {
       auto raw_data   = fm->get_raw_data(i);
       auto recon_data = dd->recon_event(raw_data,good);
@@ -76,7 +76,9 @@ int main(int argc, char *argv[])
     const auto event = args[3].c_str();
     std::cout << "event: " << event << "\n";
     fm->setup_reco_viewer(args[1],atoi(event));
-    Viewer *vv = new Viewer(2.0,fm->get_slope_yinter()); //20.0 gap
+    Viewer *vv = new Viewer(2.0,
+			    fm->get_slope_yinter(),
+			    fm->get_hit_points()); //20.0 gap
     
     vv->setup();
     
@@ -88,8 +90,10 @@ int main(int argc, char *argv[])
     printf("b\n"); fflush(stdout);
     padXZ->cd();
     TMultiGraph *tmgXZ = new TMultiGraph();
-    tmgXZ->Add(vv->get_modules(0));
-    tmgXZ->Add(vv->get_modules(2));
+    tmgXZ->Add(vv->get_modules(1));
+    tmgXZ->Add(vv->get_modules(3));
+    vv->get_hit_points().first->SetMarkerStyle(8);
+    tmgXZ->Add(vv->get_hit_points().first);
     tmgXZ->Draw("AP");
     (vv->get_recolines().first)->Draw("SAMES");
     padXZ->Update();
@@ -98,8 +102,10 @@ int main(int argc, char *argv[])
     
     padYZ->cd();
     TMultiGraph *tmgYZ = new TMultiGraph();
-    tmgYZ->Add(vv->get_modules(1));
-    tmgYZ->Add(vv->get_modules(3));
+    tmgYZ->Add(vv->get_modules(0));
+    tmgYZ->Add(vv->get_modules(2));
+    vv->get_hit_points().second->SetMarkerStyle(8);
+    tmgYZ->Add(vv->get_hit_points().second);
     tmgYZ->Draw("AP");
     (vv->get_recolines().second)->Draw("SAMES");
     padYZ->Update();

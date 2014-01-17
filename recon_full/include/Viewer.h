@@ -36,12 +36,14 @@ class Viewer{
 private:
   
   double fGap;
-  //TGraphErrors Line Draw
+
+  //TGraphErrors Line Draw HitPoints
   TCanvas *tgCanv;
   std::pair<TMultiGraph*,TMultiGraph*> tgMgs;
   std::map<int, TGraphErrors*> tgModules;
   std::pair<TF1*,TF1*> tgRecoLines;
-
+  std::pair<TGraphErrors*,TGraphErrors*> tgHitPoints = std::make_pair(new TGraphErrors(), new TGraphErrors());
+  
   //TH2D Hit Fibers
   TCanvas *thCanv;
   std::pair<TMultiGraph*,TMultiGraph*> thMgs;
@@ -59,22 +61,29 @@ private:
 
 
   std::pair<std::pair<double,double>,std::pair<double,double> > SandY;
-
+  std::pair<std::pair<std::vector<double>,std::vector<double> >
+	    ,std::pair<std::vector<double>,std::vector<double> > > fHitPoints;
 public:
-  Viewer(double gap,std::pair<std::pair<double,double>,std::pair<double,double> > sandy);
+  Viewer(double gap,
+	 std::pair<std::pair<double,double>,std::pair<double,double> > sandy,
+	 std::pair<std::pair<std::vector<double>,std::vector<double> >
+	 ,std::pair<std::vector<double>,std::vector<double> > > hitpts);
   ~Viewer();
-
+  
   void setup_geometry();
   void setup_lines();
   void setup_planes();
   void fill_TGs();
   void setup();
-
+  
   TGraphErrors* get_modules(int a){return tgModules[a];}
   std::pair<TF1*,TF1*> get_recolines(){return tgRecoLines;}
 
   double flip_yinter(double& slope, double& yinter);
   double flip_slope(double& slope);
+
+  std::pair<TGraphErrors*,TGraphErrors*> get_hit_points(){return tgHitPoints;}
+
 };
 
 #endif

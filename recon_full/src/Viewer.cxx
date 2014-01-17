@@ -1,9 +1,13 @@
 #include "Viewer.h"
 
 
-Viewer::Viewer(double gap,std::pair<std::pair<double,double>,std::pair<double,double> > sandy){ //can't pass sandy was reference because its the return of another function
+Viewer::Viewer(double gap,
+	       std::pair<std::pair<double,double>,std::pair<double,double> > sandy,
+	       std::pair<std::pair<std::vector<double>,std::vector<double> >
+	       ,std::pair<std::vector<double>,std::vector<double> > > hitpts){ //can't pass sandy was reference because its the return of another function
   fGap = gap;
   SandY = sandy;
+  fHitPoints = hitpts;
 }
 
 
@@ -27,38 +31,20 @@ double Viewer::flip_yinter(double& slope, double& yinter){
 void Viewer::setup_lines(){
   printf("how am I doing");
   std::stringstream ss;
-  /*
-  ss << flip_slope(SandY.first.first) << "*x + " << flip_yinter(SandY.first.first,SandY.second.first);
-
-  std::cout << "ss: " << ss.str() << "\n";
-
-  tgRecoLines.first = new TF1("fit_function_XZ", (ss.str()).c_str(),0.0,2.0*74.0+fGap);
-  ss.str("");
-
-
-  ss << flip_slope(SandY.first.second) << "*x + " << flip_yinter(SandY.first.second,SandY.second.second);
-
-  tgRecoLines.second = new TF1("fit_function_YZ", (ss.str()).c_str(),0.0,2.0*74.0+fGap);
-
-  std::cout << "ss: " << ss.str() << "\n";
-  */
-
-
-
+  
   ss << SandY.first.first << "*x + " << SandY.second.first;
-
   std::cout << "ss: " << ss.str() << "\n";
-
   tgRecoLines.first = new TF1("fit_function_XZ", (ss.str()).c_str(),0.0,2.0*74.0+fGap);
-  ss.str("");
+
+
+  ss.str(""); //string stream
 
 
   ss << SandY.first.second << "*x + " << SandY.second.second;
-
   tgRecoLines.second = new TF1("fit_function_YZ", (ss.str()).c_str(),0.0,2.0*74.0+fGap);
-
   std::cout << "ss: " << ss.str() << "\n";
   
+
 }
 
 
@@ -83,7 +69,14 @@ void Viewer::fill_TGs() {
     xx=0.0;
     yy=0.0;
   }//end loop modules
+
+  //Do hit points, make their TGraphErrors*
   
+  for (int k=0; k<fHitPoints.first.first.size();++k)
+    tgHitPoints.first->SetPoint(k,fHitPoints.first.first[k],fHitPoints.first.second[k]);
+  for (int k=0; k<fHitPoints.second.first.size();++k)
+    tgHitPoints.second->SetPoint(k,fHitPoints.second.first[k],fHitPoints.second.second[k]);
+			 
 }
 void Viewer::setup_planes(){
  

@@ -17,13 +17,13 @@ void Line::do_track_reco(std::vector<Track> tracks_top,std::vector<Track> tracks
 
 
 void Line::fit_tracks(){
-  int top_cnt ;
-  int bot_cnt ;
+  int top_cnt = 0;
+  int bot_cnt = 0;
   
   for(auto& top_track  : fTracks.first) { 
     fTG = new TGraphErrors(); 
-    top_cnt =1;
-	  
+    top_cnt=1;
+    
     for(auto& j : top_track.fibers()) {
       fTG->SetPoint     (top_cnt,j.coords().second,j.coords().first);
       fTG->SetPointError(top_cnt,1.54,             0.52);
@@ -47,6 +47,7 @@ void Line::fit_tracks(){
       fTG  -> Fit(ffit,"q");
       
       fFits.push_back(ffit);
+      fFittedTrack.push_back(std::make_pair(top_track.id(),bot_track.id()));
 
       //remove bottom points before new fill
       for(int k=bot_cnt;k <= top_cnt+1;--k)
@@ -62,16 +63,27 @@ void Line::choose_best(){
   //  std::sort(fFits.begin(), fFits.end(),
   //[](TF1 const & a, TF1 const &b){return a.GetChisquare() < b.GetChisquare();});
   //ok it didn't work
-  
   double _redchi = 100000.;
   double _local_redchi;
+  int cnt = 0;
+  fLowCnt = cnt;
   for(auto line : fFits){
     _local_redchi = (line->GetChisquare())/(line->GetNDF()); 
     if (_local_redchi < _redchi){
+      fLowCnt = cnt;
       _redchi = _local_redchi;
       fBestLine = *line;
     }
+    cnt++;
   }
+  
+  
+  for (auto &top_track: fTracks.first)
+    if( top_track.id() == fFittedTrack[fLowCnt].first)
+      for (auto& bot_track: fTracks.second)
+	if( bot_track.id() == fFittedTrack[fLowCnt].second)
+	  fBestTracks = std::make_pair(top_track,bot_track);	
+  
   
   fSlope    = fBestLine.GetParameter(1);
   fYinter   = fBestLine.GetParameter(0);
@@ -85,6 +97,7 @@ void Line::choose_best(){
 
 void Line::clear_lines(){  
   fFits.clear();
+  fFittedTrack.clear();
   fSlope    = 0;
   fYinter   = 0;
   fAngle    = 0;

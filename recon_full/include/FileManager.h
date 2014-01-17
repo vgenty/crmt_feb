@@ -55,6 +55,11 @@ std::string fRawDataFileName;
   double fPvalue_YZ;
   double fAngle_YZ;
   double fCosAngle_YZ;
+
+  std::vector<double> fFibsXZX;
+  std::vector<double> fFibsXZY;
+  std::vector<double> fFibsYZX;
+  std::vector<double> fFibsYZY;
   
 
   //Display Reco
@@ -77,11 +82,16 @@ public:
   void set_raw_data_name(std::string name);
   void fill_event_tree(std::pair<Line,Line>& lines);
   void finish();
-
+  void cleanup();
+  
   //View Reco
   void setup_reco_viewer(std::string reco_file,int event);
   std::pair<std::pair<double,double>,std::pair<double,double> > get_slope_yinter();
-
+  
+  std::pair<std::pair<std::vector<double>,std::vector<double> >
+	    ,std::pair<std::vector<double>,std::vector<double> > > get_hit_points();
+  
+  
 };
 
 #endif

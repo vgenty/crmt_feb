@@ -20,6 +20,9 @@ private:
   std::vector<Fiber> fFibers;
   bool fHasOneEach;
   int fid;
+  bool fChosen = false;
+
+  
   
 public:
   Track();
@@ -36,13 +39,10 @@ public:
   //void fit();
   //void calculate_angle();
   //void reconstruct();
-  void chosen(bool a);
+  void chosen(bool a){fChosen = a;};
   void hasoneeach(bool a);
   //bool is_chosen(){return fChosen;}
   bool is_hasoneeach(){return fHasOneEach;}
-  
-  
-  
 };
 
 #endif

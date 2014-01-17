@@ -27,8 +27,11 @@ private:
   
   TGraphErrors *fTG;
   std::vector<TF1*> fFits;
+  std::vector<std::pair<int,int> > fFittedTrack;
   std::pair<std::vector<Track>,std::vector<Track> > fTracks;
   
+
+  std::pair<Track,Track> fBestTracks;
   TF1 fBestLine;
   double fSlope;
   double fYinter;
@@ -37,6 +40,8 @@ private:
   double fChi;
   double fNdf;
   double fPvalue;
+  
+  int fLowCnt;
   
 public:
   Line(bool isXZ);
@@ -56,6 +61,8 @@ public:
   double pvalue()   {return fPvalue;}
   double cosangle() {return fCosAngle;}
     
+  
+  std::pair<Track,Track> get_best_tracks(){return fBestTracks;}
   
 };
 
