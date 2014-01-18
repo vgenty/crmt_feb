@@ -71,6 +71,9 @@ std::string fRawDataFileName;
   std::vector<double> fFibsYZX;
   std::vector<double> fFibsYZY;
   
+  
+  double fPhi;
+  double fTheta;
 
   //Display Reco
   TFile *fInputRecoData;

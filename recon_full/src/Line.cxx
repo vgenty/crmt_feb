@@ -95,11 +95,13 @@ void Line::choose_best(){
   fNdf      = fBestLine.GetNDF();
   fRChi     = fChi/fNdf;
   fPvalue   = TMath::Prob(fChi,fNdf);
-  
-  
-  
+   
   fAngle    = atan(fSlope);
   fAngleErr = fabs(1/(1+pow(fSlopeErr,2))*fSlopeErr);
+  
+  
+  
+  
   fCosAngle = cos(fAngle);
  
 }
@@ -109,7 +111,10 @@ void Line::clear_lines(){
   fFittedTrack.clear();
   fSlope    = 0;
   fYinter   = 0;
+  fSlopeErr = 0;
+  fYinterErr= 0;
   fAngle    = 0;
+  fAngleErr = 0;
   fCosAngle = 0;
   fChi      = 0;
   fNdf      = 0;

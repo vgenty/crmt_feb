@@ -101,24 +101,26 @@ void FileManager::load_output_data(std::string file_name)
   fEventTreeYZ->Branch("fFibYZY"        , &fFibsYZY); 
 
   fEventTree3D  = new TTree("Event Tree 3D","Recon Tree 3D");
+  fEventTree3D->Branch("fPhi",            &fPhi,         "Phi/D");
+  fEventTree3D->Branch("fTheta",            &fTheta,         "Theta/D");
   
 }
 
 
 void FileManager::fill_event_tree(std::pair<Line,Line>& lines) {
   
-  fSlope_XZ    =  lines.first.slope();
+  fSlope_XZ       =  lines.first.slope();
   fSlopeErr_XZ    =  lines.first.slopeerr();
-  fYInter_XZ   =  lines.first.yinter();
+  fYInter_XZ      =  lines.first.yinter();
   fYInterErr_XZ   =  lines.first.yintererr();
-  fChi_XZ      =  lines.first.chi();
-  fRChi_XZ      =  lines.first.rchi();
-  fNdf_XZ      =  lines.first.ndf();
+  fChi_XZ         =  lines.first.chi();
+  fRChi_XZ        =  lines.first.rchi();
+  fNdf_XZ         =  lines.first.ndf();
   
-  fPvalue_XZ   =  lines.first.pvalue();
-  fAngle_XZ    =  lines.first.angle();
+  fPvalue_XZ      =  lines.first.pvalue();
+  fAngle_XZ       =  lines.first.angle();
   fAngleErr_XZ    =  lines.first.angleerr();
-  fCosAngle_XZ =  lines.first.cosangle();
+  fCosAngle_XZ    =  lines.first.cosangle();
   
 
   //Slightly more painful way to write this data to a tree
@@ -145,22 +147,31 @@ void FileManager::fill_event_tree(std::pair<Line,Line>& lines) {
   
   
   
-  fSlope_YZ    =  lines.second.slope();
+  fSlope_YZ       =  lines.second.slope();
   fSlopeErr_YZ    =  lines.second.slopeerr();
-  fYInter_YZ   =  lines.second.yinter();
+  fYInter_YZ      =  lines.second.yinter();
   fYInterErr_YZ   =  lines.second.yintererr();
-  fChi_YZ      =  lines.second.chi();
-  fRChi_YZ      =  lines.second.rchi();
-  fNdf_YZ      =  lines.second.ndf();
+  fChi_YZ         =  lines.second.chi();
+  fRChi_YZ        =  lines.second.rchi();
+  fNdf_YZ         =  lines.second.ndf();
   
-  fPvalue_YZ   =  lines.second.pvalue();
-  fAngle_YZ    =  lines.second.angle();
+  fPvalue_YZ      =  lines.second.pvalue();
+  fAngle_YZ       =  lines.second.angle();
   fAngleErr_YZ    =  lines.second.angleerr();
-  fCosAngle_YZ =  lines.second.cosangle();
+  fCosAngle_YZ    =  lines.second.cosangle();
   
+  
+
+  fPhi            =  atan2(tan(fAngle_YZ),tan(fAngle_XZ)) + 3.14159265359;
+  
+  //for now use fAngleXZ, should decide later how to do this
+  fTheta          =  atan(tan(fAngle_XZ)/cos(fPhi));
+  //fTheta          =  atan(tan(fAngle_YZ)/sin(fPhi));
+  
+    
   fEventTreeXZ->Fill();
   fEventTreeYZ->Fill();
-
+  fEventTree3D->Fill();
   
   cleanup();
   
@@ -178,6 +189,7 @@ void FileManager::cleanup(){
 void FileManager::finish(){
   fEventTreeXZ->Write();
   fEventTreeYZ->Write();  
+  fEventTree3D->Write();
   fReconData->Close();
 }
 
@@ -185,7 +197,7 @@ void FileManager::setup_reco_viewer(std::string reco_file,int event){
   fInputRecoData = new TFile(reco_file.c_str(),"READ");
   fXZTree = (TTree*)fInputRecoData->Get("Event Tree XZ");
   fYZTree = (TTree*)fInputRecoData->Get("Event Tree YZ"); 
-
+  
   fEvent = event;
 }
 
