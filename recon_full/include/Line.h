@@ -35,10 +35,17 @@ private:
   TF1 fBestLine;
   double fSlope;
   double fYinter;
+  double fSlopeErr;
+  double fYinterErr;
+  
+
   double fAngle;
+  double fAngleErr;
   double fCosAngle;
   double fChi;
+  double fRChi;
   double fNdf;
+
   double fPvalue;
   
   int fLowCnt;
@@ -55,9 +62,15 @@ public:
   
   double slope()    {return fSlope;}
   double yinter()   {return fYinter;}
+  double slopeerr()    {return fSlopeErr;}
+  double yintererr()   {return fYinterErr;}
   double angle()    {return fAngle;}
+  double angleerr()    {return fAngleErr;}
   double chi()      {return fChi;}
+  double rchi()      {return fRChi;}
   double ndf()      {return fNdf;}
+
+  
   double pvalue()   {return fPvalue;}
   double cosangle() {return fCosAngle;}
     

@@ -15,10 +15,8 @@ Viewer::~Viewer(){}
 
 
 void Viewer::setup_geometry(){
-  printf("aa\n");
   for (int i=0; i<4; ++i){ //loop over four modules
-    printf("i\n");
-    g[i] = new Geometry(i,fGap); 
+      g[i] = new Geometry(i,fGap); 
   }
 }
 double Viewer::flip_slope(double& slope){
@@ -29,11 +27,9 @@ double Viewer::flip_yinter(double& slope, double& yinter){
 }
 
 void Viewer::setup_lines(){
-  printf("how am I doing");
   std::stringstream ss;
   
   ss << SandY.first.first << "*x + " << SandY.second.first;
-  std::cout << "ss: " << ss.str() << "\n";
   tgRecoLines.first = new TF1("fit_function_XZ", (ss.str()).c_str(),0.0,2.0*74.0+fGap);
 
 
@@ -42,7 +38,6 @@ void Viewer::setup_lines(){
 
   ss << SandY.first.second << "*x + " << SandY.second.second;
   tgRecoLines.second = new TF1("fit_function_YZ", (ss.str()).c_str(),0.0,2.0*74.0+fGap);
-  std::cout << "ss: " << ss.str() << "\n";
   
 
 }
@@ -73,9 +68,9 @@ void Viewer::fill_TGs() {
   //Do hit points, make their TGraphErrors*
   
   for (int k=0; k<fHitPoints.first.first.size();++k)
-    tgHitPoints.first->SetPoint(k,fHitPoints.first.first[k],fHitPoints.first.second[k]);
+    tgHitPoints.first->SetPoint(k,fHitPoints.first.second[k],fHitPoints.first.first[k]);
   for (int k=0; k<fHitPoints.second.first.size();++k)
-    tgHitPoints.second->SetPoint(k,fHitPoints.second.first[k],fHitPoints.second.second[k]);
+    tgHitPoints.second->SetPoint(k,fHitPoints.second.second[k],fHitPoints.second.first[k]);
 			 
 }
 void Viewer::setup_planes(){

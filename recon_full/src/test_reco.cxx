@@ -24,7 +24,7 @@ void usage()
 {
   std::cout << "Reco usage:                       " << std::endl;
   std::cout << "./Reco -r [filename]              " << std::endl;
-  //std::cout << "./Reco -d [filename] -o [event #] " << std::endl;
+  std::cout << "./Reco -d [filename] -o [event #] " << std::endl;
   //std::cout << "./Reco -d [filename] -a           " << std::endl;
 }
 
@@ -74,20 +74,20 @@ int main(int argc, char *argv[])
   if(args[0] == "-d") { // go ahead with display
     printf("Setting up event display\n"); fflush(stdout);
     const auto event = args[3].c_str();
-    std::cout << "event: " << event << "\n";
     fm->setup_reco_viewer(args[1],atoi(event));
     Viewer *vv = new Viewer(2.0,
 			    fm->get_slope_yinter(),
 			    fm->get_hit_points()); //20.0 gap
     
     vv->setup();
-    
+ 
+    fm->print_reco_results();
     
     TApplication *tapp = new TApplication("app",&argc,argv);
     TCanvas *can = new TCanvas("tgModules","tgModules",1300,570);
     TPad *padXZ = new TPad("padXZ","padXZ",0.0,0.0,0.5,1.0);
     TPad *padYZ = new TPad("padYZ","padYZ",0.5,0.0,1.0,1.0);
-    printf("b\n"); fflush(stdout);
+  
     padXZ->cd();
     TMultiGraph *tmgXZ = new TMultiGraph();
     tmgXZ->Add(vv->get_modules(1));
@@ -114,8 +114,11 @@ int main(int argc, char *argv[])
     can->cd();
     padXZ->Draw();
     padYZ->Draw();
+ 
     tapp->Run();
     
+
+
   }
   
   return 0;  

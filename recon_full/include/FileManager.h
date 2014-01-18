@@ -41,19 +41,29 @@ std::string fRawDataFileName;
 
   double fSlope_XZ;
   double fYInter_XZ;
+  double fSlopeErr_XZ;
+  double fYInterErr_XZ;
   double fChi_XZ;
+  double fRChi_XZ;
   double fNdf_XZ;
+  double fRNdf_XZ;
   double fPvalue_XZ;
   double fAngle_XZ;
+  double fAngleErr_XZ;
   double fCosAngle_XZ;
   
 
   double fSlope_YZ;
   double fYInter_YZ;
+  double fSlopeErr_YZ;
+  double fYInterErr_YZ;
   double fChi_YZ;
+  double fRChi_YZ;
   double fNdf_YZ;
+  
   double fPvalue_YZ;
   double fAngle_YZ;
+  double fAngleErr_YZ;
   double fCosAngle_YZ;
 
   std::vector<double> fFibsXZX;
@@ -73,7 +83,6 @@ public:
   FileManager();
   ~FileManager();
   
-  
   //Do Reco
   std::string to_string(char let, int id);
   std::map<int, std::vector<int> > get_raw_data(int event);
@@ -91,7 +100,7 @@ public:
   std::pair<std::pair<std::vector<double>,std::vector<double> >
 	    ,std::pair<std::vector<double>,std::vector<double> > > get_hit_points();
   
-  
+  void print_reco_results();
 };
 
 #endif

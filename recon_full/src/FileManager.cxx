@@ -67,11 +67,16 @@ void FileManager::load_output_data(std::string file_name)
   
   fEventTreeXZ  = new TTree("Event Tree XZ","Recon Tree XZ");  
   fEventTreeXZ->Branch("Slope"          , &fSlope_XZ       , "Slope/D"       );
+  fEventTreeXZ->Branch("SlopeErr"       , &fSlopeErr_XZ       , "SlopeErr/D"       );
   fEventTreeXZ->Branch("Yinter"         , &fYInter_XZ      , "Yinter/D"      );
+  fEventTreeXZ->Branch("YinterErr"         , &fYInterErr_XZ      , "YinterErr/D"      );
   fEventTreeXZ->Branch("fChi"           , &fChi_XZ         , "Chi/D"         );
+  fEventTreeXZ->Branch("fRChi"           , &fRChi_XZ         , "RChi/D"         );
   fEventTreeXZ->Branch("fNdf"           , &fNdf_XZ         , "Ndf/D"         );
+  
   fEventTreeXZ->Branch("fPvalue"        , &fPvalue_XZ      , "Pvalue/D"      ); 
   fEventTreeXZ->Branch("fAngle"         , &fAngle_XZ       , "Angle/D"       ); 
+  fEventTreeXZ->Branch("fAngleErr"         , &fAngleErr_XZ       , "AngleErr/D"       ); 
   fEventTreeXZ->Branch("fCosAngle"      , &fCosAngle_XZ    , "CosAngle/D"    ); 
   fEventTreeXZ->Branch("fFibXZX"        , &fFibsXZX); 
   fEventTreeXZ->Branch("fFibXZY"        , &fFibsXZY); 
@@ -82,10 +87,15 @@ void FileManager::load_output_data(std::string file_name)
   fEventTreeYZ  = new TTree("Event Tree YZ","Recon Tree YZ");  
   fEventTreeYZ->Branch("Slope"          , &fSlope_YZ       , "Slope/D"       );
   fEventTreeYZ->Branch("Yinter"         , &fYInter_YZ      , "Yinter/D"      );
+  fEventTreeYZ->Branch("SlopeErr"          , &fSlopeErr_YZ       , "SlopeErr/D"       );
+  fEventTreeYZ->Branch("YinterErr"         , &fYInterErr_YZ      , "YinterErr/D"      );
   fEventTreeYZ->Branch("fChi"           , &fChi_YZ         , "Chi/D"         );
+  fEventTreeYZ->Branch("fRChi"           , &fRChi_YZ         , "RChi/D"         );
   fEventTreeYZ->Branch("fNdf"           , &fNdf_YZ         , "Ndf/D"         );
+  
   fEventTreeYZ->Branch("fPvalue"        , &fPvalue_YZ      , "Pvalue/D"      ); 
   fEventTreeYZ->Branch("fAngle"         , &fAngle_YZ       , "Angle/D"       ); 
+  fEventTreeYZ->Branch("fAngleErr"         , &fAngleErr_YZ       , "AngleErr/D"       ); 
   fEventTreeYZ->Branch("fCosAngle"      , &fCosAngle_YZ    , "CosAngle/D"    ); 
   fEventTreeYZ->Branch("fFibYZX"        , &fFibsYZX); 
   fEventTreeYZ->Branch("fFibYZY"        , &fFibsYZY); 
@@ -96,15 +106,20 @@ void FileManager::load_output_data(std::string file_name)
 
 
 void FileManager::fill_event_tree(std::pair<Line,Line>& lines) {
-
+  
   fSlope_XZ    =  lines.first.slope();
+  fSlopeErr_XZ    =  lines.first.slopeerr();
   fYInter_XZ   =  lines.first.yinter();
+  fYInterErr_XZ   =  lines.first.yintererr();
   fChi_XZ      =  lines.first.chi();
+  fRChi_XZ      =  lines.first.rchi();
   fNdf_XZ      =  lines.first.ndf();
+  
   fPvalue_XZ   =  lines.first.pvalue();
   fAngle_XZ    =  lines.first.angle();
+  fAngleErr_XZ    =  lines.first.angleerr();
   fCosAngle_XZ =  lines.first.cosangle();
-
+  
 
   //Slightly more painful way to write this data to a tree
   //XZ
@@ -131,11 +146,16 @@ void FileManager::fill_event_tree(std::pair<Line,Line>& lines) {
   
   
   fSlope_YZ    =  lines.second.slope();
+  fSlopeErr_YZ    =  lines.second.slopeerr();
   fYInter_YZ   =  lines.second.yinter();
+  fYInterErr_YZ   =  lines.second.yintererr();
   fChi_YZ      =  lines.second.chi();
+  fRChi_YZ      =  lines.second.rchi();
   fNdf_YZ      =  lines.second.ndf();
+  
   fPvalue_YZ   =  lines.second.pvalue();
   fAngle_YZ    =  lines.second.angle();
+  fAngleErr_YZ    =  lines.second.angleerr();
   fCosAngle_YZ =  lines.second.cosangle();
   
   fEventTreeXZ->Fill();
@@ -162,13 +182,11 @@ void FileManager::finish(){
 }
 
 void FileManager::setup_reco_viewer(std::string reco_file,int event){  
-  printf("okay");
   fInputRecoData = new TFile(reco_file.c_str(),"READ");
   fXZTree = (TTree*)fInputRecoData->Get("Event Tree XZ");
   fYZTree = (TTree*)fInputRecoData->Get("Event Tree YZ"); 
 
   fEvent = event;
-  printf("fEvent: %d", fEvent);
 }
 
 
@@ -218,39 +236,36 @@ std::pair<std::pair<std::vector<double>,std::vector<double> >
   TBranch *b_fibsYZY=  fYZTree->GetBranch("fFibYZY");; 
   
   
-  printf("a\n");
   b_fibsXZX->GetEvent(fEvent);
   b_fibsXZY->GetEvent(fEvent);
   b_fibsYZX->GetEvent(fEvent);
   b_fibsYZY->GetEvent(fEvent);
-  //fXZTree->GetEntry(fEvent);
-  printf("b\n");
-  //fYZTree->GetEntry(fEvent);
-  printf("c\n");
+  
 
+  // printf("fibsXZX.size(): %lu\n", fibsXZX->size());
+  // printf("fibsXZY.size(): %lu\n", fibsXZY->size());
+  // printf("fibsYZX.size(): %lu\n", fibsYZX->size());
+  // printf("fibsYZY.size(): %lu\n", fibsYZY->size());
   
-  printf("fibsXZX.size(): %lu\n", fibsXZX->size());
-  printf("fibsXZY.size(): %lu\n", fibsXZY->size());
-  printf("fibsYZX.size(): %lu\n", fibsYZX->size());
-  printf("fibsYZY.size(): %lu\n", fibsYZY->size());
-  
-  for(auto value : *fibsXZX)
-    printf("fibsXZX value: %f\n",value);
-  printf("\n");
-  for(auto value : *fibsXZY)
-    printf("fibsXZY value: %f\n",value);
-  printf("\n");
-  for(auto value : *fibsYZX)
-    printf("fibsYZX value: %f\n",value);
-  printf("\n");
-  for(auto value : *fibsYZY)
-    printf("fibsYZY value: %f\n",value);
+  // for(auto value : *fibsXZX)
+  //   printf("fibsXZX value: %f\n",value);
+  // printf("\n");
+  // for(auto value : *fibsXZY)
+  //   printf("fibsXZY value: %f\n",value);
+  // printf("\n");
+  // for(auto value : *fibsYZX)
+  //   printf("fibsYZX value: %f\n",value);
+  // printf("\n");
+  // for(auto value : *fibsYZY)
+  //   printf("fibsYZY value: %f\n",value);
    
   
+  fXZTree->ResetBranchAddresses();
+  fYZTree->ResetBranchAddresses();
   
-  printf("returning\n");
-  return std::make_pair(std::make_pair(*fibsXZY,*fibsXZX),
-  			std::make_pair(*fibsYZY,*fibsYZX));
+  
+  return std::make_pair(std::make_pair(*fibsXZX,*fibsXZY),
+  			std::make_pair(*fibsYZX,*fibsYZY));
      
   
 }
@@ -269,8 +284,46 @@ std::pair<std::pair<double,double>,std::pair<double,double> > FileManager::get_s
   
   fXZTree->GetEntry(fEvent);
   fYZTree->GetEntry(fEvent);
-  printf("\nsXZ: %f sYZ: %f yXZ: %f yYZ: %f\n",sXZ,sYZ,yXZ,yYZ);
+    
+  fXZTree->ResetBranchAddresses();
+  fYZTree->ResetBranchAddresses();
+  
   return std::make_pair(std::make_pair(sXZ,sYZ),std::make_pair(yXZ,yYZ));
   
 
+}
+
+void FileManager::print_reco_results(){
+
+  
+  double angleXZ,angleXZerr,angleYZ,angleYZerr,cosangleXZ,cosangleYZ;
+
+  fXZTree->SetBranchAddress("fAngle"      ,&angleXZ);
+  fXZTree->SetBranchAddress("fAngleErr"   ,&angleXZerr);
+  fXZTree->SetBranchAddress("fCosAngle"   ,&cosangleXZ);
+  fYZTree->SetBranchAddress("fAngle"      ,&angleYZ);
+  fYZTree->SetBranchAddress("fAngleErr"   ,&angleYZerr);
+  fYZTree->SetBranchAddress("fCosAngle"   ,&cosangleYZ);
+
+  
+  fXZTree->GetEntry(fEvent);
+  fYZTree->GetEntry(fEvent);
+  
+  //this is necessary
+  fXZTree->ResetBranchAddresses();
+  fYZTree->ResetBranchAddresses();
+  
+  printf("----------Reco--Results----------\n");
+  printf("Event       : %d         \n",fEvent);
+  printf("AngleXZ     : %f +- %f   \n",angleXZ,angleXZerr);
+  printf("CosAngleXZ  : %f         \n",cosangleXZ);
+  printf("AngleYZ     : %f +- %f   \n",angleYZ,angleYZerr);
+  printf("CosAngleYZ  : %f         \n",cosangleYZ);
+  
+  
+  
+  //printf("Phi     : %f +- err  \n");
+  //printf("Theta   : %f +- err  \n");
+  
+  
 }

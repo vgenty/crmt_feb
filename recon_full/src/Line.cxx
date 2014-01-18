@@ -86,13 +86,22 @@ void Line::choose_best(){
   
   
   fSlope    = fBestLine.GetParameter(1);
+  fSlopeErr = fBestLine.GetParError(1);
+
   fYinter   = fBestLine.GetParameter(0);
+  fYinterErr= fBestLine.GetParError(1);
+  
   fChi      = fBestLine.GetChisquare();
   fNdf      = fBestLine.GetNDF();
+  fRChi     = fChi/fNdf;
   fPvalue   = TMath::Prob(fChi,fNdf);
-  fAngle    = atan(fSlope);  
-  fCosAngle = cos(fAngle);
   
+  
+  
+  fAngle    = atan(fSlope);
+  fAngleErr = fabs(1/(1+pow(fSlopeErr,2))*fSlopeErr);
+  fCosAngle = cos(fAngle);
+ 
 }
 
 void Line::clear_lines(){  
