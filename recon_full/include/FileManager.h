@@ -46,7 +46,6 @@ std::string fRawDataFileName;
   double fChi_XZ;
   double fRChi_XZ;
   double fNdf_XZ;
-  double fRNdf_XZ;
   double fPvalue_XZ;
   double fAngle_XZ;
   double fAngleErr_XZ;

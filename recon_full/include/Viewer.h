@@ -38,19 +38,19 @@ private:
   double fGap;
 
   //TGraphErrors Line Draw HitPoints
-  TCanvas *tgCanv;
+  // TCanvas *tgCanv;
   std::pair<TMultiGraph*,TMultiGraph*> tgMgs;
   std::map<int, TGraphErrors*> tgModules;
   std::pair<TF1*,TF1*> tgRecoLines;
   std::pair<TGraphErrors*,TGraphErrors*> tgHitPoints = std::make_pair(new TGraphErrors(), new TGraphErrors());
   
   //TH2D Hit Fibers
-  TCanvas *thCanv;
+  //TCanvas *thCanv;
   std::pair<TMultiGraph*,TMultiGraph*> thMgs;
   std::map<int, TH2D*> thModules;
 
   //Canvas of Info
-  TCanvas *infoCanv;
+  //TCanvas *infoCanv;
   std::vector<TPaveText*> infoText;
   
   //Local geometry

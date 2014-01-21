@@ -16,8 +16,13 @@
 #include "TTree.h"
 #include "TFile.h"
 #include "TMultiGraph.h"
+#include "TLatex.h"
+#include "TStyle.h"
+#include "VStyle.h"
 
 #include <sstream>
+
+
 
 
 void usage()
@@ -71,8 +76,10 @@ int main(int argc, char *argv[])
     fm->finish();
     
   }   
-  if(args[0] == "-d") { // go ahead with display
+  if(args[0] == "-d") { // go ahead with display 
+    set_style(); //from VStyle.h
     printf("Setting up event display\n"); fflush(stdout);
+    
     const auto event = args[3].c_str();
     fm->setup_reco_viewer(args[1],atoi(event));
     Viewer *vv = new Viewer(2.0,
@@ -90,14 +97,15 @@ int main(int argc, char *argv[])
   
     padXZ->cd();
     TMultiGraph *tmgXZ = new TMultiGraph();
+    
     tmgXZ->Add(vv->get_modules(1));
     tmgXZ->Add(vv->get_modules(3));
+    
     vv->get_hit_points().first->SetMarkerStyle(8);
     tmgXZ->Add(vv->get_hit_points().first);
     tmgXZ->Draw("AP");
     (vv->get_recolines().first)->Draw("SAMES");
-    padXZ->Update();
-    padXZ->Modified();
+    tmgXZ->SetTitle(";z#rightarrow;x#rightarrow");
     
     
     padYZ->cd();
@@ -108,15 +116,41 @@ int main(int argc, char *argv[])
     tmgYZ->Add(vv->get_hit_points().second);
     tmgYZ->Draw("AP");
     (vv->get_recolines().second)->Draw("SAMES");
-    padYZ->Update();
-    padYZ->Modified();
 
+    tmgYZ->SetTitle(";z#rightarrow;y#rightarrow");
+  
     can->cd();
     padXZ->Draw();
     padYZ->Draw();
- 
-    tapp->Run();
     
+    //Give TMultiGraph Axis
+    padXZ->cd();
+    tmgXZ->GetXaxis()->CenterTitle();
+    tmgXZ->GetYaxis()->CenterTitle();
+    TPaveText *XZ_title = new TPaveText(0.36,.93,.7,.95,"brNDC");
+    XZ_title->SetTextSize(22);
+    XZ_title->SetTextFont(63);
+    XZ_title->SetBorderSize(0);
+    XZ_title->SetFillColor(0);
+    XZ_title->AddText("XZ plane");
+    XZ_title->Draw();
+    padXZ->Update();
+    padXZ->Modified();
+     
+    padYZ->cd();
+    tmgYZ->GetXaxis()->CenterTitle();
+    tmgYZ->GetYaxis()->CenterTitle();
+    TPaveText *YZ_title = new TPaveText(0.36,.93,.7,.95,"brNDC");
+    YZ_title->SetTextSize(22);
+    YZ_title->SetTextFont(63);
+    YZ_title->SetBorderSize(0);
+    YZ_title->SetFillColor(0);
+    YZ_title->AddText("YZ plane");
+    YZ_title->Draw();
+    padYZ->Update();
+    padYZ->Modified();
+    
+    tapp->Run();
 
 
   }
