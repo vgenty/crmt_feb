@@ -50,18 +50,22 @@ int main(int argc, char *argv[])
   int nevents;
   
   if(args[0] == "-r") { // go ahead with reco
+    
     std::cout << "Loading RAW file: " << args[1] << "\n";
     fm->set_raw_data_name(args[1]);
     nevents = fm->get_n_events();
     std::cout << "Got N: " << nevents << " events" << std::endl;
+    auto gap = fm->get_gap();
+    std::cout << "Got gap: " << gap << std::endl;
     std::cout << "Creating RECO file: " << "recodata.root" << "\n";
     fm->load_output_data("./output/recodata.root");
-
-    std::cout << "Creating Detector\n";
-    Detector *dd = new Detector(2.0); //gap is 20, will read from ROOT file at some point
     
-    bool good = false;
-    int good_cnt = 0;
+    std::cout << "Creating Detector\n";
+    Detector *dd = new Detector(gap);
+    
+    bool good     = false;
+    int  good_cnt = 0;
+
     for(int i = 0; i < nevents; ++i) {
       auto raw_data   = fm->get_raw_data(i);
       auto recon_data = dd->recon_event(raw_data,good);
@@ -79,10 +83,11 @@ int main(int argc, char *argv[])
   if(args[0] == "-d") { // go ahead with display 
     set_style(); //from VStyle.h
     printf("Setting up event display\n"); fflush(stdout);
-    
     const auto event = args[3].c_str();
     fm->setup_reco_viewer(args[1],atoi(event));
-    Viewer *vv = new Viewer(2.0,
+    auto gap = fm->get_gap();
+    
+    Viewer *vv = new Viewer(gap, //gap
 			    fm->get_slope_yinter(),
 			    fm->get_hit_points()); //20.0 gap
     

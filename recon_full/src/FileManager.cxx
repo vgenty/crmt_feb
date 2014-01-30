@@ -55,9 +55,11 @@ std::map<int, std::vector<int> > FileManager::get_raw_data(int event){
 void FileManager::set_raw_data_name(std::string name){
   
   fRawDataFileName = name;
-  fRawData     = new TFile(fRawDataFileName.c_str(),"READ");
-  fRawDataTree = (TTree*)fRawData->Get("SimulationTree");   
-  fNRawEvents = fRawDataTree->GetEntries();
+  fRawData        = new TFile(fRawDataFileName.c_str(),"READ");
+  fRawDataTree    = (TTree*)fRawData->Get("SimulationTree");   
+  fTestVolumeTree = (TTree*)fRawData->Get("TestVolumeTree");   
+  fNRawEvents     = fRawDataTree->GetEntries();
+  set_gap_sim();
 }
 
 void FileManager::load_output_data(std::string file_name)
@@ -103,6 +105,7 @@ void FileManager::load_output_data(std::string file_name)
   fEventTree3D  = new TTree("Event Tree 3D","Recon Tree 3D");
   fEventTree3D->Branch("fPhi",            &fPhi,         "Phi/D");
   fEventTree3D->Branch("fTheta",            &fTheta,         "Theta/D");
+  fEventTree3D->Branch("fGap",            &fGap,         "Gap/D");
   
 }
 
@@ -163,10 +166,10 @@ void FileManager::fill_event_tree(std::pair<Line,Line>& lines) {
   
 
   fPhi            =  atan2(tan(fAngle_YZ),tan(fAngle_XZ)) + 3.14159265359;
-  
+ 
   //for now use fAngleXZ, should decide later how to do this
   fTheta          =  atan(tan(fAngle_XZ)/cos(fPhi));
-  //fTheta          =  atan(tan(fAngle_YZ)/sin(fPhi));
+  //fTheta        =  atan(tan(fAngle_YZ)/sin(fPhi));
   
     
   fEventTreeXZ->Fill();
@@ -196,9 +199,10 @@ void FileManager::finish(){
 void FileManager::setup_reco_viewer(std::string reco_file,int event){  
   fInputRecoData = new TFile(reco_file.c_str(),"READ");
   fXZTree = (TTree*)fInputRecoData->Get("Event Tree XZ");
-  fYZTree = (TTree*)fInputRecoData->Get("Event Tree YZ"); 
-  
+  fYZTree = (TTree*)fInputRecoData->Get("Event Tree YZ");
+  f3DTree = (TTree*)fInputRecoData->Get("Event Tree 3D");
   fEvent = event;
+  set_gap_reco();
 }
 
 
@@ -336,6 +340,33 @@ void FileManager::print_reco_results(){
   
   //printf("Phi     : %f +- err  \n");
   //printf("Theta   : %f +- err  \n");
+  
+  
+}
+//xx
+void FileManager::set_gap_sim(){
+  double _gap;
+  
+  fTestVolumeTree->SetBranchAddress("Gap" ,&_gap);
+  fTestVolumeTree->GetEntry(0);
+ 
+  fGap = _gap/10.; //Doug uses mm stupid kid
+
+   
+  fTestVolumeTree->ResetBranchAddresses();
+  
+ 
+  
+}
+
+void FileManager::set_gap_reco(){
+  double _gap;
+  f3DTree->SetBranchAddress("fGap",&_gap);
+  f3DTree->GetEntry(fEvent);
+
+  fGap = _gap; //Vic uses cm oh yeah
+
+  f3DTree->ResetBranchAddresses();
   
   
 }

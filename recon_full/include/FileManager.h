@@ -25,10 +25,12 @@ private:
   //Do Reco
   TFile *fReconData;
   TFile *fRawData;
-
-
-std::string fRawDataFileName;  
+  
+  
+  std::string fRawDataFileName;  
   TTree *fRawDataTree;
+  TTree *fTestVolumeTree;
+  
   //TTree *fEventTree;
   TTree *fEventTreeXZ;
   TTree *fEventTreeYZ;
@@ -78,9 +80,10 @@ std::string fRawDataFileName;
   TFile *fInputRecoData;
   TTree *fXZTree;
   TTree *fYZTree;
+  TTree *f3DTree;
   
   int fEvent;
-  
+  double fGap;
 public:
   FileManager();
   ~FileManager();
@@ -102,6 +105,9 @@ public:
   std::pair<std::pair<std::vector<double>,std::vector<double> >
 	    ,std::pair<std::vector<double>,std::vector<double> > > get_hit_points();
   
+  void set_gap_sim();
+  void set_gap_reco();
+  double get_gap(){return fGap;}
   void print_reco_results();
 };
 
