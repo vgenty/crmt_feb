@@ -10,7 +10,13 @@ Geometry::Geometry(const double &id,const double &gap)
   else
     fGap = 0.0;
   
-  fBottom = 0.64 + fGap + (3.0 - fId)*(3.0*fStopGap + 4.0*1.54*2.0 );
+  //gap between modules: 0.64
+  
+  if(fId == 3.0) 
+    fBottom = 0.64 + fGap + (3.0 - fId)*(3.0*fStopGap + 4.0*1.54*2.0);
+  else
+    fBottom = ((2.0*(3.0-fId)+1.0)*0.64) + fGap + (3.0 - fId)*(3.0*fStopGap + 4.0*1.54*2.0);
+  
   set_coordinates();
 }
 
@@ -54,16 +60,38 @@ void Geometry::set_coordinates()
     }
    }
    
-   /*   
-	if(fId == 0.0){
-	std::ofstream myfile;
-	myfile.open ("geometry.dat");
-	for(int i=0;i<4;i++)
-	for(int j=0;j<64;++j)
-	myfile << fLocation[i][j].first << "," << fLocation[i][j].second << std::endl;
-	myfile.close();  
-	}
-   */
-  
-
+   printf("f\n");
+   if(fId == 0.0){
+     std::ofstream myfile;
+     myfile.open ("geometry0.dat");
+     for(int i=0;i<4;i++)
+       for(int j=0;j<64;++j)
+	 myfile << fLocation[i][j].first << "," << fLocation[i][j].second << std::endl;
+     myfile.close();  
+   }
+ if(fId == 1.0){
+     std::ofstream myfile;
+     myfile.open ("geometry1.dat");
+     for(int i=0;i<4;i++)
+       for(int j=0;j<64;++j)
+	 myfile << fLocation[i][j].first << "," << fLocation[i][j].second << std::endl;
+     myfile.close();  
+   }
+ if(fId == 2.0){
+     std::ofstream myfile;
+     myfile.open ("geometry2.dat");
+     for(int i=0;i<4;i++)
+       for(int j=0;j<64;++j)
+	 myfile << fLocation[i][j].first << "," << fLocation[i][j].second << std::endl;
+     myfile.close();  
+   }
+ if(fId == 3.0){
+     std::ofstream myfile;
+     myfile.open ("geometry3.dat");
+     for(int i=0;i<4;i++)
+       for(int j=0;j<64;++j)
+	 myfile << fLocation[i][j].first << "," << fLocation[i][j].second << std::endl;
+     myfile.close();  
+   }
+   
 }

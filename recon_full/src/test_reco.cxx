@@ -22,9 +22,6 @@
 
 #include <sstream>
 
-
-
-
 void usage()
 {
   std::cout << "Reco usage:                       " << std::endl;

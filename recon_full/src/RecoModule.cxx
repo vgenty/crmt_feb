@@ -71,13 +71,13 @@ void RecoModule::initpins()
 }
 
 
-void RecoModule::initfibs()
-{
+void RecoModule::initfibs(){
   int seeds[3][8] = {{9  ,33,73,97,  1,41,65,105},
 		     {104,80,40,16,112,72,48,  8},
 		     {120,96,56,32,128,88,64, 24}};
   
-  //Fill identifier row                                                                                     
+  //Fill identifier row
+  
   for(int kk=0; kk<8;++kk) {
     fFiberLocations[0][kk+0*8] = 25  + kk;
     fFiberLocations[0][kk+1*8] = 49  + kk;
@@ -88,6 +88,7 @@ void RecoModule::initfibs()
     fFiberLocations[0][kk+6*8] = 81  + kk;
     fFiberLocations[0][kk+7*8] = 121 + kk;
   }
+  
   for (int o=0;o<3;++o)
     for( int e=0;e<8;++e)
       for (int i=0;i<8;++i)
@@ -97,18 +98,18 @@ void RecoModule::initfibs()
           fFiberLocations[o+1][8*e+i]=seeds[o][i]-e;
 }
 
-bool RecoModule::check_event(std::vector<int>& pin_data)
-{
+bool RecoModule::check_event(std::vector<int>& pin_data) {
   bool check      =  false;
-  if(pin_data.size()>=3){      //Must have at least 4 pins hit  
+  if(pin_data.size()>=1){      //Must have at least 1 pins hit, commented Feb 4.  
     for(auto pin : pin_data){  //Loop over pins              
-      for(int j=0;j<8;++j){    //check against goodpins (which are identifier row pins
+      for(int j=0;j<8;++j){    //check against goodpins (which are identifier row pins, there are 8)
+	// int goodpins[8] =  {8,9,10,11,12,13,14,15}; //this must be manually entered
 	if(pin == goodpins[j]){
 	  check=true;
 	}//end if good pin
       }//end looping good pins
     }//end pin loop
-  }//end >4
+  }//end >3
   
   return check;
 }
@@ -122,7 +123,7 @@ void RecoModule::find_hit_fibers(std::vector<int>& hit_pins){
     if(binary_search(hit_pins.begin(), hit_pins.end(), fPinsToPixels[j][0])){
       pin   = fPinsToPixels[j][0];
       pixel = fPinsToPixels[j][1];
-
+      
       if(pin<16) //pins less than 16 are the top PMT. Yes it's true the FEB is rotated.
         for(int k=0;k<8;++k){
           fHitFibers[0].push_back(fPixelsToFibers[pixel-1][k]);
@@ -137,8 +138,7 @@ void RecoModule::find_hit_fibers(std::vector<int>& hit_pins){
   }
 }
 
-void RecoModule::init_module()
-{
+void RecoModule::init_module(){
  
   getfiles(fPinFile.c_str());
   initfibs();
